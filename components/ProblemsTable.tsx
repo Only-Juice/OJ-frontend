@@ -1,11 +1,23 @@
-export default function Table() {
+"use client";
+import { useRouter } from "next/navigation";
+
+type TableProps = {
+  data: {
+    title: string;
+    startDate: string;
+    endDate: string;
+    status: boolean;
+  }[];
+};
+
+export default function Table({ data }: TableProps) {
+  const router = useRouter();
   return (
     <div className="overflow-x-auto">
-      <table className="table">
+      <table className="table table-zebra table-lg">
         {/* head */}
         <thead>
           <tr>
-            <th></th>
             <th>Title</th>
             <th>Start date</th>
             <th>End Date</th>
@@ -13,21 +25,24 @@ export default function Table() {
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: 100 }).map((_, index) => (
-            <tr key={index}>
-              <th>{index + 1}</th>
-              <td>Question {index + 1}</td>
-              <td>2025/01/{index + 1} 23:59:59</td>
-              <td>2025/01/{index + 1} 23:59:59</td>
+          {data.map((item, index) => (
+            <tr
+              key={index}
+              onClick={() => router.push(`/problem/${index + 1}`)}
+              className="cursor-pointer"
+            >
+              <td>{item.title}</td>
+              <td>{item.startDate}</td>
+              <td>{item.endDate}</td>
               <td>
-                {index < 10 ? (
+                {item.status ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
+                    strokeWidth={2}
+                    stroke="green"
+                    className="size-8"
                   >
                     <path
                       strokeLinecap="round"
@@ -40,9 +55,9 @@ export default function Table() {
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
+                    strokeWidth={2}
+                    stroke="red"
+                    className="size-8"
                   >
                     <path
                       strokeLinecap="round"

@@ -1,14 +1,24 @@
-export default function Home() {
+"use client";
+import { useRouter } from "next/navigation";
+
+export default function Navbar() {
+  const router = useRouter();
   return (
     <div
       className="navbar bg-base-100 shadow-sm"
       style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
     >
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl" href="#">
+        <a
+          className="btn btn-ghost text-xl"
+          onClick={() => router.push("/problem")}
+        >
           Problems
         </a>
-        <a className="btn btn-ghost text-xl" href="#">
+        <a
+          className="btn btn-ghost text-xl"
+          onClick={() => router.push("/problem")}
+        >
           Contests
         </a>
       </div>

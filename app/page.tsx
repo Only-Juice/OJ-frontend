@@ -1,6 +1,8 @@
 "use client";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="card bg-base-100 w-96 shadow-sm">
@@ -20,7 +22,7 @@ export default function Home() {
           <div className="h-15"></div>
           <button
             className="btn btn-primary"
-            onClick={() => (window.location.href = "/problems")}
+            onClick={() => router.push("/problem")}
           >
             Login
           </button>
