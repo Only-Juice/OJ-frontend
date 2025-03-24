@@ -9,12 +9,12 @@ export default function Home() {
         <div className="card-body p-10 ">
           <h2 className="card-title">Welcome to Orange Juice</h2>
           <fieldset className="fieldset">
-            <legend className="fieldset-legend">Email</legend>
-            <input type="email" className="input" />
+            <legend className="fieldset-legend">Username</legend>
+            <input id="username" type="text" className="input" />
           </fieldset>
           <fieldset className="fieldset">
             <legend className="fieldset-legend">Password</legend>
-            <input type="Password" className="input" />
+            <input id="password" type="Password" className="input" />
           </fieldset>
           <a href="#" className="text-end text-primary">
             Forget password?
@@ -22,7 +22,41 @@ export default function Home() {
           <div className="h-15"></div>
           <button
             className="btn btn-primary"
-            onClick={() => router.push("/problem")}
+            onClick={() => {
+              const usernameInput = document.getElementById(
+                "username"
+              ) as HTMLInputElement;
+              const passwordInput = document.getElementById(
+                "password"
+              ) as HTMLInputElement;
+              const username = usernameInput?.value;
+              const password = passwordInput?.value;
+
+              fetch("https://ojapi.ruien.me/api/gitea/auth", {
+                method: "POST",
+                headers: {
+                  accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  username,
+                  password,
+                }),
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  console.log("Success:", data);
+                  router.push("/problem");
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                });
+            }}
           >
             Login
           </button>
