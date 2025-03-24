@@ -3,10 +3,12 @@ import { useRouter } from "next/navigation";
 
 type TableProps = {
   data: {
+    id: number;
     title: string;
     startDate: string;
     endDate: string;
     status: boolean;
+    repoUrl: string;
   }[];
 };
 
@@ -28,7 +30,10 @@ export default function Table({ data }: TableProps) {
           {data.map((item, index) => (
             <tr
               key={index}
-              onClick={() => router.push(`/problem/${index + 1}`)}
+              onClick={() => {
+                sessionStorage.setItem("repoUrl", item.repoUrl);
+                router.push(`/problem/${item.id}`);
+              }}
               className="cursor-pointer"
             >
               <td>{item.title}</td>

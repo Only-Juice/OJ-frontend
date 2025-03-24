@@ -27,6 +27,7 @@ export default function Navbar() {
           tabIndex={0}
           role="button"
           className="btn btn-ghost btn-circle avatar"
+          onClick={() => router.push("/profile")}
         >
           <div className="w-10 rounded-full">
             <img
