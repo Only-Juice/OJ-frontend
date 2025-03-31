@@ -25,7 +25,6 @@ export default function Problem() {
               startDate: "test start date",
               endDate: "test end date",
               status: false,
-              repoUrl: question.GitRepoURL,
             };
           }
         );

@@ -19,7 +19,13 @@ export default function Home() {
           <a href="#" className="text-end text-primary">
             Forget password?
           </a>
-          <div className="h-15"></div>
+          <p
+            className="text-red-500 mt-2"
+            style={{ visibility: "hidden" }}
+            id="error_message"
+          >
+            Login failed, please check your username and password.
+          </p>
           <button
             className="btn btn-primary"
             onClick={() => {
@@ -50,11 +56,13 @@ export default function Home() {
                   return response.json();
                 })
                 .then((data) => {
-                  console.log("Success:", data);
+                  // console.log("Success:", data);
+                  sessionStorage.setItem("authToken", data.data);
                   router.push("/problem");
                 })
                 .catch((error) => {
-                  console.error("Error:", error);
+                  document.getElementById("error_message")!.style.visibility ="visible";
+                  // console.error("Error:", error);
                 });
             }}
           >

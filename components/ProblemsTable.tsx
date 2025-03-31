@@ -8,7 +8,6 @@ type TableProps = {
     startDate: string;
     endDate: string;
     status: boolean;
-    repoUrl: string;
   }[];
 };
 
@@ -31,7 +30,6 @@ export default function Table({ data }: TableProps) {
             <tr
               key={index}
               onClick={() => {
-                sessionStorage.setItem("repoUrl", item.repoUrl);
                 router.push(`/problem/${item.id}`);
               }}
               className="cursor-pointer"

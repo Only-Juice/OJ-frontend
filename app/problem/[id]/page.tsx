@@ -34,37 +34,81 @@ export default function Problem() {
 
   //   fetchReadme();
   // });
+
   useEffect(() => {
-    setContent(`# Test
-    Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
-  
-    You may assume that each input would have exactly one solution, and you may not use the same element twice.
-  
-    You can return the answer in any order.
-    `);
+    const takeQuestion = async () => {
+      try {
+        const response = await fetch(
+          `https://ojapi.ruien.me/api/gitea/question/${id}`,
+          {
+            method: "POST",
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+            },
+            body: "",
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to post data");
+        const data = await response.json();
+        console.log("Post request successful:", data);
+      } catch (error) {
+        console.error("Error during POST request:", error);
+      }
+    };
+
+    const getQuestionReadme = async () => {
+      try {
+        const response = await fetch(
+          `https://ojapi.ruien.me/api/question/user/id/${id}`,
+          {
+            method: "GET",
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch question data");
+        const data = await response.json();
+        console.log(data);
+
+        setContent(data.data.readme || "No content available");
+      } catch (error) {
+        console.error(error);
+        setContent("Failed to load question content");
+      }
+    };
+    (async () => {
+      await takeQuestion();
+      await getQuestionReadme();
+    })();
   });
 
   return (
     <div>
       <Navbar></Navbar>
       <div className="w-full min-h-screen pt-25 p-10 flex gap-10">
-        <div className="flex-3 ">
+        <div className="flex-3">
           <div className="card bg-base-100 shadow-sm min-h-full">
             <div className="card-body">
               <h2 className="card-title">Question {id}</h2>
               <MarkdownPreview
+                className="rounded-lg"
                 source={content}
                 style={{ padding: 16 }}
               ></MarkdownPreview>
             </div>
           </div>
         </div>
-        <div className="flex-1">
-          <div className="card bg-base-100 w-full shadow-sm min-h-full">
-            <div className="card-body">
+        <div className="flex-1 gap-10 flex flex-col">
+          <div className="card bg-base-100 w-full shadow-sm min-h-[75vh] max-h-[75vh]">
+            <div className="card-body h-full">
               <h2 className="card-title">Summit history</h2>
-              <ul className="list">
-                {Array.from({ length: 10 }).map((_, index) => {
+              <ul className="list overflow-y-auto max-h-full">
+                {Array.from({ length: 20 }).map((_, index) => {
                   return (
                     <li key={index} className="list-row">
                       <p>2025-01-{index + 1}</p>
@@ -75,6 +119,7 @@ export default function Problem() {
               </ul>
             </div>
           </div>
+          <button className="btn btn-primary">Copy SSH url</button>
         </div>
       </div>
     </div>

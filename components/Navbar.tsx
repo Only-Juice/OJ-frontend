@@ -1,8 +1,35 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const router = useRouter();
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("https://ojapi.ruien.me/api/gitea/user", {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setAvatarUrl(data.data.avatar_url);
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+
   return (
     <div
       className="navbar bg-base-100 shadow-sm"
@@ -31,8 +58,7 @@ export default function Navbar() {
         >
           <div className="w-10 rounded-full">
             <img
-              alt="Only Juice"
-              src="https://avatars.githubusercontent.com/u/184535404?s=200&v=4"
+              src={avatarUrl}
             />
           </div>
         </div>
