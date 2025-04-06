@@ -34,19 +34,32 @@ export default function Profile() {
     <div>
       <Navbar></Navbar>
       <div className="w-full pt-25 p-10 flex justify-center gap-10 min-h-screen">
-        <div className="card flex-1 flex flex-col gap-10 items-center pt-10 bg-base-100">
-          <div className="card-body gap-5">
+        <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100">
+          <div className="card-body w-full">
+            <h2 className="card-title">Sunmit history</h2>
+            <ul className="list">
+              {Array.from({ length: 3 }).map((_, index) => {
+                return (
+                  <li key={index} className="list-row">
+                    <p>2025-01-{index + 1}</p>
+                    <p>100</p>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          {/* <div className="card-body gap-5">
             <img src={avatarUrl} className="rounded-lg" />
             <h2 className="card-title">{username}</h2>
             {username}
             <button className="btn btn-primary">Edit Profile</button>
-          </div>
+          </div> */}
         </div>
-        <div className="flex-4 flex flex-col gap-10">
+        <div className="flex-1 flex flex-col gap-10">
           <div className="flex-1 flex gap-10">
-            <div className="card flex-1 bg-base-200">
+            {/* <div className="card flex-1 bg-base-200">
               <div className="card-body"></div>
-            </div>
+            </div> */}
             <div className="card flex-1 bg-base-200">
               <div className="card-body">
                 <div className="flex flex-wrap gap-4">
@@ -67,18 +80,6 @@ export default function Profile() {
             </div>
           </div>
           <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100">
-            <div className="card-body w-full">
-              <ul className="list">
-                {Array.from({ length: 3 }).map((_, index) => {
-                  return (
-                    <li key={index} className="list-row">
-                      <p>2025-01-{index + 1}</p>
-                      <p>100</p>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
           </div>
         </div>
       </div>

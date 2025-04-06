@@ -20,7 +20,7 @@ export default function Problem() {
           (question: any, index: number) => {
             const day = formatNumber(index + 1);
             return {
-              id: question.ID,
+              id: question.id,
               title: question.title,
               startDate: "test start date",
               endDate: "test end date",
