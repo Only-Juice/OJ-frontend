@@ -9,7 +9,9 @@ export default function Problem() {
   // const [repoUrl, setRepoUrl] = useState("");
   const params = useParams();
   const [content, setContent] = useState<string>("");
-  const [scoreHistory, setScoreHistory] = useState<any[]>([]);
+  const [scoreHistory, setScoreHistory] = useState<any>(null);
+  const [selectHistory, setSelectHistory] = useState<any>(null);
+
   const id = params.id;
 
   useEffect(() => {
@@ -88,29 +90,64 @@ export default function Problem() {
     <div>
       <Navbar></Navbar>
       <div className="w-full min-h-screen pt-25 p-10 flex gap-10">
-        <div className="flex-3">
-          <div className="card bg-base-100 shadow-sm min-h-full">
-            <div className="card-body">
-              <h2 className="card-title">Question {id}</h2>
-              <MarkdownPreview
-                className="rounded-lg"
-                source={content}
-                style={{ padding: 16 }}
-              ></MarkdownPreview>
-            </div>
+        {/* name of each tab group should be unique */}
+        <div className="tabs tabs-box flex-3">
+          <input
+            type="radio"
+            name="my_tabs_6"
+            className="tab"
+            aria-label="Question"
+            defaultChecked
+          />
+          <div className="tab-content p-2">
+            <MarkdownPreview
+              className="rounded-lg"
+              source={content}
+              style={{ padding: 16 }}
+            ></MarkdownPreview>
           </div>
+          {selectHistory !== null && (
+            <>
+              <input
+                type="radio"
+                name="my_tabs_6"
+                className="tab"
+                aria-label="Summit history details"
+              />
+              <div className="tab-content p-2">
+                {Array.from({ length: 5 }).map((_, index) => {
+                  return (
+                    <div
+                      className="collapse collapse-arrow bg-base-100 border-base-300 border"
+                      key={index}
+                    >
+                      <input type="checkbox" />
+                      <div className="collapse-title font-semibold">
+                        How do I create an account?
+                      </div>
+                      <div className="collapse-content text-sm">
+                        Click the "Sign Up" button in the top right corner and
+                        follow the registration process.
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
         <div className="flex-1 gap-10 flex flex-col">
           <div className="card bg-base-100 w-full shadow-sm min-h-[75vh] max-h-[75vh]">
             <div className="card-body h-full">
               <h2 className="card-title">Summit history</h2>
               <ul className="list overflow-y-auto max-h-full">
-                {scoreHistory.map((score, index) => (
-                  <li key={index} className="list-row">
-                    <p>{new Date(score.judge_time).toLocaleString()}</p>
-                    <p>{score.score}</p>
-                  </li>
-                ))}
+                {scoreHistory !== null &&
+                  scoreHistory.map((score: any, index: number) => (
+                    <li key={index} className="list-row">
+                      <p>{new Date(score.judge_time).toLocaleString()}</p>
+                      <p>{score.score}</p>
+                    </li>
+                  ))}
               </ul>
             </div>
           </div>

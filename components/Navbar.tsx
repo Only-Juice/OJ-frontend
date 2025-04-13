@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function Navbar() {
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(null);
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState("");
 
@@ -38,12 +38,6 @@ export default function Navbar() {
       style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
     >
       <div className="flex-1">
-        {/* <a
-          className="btn btn-ghost text-xl"
-          onClick={() => router.push("/problem")}
-        >
-          Problems
-        </a> */}
         <Link href="/problem" className="btn btn-ghost text-xl">
           Problems
         </Link>
@@ -65,19 +59,21 @@ export default function Navbar() {
             role="button"
             className="btn btn-ghost btn-circle avatar"
           >
-            <div className="w-10 rounded-full">
-              <img alt="avatar" src={avatarUrl} />
-            </div>
+            {avatarUrl === null ? (
+              <div className="skeleton h-10 w-10 shrink-0 rounded-full"></div>
+            ) : (
+              // <div className="avatar avatar-online">
+              <div className="w-10 rounded-full">
+                <img alt="avatar" src={avatarUrl} />
+              </div>
+              // </div>
+            )}
           </div>
           <ul
             tabIndex={0}
             className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
             <li>
-              {/* <a className="justify-between">
-                Profile
-                <span className="badge">New</span>
-              </a> */}
               <label className="fieldset-label">
                 <input
                   type="checkbox"
