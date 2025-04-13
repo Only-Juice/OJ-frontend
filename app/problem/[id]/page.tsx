@@ -9,31 +9,8 @@ export default function Problem() {
   // const [repoUrl, setRepoUrl] = useState("");
   const params = useParams();
   const [content, setContent] = useState<string>("");
+  const [scoreHistory, setScoreHistory] = useState<any[]>([]);
   const id = params.id;
-
-  // useEffect(() => {
-  //   const fetchReadme = async () => {
-  //     try {
-  //       let repoUrl = sessionStorage.getItem("repoUrl");
-  //       const response = await fetch(
-  //         `https://gitea.ruien.me/${repoUrl}/src/README.md`,
-  //         {
-  //           mode: "no-cors",
-  //         }
-  //       );
-  //       console.log(`https://gitea.ruien.me/${repoUrl}/src/README.md`);
-
-  //       if (!response.ok) throw new Error("Failed to fetch README.md");
-  //       const text = await response.text();
-  //       setContent(text);
-  //     } catch (error) {
-  //       console.error(error);
-  //       setContent("無法加載 README.md");
-  //     }
-  //   };
-
-  //   fetchReadme();
-  // });
 
   useEffect(() => {
     const takeQuestion = async () => {
@@ -52,7 +29,6 @@ export default function Problem() {
 
         if (!response.ok) throw new Error("Failed to post data");
         const data = await response.json();
-        console.log("Post request successful:", data);
       } catch (error) {
         console.error("Error during POST request:", error);
       }
@@ -73,17 +49,38 @@ export default function Problem() {
 
         if (!response.ok) throw new Error("Failed to fetch question data");
         const data = await response.json();
-        console.log(data);
-
         setContent(data.data.readme || "No content available");
       } catch (error) {
         console.error(error);
         setContent("Failed to load question content");
       }
     };
+
+    const getScoreHistory = async () => {
+      try {
+        const response = await fetch(
+          `https://ojapi.ruien.me/api/score/question/${id}`,
+          {
+            method: "GET",
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch summit history");
+        const data = await response.json();
+        setScoreHistory(data.data.scores);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     (async () => {
       await takeQuestion();
       await getQuestionReadme();
+      await getScoreHistory();
     })();
   });
 
@@ -108,14 +105,12 @@ export default function Problem() {
             <div className="card-body h-full">
               <h2 className="card-title">Summit history</h2>
               <ul className="list overflow-y-auto max-h-full">
-                {Array.from({ length: 20 }).map((_, index) => {
-                  return (
-                    <li key={index} className="list-row">
-                      <p>2025-01-{index + 1}</p>
-                      <p>100</p>
-                    </li>
-                  );
-                })}
+                {scoreHistory.map((score, index) => (
+                  <li key={index} className="list-row">
+                    <p>{new Date(score.judge_time).toLocaleString()}</p>
+                    <p>{score.score}</p>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

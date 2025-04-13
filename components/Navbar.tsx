@@ -79,15 +79,19 @@ export default function Navbar() {
                 <span className="badge">New</span>
               </a> */}
               <label className="fieldset-label">
-                <input type="checkbox" defaultChecked className="toggle" />
+                <input
+                  type="checkbox"
+                  defaultChecked
+                  className="toggle toggle-primary"
+                />
                 Hide information
               </label>
             </li>
             <li>
-              <a>Settings</a>
+              <a>(SSH) Settings</a>
             </li>
             <li>
-              <a>Logout</a>
+              <a className="text-secondary">Logout</a>
             </li>
           </ul>
         </div>
