@@ -62,11 +62,11 @@ export default function Navbar() {
             {avatarUrl === null ? (
               <div className="skeleton h-10 w-10 shrink-0 rounded-full"></div>
             ) : (
-              // <div className="avatar avatar-online">
-              <div className="w-10 rounded-full">
-                <img alt="avatar" src={avatarUrl} />
+              <div className="avatar avatar-online">
+                <div className="w-10 rounded-full">
+                  <img alt="avatar" src={avatarUrl} />
+                </div>
               </div>
-              // </div>
             )}
           </div>
           <ul
@@ -87,7 +87,7 @@ export default function Navbar() {
               <a>(SSH) Settings</a>
             </li>
             <li>
-              <a className="text-secondary">Logout</a>
+              <a className="text-error">Logout</a>
             </li>
           </ul>
         </div>
