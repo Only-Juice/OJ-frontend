@@ -89,7 +89,7 @@ export default function Problem() {
   return (
     <div>
       <Navbar></Navbar>
-      <div className="w-full h-full pt-25 p-10 flex gap-10">
+      <div className="w-full min-h-screen h-full pt-25 p-10 flex gap-10">
         <div className="tabs tabs-border tabs-box flex-3">
           <input
             type="radio"
@@ -131,10 +131,44 @@ export default function Problem() {
                             </span>
                           </div>
                         </div>
-                        <div className="collapse-content text-sm list">
+                        <div className="collapse-content text-lg list">
                           {Array.from(test.testsuite).map((t: any, i) => (
-                            <div key={i} className="list-row">
+                            <div
+                              key={i}
+                              className="list-row flex justify-between items-center"
+                            >
                               <p>{t.name}</p>
+                              {t.failures > 0 ? (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={2}
+                                  stroke="red"
+                                  className="size-8"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
+                                </svg>
+                              ) : (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={2}
+                                  stroke="green"
+                                  className="size-8"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                  />
+                                </svg>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -146,7 +180,7 @@ export default function Problem() {
           </div>
         </div>
         <div className="flex-1 gap-10 flex flex-col sticky top-25 self-start">
-          <div className="card bg-base-100 w-full shadow-sm min-h-[75vh] max-h-[75vh]">
+          <div className="card bg-base-100 w-full shadow-sm h-[75vh]">
             <div className="card-body h-full">
               <h2 className="card-title">Summit history</h2>
               <ul className="list overflow-y-auto">
@@ -167,6 +201,14 @@ export default function Problem() {
             </div>
           </div>
           <button className="btn btn-primary">Copy SSH url</button>
+          {/* <div className="join w-">
+            <div>
+              <label className="input validator join-item">
+                <input placeholder="url" />
+              </label>
+            </div>
+            <button className="btn btn-neutral join-item">COPY</button>
+          </div> */}
         </div>
       </div>
     </div>
