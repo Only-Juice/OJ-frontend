@@ -6,6 +6,7 @@ export default function Navbar() {
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -62,7 +63,11 @@ export default function Navbar() {
             {avatarUrl === null ? (
               <div className="skeleton h-10 w-10 shrink-0 rounded-full"></div>
             ) : (
-              <div className="avatar avatar-online">
+              <div
+                className={`avatar ${
+                  isPublic ? "avatar-online" : "avatar-offline"
+                }`}
+              >
                 <div className="w-10 rounded-full">
                   <img alt="avatar" src={avatarUrl} />
                 </div>
@@ -77,7 +82,8 @@ export default function Navbar() {
               <label className="fieldset-label">
                 <input
                   type="checkbox"
-                  defaultChecked
+                  checked={isPublic}
+                  onChange={(e) => setIsPublic(e.target.checked)}
                   className="toggle toggle-primary"
                 />
                 Hide information

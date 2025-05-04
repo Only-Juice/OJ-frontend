@@ -112,7 +112,7 @@ export default function Problem() {
             aria-label="Summit history details"
           />
           <div className="tab-content p-2">
-            {scoreHistory !== null
+            {scoreHistory !== null && scoreHistory[historyIndex].score >= 0
               ? JSON.parse(scoreHistory[historyIndex].message).testsuites.map(
                   (test: any, index: number) => {
                     let pass =
@@ -188,19 +188,58 @@ export default function Problem() {
                   scoreHistory.map((score: any, index: number) => (
                     <li
                       key={index}
-                      className="list-row"
+                      className={`list-row cursor-pointer   ${
+                        historyIndex === index
+                          ? "bg-primary text-primary-content"
+                          : "hover:bg-base-200"
+                      }`}
                       onClick={() => {
                         setHistoryIndex(index);
                       }}
                     >
                       <p>{new Date(score.judge_time).toLocaleString()}</p>
-                      <p>{score.score}</p>
+                      {score.score >= 0 ? (
+                        <p>{score.score}</p>
+                      ) : (
+                        <p>{score.message}</p>
+                      )}
                     </li>
                   ))}
               </ul>
             </div>
           </div>
-          <button className="btn btn-primary">Copy SSH url</button>
+          <div className="flex gap-10">
+            <button className="btn btn-primary flex-3">Copy SSH url</button>
+            <button
+              className="btn btn-primary flex-1"
+              onClick={async () => {
+                try {
+                  const response = await fetch(
+                    `https://ojapi.ruien.me/api/score/user/rescore/${id}`,
+                    {
+                      method: "POST",
+                      headers: {
+                        accept: "application/json",
+                        Authorization: `Bearer ${sessionStorage.getItem(
+                          "authToken"
+                        )}`,
+                      },
+                      body: "",
+                    }
+                  );
+
+                  if (!response.ok) throw new Error("Failed to rescore");
+                  const data = await response.json();
+                  setHistoryIndex(0);
+                  console.log("Rescore successful:", data);
+                } catch (error) {
+                  console.error("Error during rescore request:", error);
+                }
+              }}
+            >
+              Re-score
+            </button>
+          </div>
           {/* <div className="join w-">
             <div>
               <label className="input validator join-item">
