@@ -22,8 +22,8 @@ export default function Problem() {
             return {
               id: question.id,
               title: question.title,
-              startDate: "test start date",
-              endDate: "test end date",
+              startTime: question.start_time,
+              endTime: question.end_time,
               status: false,
             };
           }

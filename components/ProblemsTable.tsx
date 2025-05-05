@@ -5,8 +5,8 @@ type TableProps = {
   data: {
     id: number;
     title: string;
-    startDate: string;
-    endDate: string;
+    startTime: string;
+    endTime: string;
     status: boolean;
   }[];
 };
@@ -19,6 +19,7 @@ export default function Table({ data }: TableProps) {
         {/* head */}
         <thead>
           <tr>
+            <th></th>
             <th>Title</th>
             <th>Start date</th>
             <th>End Date</th>
@@ -34,9 +35,10 @@ export default function Table({ data }: TableProps) {
               }}
               className="cursor-pointer"
             >
+              <th>{index + 1}</th>
               <td>{item.title}</td>
-              <td>{item.startDate}</td>
-              <td>{item.endDate}</td>
+              <td>{new Date(item.startTime).toLocaleString()}</td>
+              <td>{new Date(item.endTime).toLocaleString()}</td>
               <td>
                 {item.status ? (
                   <svg

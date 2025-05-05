@@ -79,12 +79,10 @@ export default function Problem() {
       }
     };
 
-    (async () => {
-      await takeQuestion();
-      await getQuestionReadme();
-      await getScoreHistory();
-    })();
-  });
+    takeQuestion();
+    getQuestionReadme();
+    getScoreHistory();
+  }, []);
 
   return (
     <div>
@@ -180,7 +178,7 @@ export default function Problem() {
           </div>
         </div>
         <div className="flex-1 gap-10 flex flex-col sticky top-25 self-start">
-          <div className="card bg-base-100 w-full shadow-sm h-[75vh]">
+          <div className="card bg-base-100 w-full shadow-sm h-[80vh]">
             <div className="card-body h-full">
               <h2 className="card-title">Summit history</h2>
               <ul className="list overflow-y-auto">
@@ -237,7 +235,7 @@ export default function Problem() {
                 }
               }}
             >
-              Re-score
+              Rejudge
             </button>
           </div>
           {/* <div className="join w-">
