@@ -9,7 +9,7 @@ export default function Navbar() {
   const [isPublic, setIsPublic] = useState(false);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserProfile = async () => {
       try {
         const response = await fetch("https://ojapi.ruien.me/api/gitea/user", {
           headers: {
@@ -30,8 +30,51 @@ export default function Navbar() {
       }
     };
 
-    fetchUser();
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch("https://ojapi.ruien.me/api/user", {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setIsPublic(data.data.is_public);
+        } else {
+          console.error("Failed to fetch user details");
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+
+    fetchUserProfile();
+    fetchUserInfo();
   }, []);
+
+  const updateUserVisibility = async (isPublic: boolean) => {
+    try {
+      const response = await fetch(
+        "https://ojapi.ruien.me/api/user/is_public",
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify({ is_public: isPublic }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Failed to update user visibility");
+      }
+    } catch (error) {
+      console.error("Error updating user visibility:", error);
+    }
+  };
 
   return (
     <div
@@ -47,6 +90,9 @@ export default function Navbar() {
         </Link>
         <Link href="/dashboard" className="btn btn-ghost text-xl">
           Dashboard
+        </Link>
+        <Link href="/rank" className="btn btn-ghost text-xl">
+          Rank
         </Link>
       </div>
       <div className="flex gap-5 items-center">
@@ -83,7 +129,11 @@ export default function Navbar() {
                 <input
                   type="checkbox"
                   checked={isPublic}
-                  onChange={(e) => setIsPublic(e.target.checked)}
+                  onChange={async (e) => {
+                    const newVisibility = e.target.checked;
+                    setIsPublic(newVisibility);
+                    await updateUserVisibility(newVisibility);
+                  }}
                   className="toggle toggle-primary"
                 />
                 Hide information
@@ -93,7 +143,15 @@ export default function Navbar() {
               <a>(SSH) Settings</a>
             </li>
             <li>
-              <a className="text-error">Logout</a>
+              <a
+                className="text-error"
+                onClick={() => {
+                  sessionStorage.removeItem("authToken");
+                  window.location.href = "/";
+                }}
+              >
+                Logout
+              </a>
             </li>
           </ul>
         </div>
