@@ -1,11 +1,12 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function Profile() {
-  const [data, setData] = useState(null);
+  const links = [{ title: "Dashboard", href: "/dashboard" }];
+  const [history, setHistory] = useState(null);
   const [historyPage, setHistoryPage] = useState(1);
   const router = useRouter();
 
@@ -27,7 +28,7 @@ export default function Profile() {
         }
 
         const data = await response.json();
-        setData(data.data);
+        setHistory(data.data);
       } catch (error) {
         console.error(error);
       }
@@ -37,13 +38,14 @@ export default function Profile() {
   }, [historyPage]);
 
   return (
-    <Navbar links={[{ title: "Dashboard", href: "/dashboard" }]}>
+    <div className="flex flex-col flex-1">
+      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex justify-center gap-10 flex-1">
         <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100">
           <div className="card-body w-full flex flex-col">
             <h2 className="card-title">Sunmit history</h2>
             <ul className="list">
-              {data?.scores.map((score, index) => {
+              {history?.scores.map((score, index) => {
                 return (
                   <li
                     key={index}
@@ -75,7 +77,7 @@ export default function Profile() {
               <button
                 className="join-item btn"
                 onClick={() => {
-                  if (data?.scores_count > historyPage * 10) {
+                  if (history?.scores_count > historyPage * 10) {
                     setHistoryPage(historyPage + 1);
                   }
                 }}
@@ -109,6 +111,6 @@ export default function Profile() {
           <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100"></div>
         </div>
       </div>
-    </Navbar>
+    </div>
   );
 }

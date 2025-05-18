@@ -2,10 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const Navbar: React.FC<{
-  children?: React.ReactNode;
-  links?: { title: string; href: string }[];
-}> = ({ children, links = [] }) => {
+const Navbar = () => {
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState("");
@@ -80,7 +77,6 @@ const Navbar: React.FC<{
   };
 
   return (
-    <div>
       <div
         className="navbar bg-base-100 shadow-sm"
         style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
@@ -161,19 +157,18 @@ const Navbar: React.FC<{
           </div>
         </div>
       </div>
-      <div className="pt-20 p-10 min-h-screen flex-col flex">
-        <div className="breadcrumbs text-sm pb-7">
-          <ul>
-            {links.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href}>{link.title}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        {children}
-      </div>
-    </div>
+      // {/* <div className="pt-20 p-10 min-h-screen flex-col flex">
+      //   <div className="breadcrumbs text-sm pb-7">
+      //     <ul>
+      //       {links.map((link) => (
+      //         <li key={link.href}>
+      //           <Link href={link.href}>{link.title}</Link>
+      //         </li>
+      //       ))}
+      //     </ul>
+      //   </div>
+      //   {children}
+      // </div> */}
   );
 };
 

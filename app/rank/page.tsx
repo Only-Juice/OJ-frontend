@@ -1,10 +1,11 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { useEffect, useState } from "react";
 
 export default function Profile() {
   const [leaderboard, setLeaderboard] = useState([]);
+  const links = [{ title: "Rank", href: "/rank" }];
 
   useEffect(() => {
     async function fetchLeaderboard() {
@@ -31,7 +32,8 @@ export default function Profile() {
     fetchLeaderboard();
   }, []);
   return (
-    <Navbar links={[{ title: "Rank", href: "/rank" }]}>
+    <div>
+      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex justify-center gap-10 card flex-1">
         <div className="card-body w-full">
           <div className="overflow-x-auto">
@@ -99,6 +101,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </Navbar>
+    </div>
   );
 }
