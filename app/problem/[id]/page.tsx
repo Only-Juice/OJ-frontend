@@ -19,6 +19,43 @@ export default function Problem() {
   ];
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    let isFetching = false;
+
+    const getScoreHistory = async () => {
+      if (isFetching) return;
+      isFetching = true;
+
+      try {
+        const response = await fetch(
+          `https://ojapi.ruien.me/api/score/question/${id}`,
+          {
+            method: "GET",
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to fetch score history");
+
+        const data = await response.json();
+        setScoreHistory(data.data.scores);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        isFetching = false;
+      }
+    };
+
+    getScoreHistory();
+    intervalId = setInterval(getScoreHistory, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
     const takeQuestion = async () => {
       try {
         const response = await fetch(
@@ -62,30 +99,8 @@ export default function Problem() {
       }
     };
 
-    const getScoreHistory = async () => {
-      try {
-        const response = await fetch(
-          `https://ojapi.ruien.me/api/score/question/${id}`,
-          {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-            },
-          }
-        );
-
-        if (!response.ok) throw new Error("Failed to fetch summit history");
-        const data = await response.json();
-        setScoreHistory(data.data.scores);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     takeQuestion();
     getQuestionReadme();
-    getScoreHistory();
   }, []);
 
   return (
@@ -210,7 +225,20 @@ export default function Problem() {
             </div>
           </div>
           <div className="flex gap-10">
-            <button className="btn btn-primary flex-3">Copy SSH url</button>
+            <div className="join">
+              <input className="input join-item" placeholder="ssh url" />
+              <button className="btn btn-primary join-item">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  className="fill-[var(--color-primary-content)]"
+                >
+                  <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" />
+                </svg>
+              </button>
+            </div>
             <button
               className="btn btn-primary flex-1"
               onClick={async () => {
@@ -239,11 +267,13 @@ export default function Problem() {
               }}
             >
               <svg
-                viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 -960 960 960"
+                width="24px"
                 className="fill-[var(--color-primary-content)]"
               >
-                <path d="M17.91 14c-.478 2.833-2.943 5-5.91 5-3.308 0-6-2.692-6-6s2.692-6 6-6h2.172l-2.086 2.086L13.5 10.5 18 6l-4.5-4.5-1.414 1.414L14.172 5H12c-4.418 0-8 3.582-8 8s3.582 8 8 8c4.08 0 7.438-3.055 7.93-7h-2.02z" />
+                <path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z" />
               </svg>
               Rejudge
             </button>
