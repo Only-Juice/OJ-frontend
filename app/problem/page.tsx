@@ -1,10 +1,11 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import ProblemsTable from "@/components/ProblemsTable";
 import { useEffect, useState } from "react";
 
 export default function Problem() {
+  const inks = [{ title: "Problems", href: "/problem" }];
   const formatNumber = (num: number) => String(num).padStart(2, "0");
   const [questions, setQuestions] = useState([]);
   useEffect(() => {
@@ -33,7 +34,8 @@ export default function Problem() {
       .catch((error) => console.error("Error fetching questions:", error));
   }, []);
   return (
-    <Navbar links={[{ title: "Problems", href: "/problem" }]}>
+    <div>
+      <Breadcrumbs links={inks}></Breadcrumbs>
       <div className="w-full flex justify-center gap-10 flex-1">
         <div className="flex-3">
           <ProblemsTable data={questions}></ProblemsTable>
@@ -61,6 +63,6 @@ export default function Problem() {
           </div>
         </div>
       </div>
-    </Navbar>
+    </div>
   );
 }
