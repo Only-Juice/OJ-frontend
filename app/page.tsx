@@ -47,7 +47,7 @@ export default function Root() {
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="text-center lg:text-left">
           <h1 className="text-5xl font-bold">Login Now!</h1>
-          <p className="p-6">
+          <p className="py-6">
             Welcome to Orange Juice, a platform for online judge.
           </p>
         </div>

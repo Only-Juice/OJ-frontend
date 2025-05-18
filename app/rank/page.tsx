@@ -31,13 +31,11 @@ export default function Profile() {
     fetchLeaderboard();
   }, []);
   return (
-    <div>
-      <Navbar></Navbar>
-      <div className="w-full pt-25 p-10 flex justify-center gap-10 min-h-screen card">
+    <Navbar links={[{ title: "Rank", href: "/rank" }]}>
+      <div className="w-full flex justify-center gap-10 card flex-1">
         <div className="card-body w-full">
           <div className="overflow-x-auto">
             <table className="table">
-              {/* head */}
               <thead>
                 <tr>
                   <th></th>
@@ -49,7 +47,48 @@ export default function Profile() {
                 {leaderboard.map((item: any, index: number) => {
                   return (
                     <tr key={index}>
-                      <th>{index + 1}</th>
+                      {index === 0 ? (
+                        <td>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6"
+                          >
+                            <path
+                              fill="gold"
+                              d="M12 2L15 8L22 9L17 14L18 21L12 17L6 21L7 14L2 9L9 8L12 2Z"
+                            />
+                          </svg>
+                        </td>
+                      ) : index === 1 ? (
+                        <td>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6"
+                          >
+                            <path
+                              fill="silver"
+                              d="M12 2L15 8L22 9L17 14L18 21L12 17L6 21L7 14L2 9L9 8L12 2Z"
+                            />
+                          </svg>
+                        </td>
+                      ) : index === 2 ? (
+                        <td>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            className="w-6 h-6"
+                          >
+                            <path
+                              fill="#cd7f32"
+                              d="M12 2L15 8L22 9L17 14L18 21L12 17L6 21L7 14L2 9L9 8L12 2Z"
+                            />
+                          </svg>
+                        </td>
+                      ) : (
+                        <td>{index + 1}</td>
+                      )}
                       <td>{item.user_name}</td>
                       <td>{item.score}</td>
                     </tr>
@@ -60,6 +99,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-    </div>
+    </Navbar>
   );
 }
