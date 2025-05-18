@@ -33,9 +33,8 @@ export default function Problem() {
       .catch((error) => console.error("Error fetching questions:", error));
   }, []);
   return (
-    <div>
-      <Navbar></Navbar>
-      <div className="w-full pt-25 p-10 flex justify-center gap-10 min-h-screen">
+    <Navbar links={[{ title: "Problems", href: "/problem" }]}>
+      <div className="w-full flex justify-center gap-10 flex-1">
         <div className="flex-3">
           <ProblemsTable data={questions}></ProblemsTable>
         </div>
@@ -62,6 +61,6 @@ export default function Problem() {
           </div>
         </div>
       </div>
-    </div>
+    </Navbar>
   );
 }

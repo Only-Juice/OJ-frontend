@@ -2,21 +2,56 @@
 
 import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Profile() {
+  const [scores, setScores] = useState([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchScores = async () => {
+      try {
+        const response = await fetch("https://ojapi.ruien.me/api/score/all", {
+          headers: {
+            accept: "application/json",
+            Authorization:
+              "***REMOVED***",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch scores");
+        }
+
+        const data = await response.json();
+        setScores(data.data.scores);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchScores();
+  }, []);
+
   return (
-    <div>
-      <Navbar></Navbar>
-      <div className="w-full pt-25 p-10 flex justify-center gap-10 min-h-screen">
+    <Navbar links={[{ title: "Dashboard", href: "/dashboard" }]}>
+      <div className="w-full flex justify-center gap-10 flex-1">
         <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100">
           <div className="card-body w-full">
             <h2 className="card-title">Sunmit history</h2>
             <ul className="list">
-              {Array.from({ length: 3 }).map((_, index) => {
+              {scores.map((score, index) => {
                 return (
-                  <li key={index} className="list-row">
-                    <p>2025-01-{index + 1}</p>
-                    <p>100</p>
+                  <li
+                    key={index}
+                    className="list-row cursor-pointer"
+                    onClick={() => {
+                      router.push(`/problem/${score.question_id}`);
+                    }}
+                  >
+                    <p>{score.question_id}</p>
+                    <p>{new Date(score.judge_time).toLocaleString()}</p>
+                    <p>{score.score}</p>
                   </li>
                 );
               })}
@@ -44,10 +79,9 @@ export default function Profile() {
               </div>
             </div>
           </div>
-          <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100">
-          </div>
+          <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100"></div>
         </div>
       </div>
-    </div>
+    </Navbar>
   );
 }
