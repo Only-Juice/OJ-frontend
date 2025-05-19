@@ -2,37 +2,27 @@
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProblemsTable from "@/components/ProblemsTable";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 export default function Problem() {
   const inks = [{ title: "Problems", href: "/problem" }];
   const formatNumber = (num: number) => String(num).padStart(2, "0");
-  const [questions, setQuestions] = useState([]);
-  useEffect(() => {
-    fetch("https://ojapi.ruien.me/api/question", {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const extractedQuestions = (data.data?.questions || []).map(
-          (question: any, index: number) => {
-            const day = formatNumber(index + 1);
-            return {
-              id: question.id,
-              title: question.title,
-              startTime: question.start_time,
-              endTime: question.end_time,
-              status: false,
-            };
-          }
-        );
-        setQuestions(extractedQuestions);
-      })
-      .catch((error) => console.error("Error fetching questions:", error));
-  }, []);
+
+  const { data: questionData } = useSWR("https://ojapi.ruien.me/api/question");
+  
+  const questions =
+    (questionData?.data?.questions || []).map(
+      (question: any, index: number) => {
+        const day = formatNumber(index + 1);
+        return {
+          id: question.id,
+          title: question.title,
+          startTime: question.start_time,
+          endTime: question.end_time,
+          status: false,
+        };
+      }
+    ) || [];
   return (
     <div>
       <Breadcrumbs links={inks}></Breadcrumbs>

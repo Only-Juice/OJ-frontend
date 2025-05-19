@@ -1,36 +1,14 @@
 "use client";
 
+import useSWR from "swr";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { useEffect, useState } from "react";
 
 export default function Profile() {
-  const [leaderboard, setLeaderboard] = useState([]);
   const links = [{ title: "Rank", href: "/rank" }];
 
-  useEffect(() => {
-    async function fetchLeaderboard() {
-      try {
-        const response = await fetch(
-          "https://ojapi.ruien.me/api/score/leaderboard",
-          {
-            headers: {
-              accept: "application/json",
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setLeaderboard(data.data.scores);
-        } else {
-          console.error("Failed to fetch leaderboard");
-        }
-      } catch (error) {
-        console.error("Error fetching leaderboard:", error);
-      }
-    }
+  const { data } = useSWR("https://ojapi.ruien.me/api/score/leaderboard");
+  const leaderboard = data?.data?.scores ?? [];
 
-    fetchLeaderboard();
-  }, []);
   return (
     <div>
       <Breadcrumbs links={links}></Breadcrumbs>

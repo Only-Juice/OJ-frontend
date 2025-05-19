@@ -1,61 +1,32 @@
 "use client";
 
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import useSWR from "swr";
+
 import Breadcrumbs from "@/components/Breadcrumbs";
 import MarkdownPreview from "@uiw/react-markdown-preview";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function Problem() {
-  // const [repoUrl, setRepoUrl] = useState("");
   const params = useParams();
-  const [content, setContent] = useState("Loading...");
-  const [history, setHistory] = useState(null);
-  // const [scoreHistory, setScoreHistory] = useState<any>(null);
-  const [historyIndex, setHistoryIndex] = useState<number>(0);
-  const [historyPage, setHistoryPage] = useState(1);
-
   const id = params.id;
+
   const links = [
     { title: "Problem", href: "/problem" },
     { title: `Problem ${id}`, href: `/problem/${id}` },
   ];
 
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    let isFetching = false;
+  const [historyPage, setHistoryPage] = useState(1);
+  const { data: historyData } = useSWR(
+    `https://ojapi.ruien.me/api/score/question/${id}?page=${historyPage}`
+  );
+  const histories = historyData?.data || null;
+  const [historyIndex, setHistoryIndex] = useState(0);
 
-    const getScoreHistory = async () => {
-      if (isFetching) return;
-      isFetching = true;
-
-      try {
-        const response = await fetch(
-          `https://ojapi.ruien.me/api/score/question/${id}?page=${historyPage}`,
-          {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-            },
-          }
-        );
-
-        if (!response.ok) throw new Error("Failed to fetch score history");
-
-        const data = await response.json();
-        setHistory(data.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        isFetching = false;
-      }
-    };
-
-    getScoreHistory();
-    intervalId = setInterval(getScoreHistory, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [historyPage]);
+  const { data: questionData } = useSWR(
+    `https://ojapi.ruien.me/api/question/user/id/${id}`
+  );
+  const question = questionData?.data.readme || "Loading...";
 
   useEffect(() => {
     const takeQuestion = async () => {
@@ -79,30 +50,7 @@ export default function Problem() {
       }
     };
 
-    const getQuestionReadme = async () => {
-      try {
-        const response = await fetch(
-          `https://ojapi.ruien.me/api/question/user/id/${id}`,
-          {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-            },
-          }
-        );
-
-        if (!response.ok) throw new Error("Failed to fetch question data");
-        const data = await response.json();
-        setContent(data.data.readme || "No content available");
-      } catch (error) {
-        console.error(error);
-        setContent("Failed to load question content");
-      }
-    };
-
     takeQuestion();
-    getQuestionReadme();
   }, []);
 
   return (
@@ -120,7 +68,7 @@ export default function Problem() {
           <div className="tab-content p-2">
             <MarkdownPreview
               className="rounded-lg"
-              source={content}
+              source={question}
               style={{ padding: 16 }}
             ></MarkdownPreview>
           </div>
@@ -131,9 +79,9 @@ export default function Problem() {
             aria-label="Summit history details"
           />
           <div className="tab-content p-2">
-            {history?.scores[historyIndex].score >= 0
+            {histories?.scores[historyIndex].score >= 0
               ? JSON.parse(
-                  history?.scores[historyIndex].message
+                  histories?.scores[historyIndex].message
                 ).testsuites.map((test: any, index: number) => {
                   let pass =
                     test.tests - test.failures - test.disabled - test.errors;
@@ -203,7 +151,7 @@ export default function Problem() {
             <div className="card-body h-full">
               <h2 className="card-title">Summit history</h2>
               <ul className="list overflow-y-auto flex-1 text-xs">
-                {history?.scores?.map((score: any, index: number) => (
+                {histories?.scores?.map((score: any, index: number) => (
                   <li
                     key={index}
                     className={`list-row cursor-pointer   ${
@@ -229,6 +177,7 @@ export default function Problem() {
                   className="join-item btn"
                   onClick={() => {
                     if (historyPage > 1) {
+                      setHistoryIndex(0);
                       setHistoryPage(historyPage - 1);
                     }
                   }}
@@ -239,7 +188,8 @@ export default function Problem() {
                 <button
                   className="join-item btn"
                   onClick={() => {
-                    if (history?.scores_count > historyPage * 10) {
+                    if (histories?.scores_count > historyPage * 10) {
+                      setHistoryIndex(0);
                       setHistoryPage(historyPage + 1);
                     }
                   }}
@@ -251,7 +201,11 @@ export default function Problem() {
           </div>
           <div className="flex gap-10">
             <div className="join">
-              <input className="input join-item" placeholder="ssh url" />
+              <input
+                className="input join-item"
+                placeholder="ssh url"
+                readOnly
+              />
               <button className="btn btn-primary join-item">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
