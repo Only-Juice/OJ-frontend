@@ -1,10 +1,11 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Navbar from "@/components/Navbar";
-
 import { Geist, Geist_Mono, Nabla } from "next/font/google";
 import "./globals.css";
+
+import Navbar from "@/components/Navbar";
+import { SWRProvider } from "@/providers/swr-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,16 +35,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {!hideNavbar ? (
-          <div>
-            <Navbar />
-            <main className="pt-20 p-10 min-h-screen flex-col flex">
-              {children}
-            </main>
-          </div>
-        ) : (
-          <main>{children}</main>
-        )}
+        <SWRProvider>
+          {!hideNavbar ? (
+            <div>
+              <Navbar />
+              <main className="pt-20 p-10 min-h-screen flex-col flex">
+                {children}
+              </main>
+            </div>
+          ) : (
+            <main>{children}</main>
+          )}
+        </SWRProvider>
       </body>
     </html>
   );
