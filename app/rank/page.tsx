@@ -10,7 +10,7 @@ export default function Profile() {
   const leaderboard = data?.data?.scores ?? [];
 
   return (
-    <div>
+    <div className="flex-1">
       <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex justify-center gap-10 card flex-1">
         <div className="card-body w-full">

@@ -12,13 +12,16 @@ export default function Problem() {
   const id = params.id;
 
   const links = [
-    { title: "Problem", href: "/problem" },
+    { title: "Problems", href: "/problem" },
     { title: `Problem ${id}`, href: `/problem/${id}` },
   ];
 
   const [historyPage, setHistoryPage] = useState(1);
   const { data: historyData } = useSWR(
-    `https://ojapi.ruien.me/api/score/question/${id}?page=${historyPage}`
+    `https://ojapi.ruien.me/api/score/question/${id}?page=${historyPage}`,
+    {
+      refreshInterval: 3000,
+    }
   );
   const histories = historyData?.data || null;
   const [historyIndex, setHistoryIndex] = useState(0);
@@ -54,7 +57,7 @@ export default function Problem() {
   }, []);
 
   return (
-    <div>
+    <div className="flex-1">
       <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex gap-10 flex-1">
         <div className="tabs tabs-border tabs-box flex-3">
@@ -76,7 +79,7 @@ export default function Problem() {
             type="radio"
             name="my_tabs_1"
             className="tab"
-            aria-label="Summit history details"
+            aria-label="Submit history details"
           />
           <div className="tab-content p-2">
             {histories?.scores[historyIndex].score >= 0
@@ -143,13 +146,13 @@ export default function Problem() {
                     </div>
                   );
                 })
-              : "No data"}
+              : histories?.scores[historyIndex].message}
           </div>
         </div>
         <div className="flex-1 gap-10 flex flex-col sticky top-35 self-start">
           <div className="card bg-base-100 w-full shadow-sm h-[70vh]">
             <div className="card-body h-full">
-              <h2 className="card-title">Summit history</h2>
+              <h2 className="card-title">Submit history</h2>
               <ul className="list overflow-y-auto flex-1 text-xs">
                 {histories?.scores?.map((score: any, index: number) => (
                   <li

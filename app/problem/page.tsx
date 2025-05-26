@@ -9,7 +9,7 @@ export default function Problem() {
   const formatNumber = (num: number) => String(num).padStart(2, "0");
 
   const { data: questionData } = useSWR("https://ojapi.ruien.me/api/question");
-  
+
   const questions =
     (questionData?.data?.questions || []).map(
       (question: any, index: number) => {
@@ -24,7 +24,7 @@ export default function Problem() {
       }
     ) || [];
   return (
-    <div>
+    <div className="flex-1">
       <Breadcrumbs links={inks}></Breadcrumbs>
       <div className="w-full flex justify-center gap-10 flex-1">
         <div className="flex-3">

@@ -48,24 +48,26 @@ const Navbar = () => {
     }
   };
 
+  const links = [
+    { href: "/problem", label: "Problems" },
+    { href: "/contest", label: "Contests" },
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/rank", label: "Rank" },
+  ]
+
   return (
     <div
       className="navbar bg-base-100 shadow-sm"
       style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
     >
       <div className="flex-1">
-        <Link href="/problem" className="btn btn-ghost text-xl">
-          Problems
-        </Link>
-        <Link href="/contest" className="btn btn-ghost text-xl">
-          Contests
-        </Link>
-        <Link href="/dashboard" className="btn btn-ghost text-xl">
-          Dashboard
-        </Link>
-        <Link href="/rank" className="btn btn-ghost text-xl">
-          Rank
-        </Link>
+        {
+          links.map((link) => (
+            <Link key={link.href} href={link.href} className="btn btn-ghost text-xl">
+              {link.label}
+            </Link>
+          ))
+        }
       </div>
       <div className="flex gap-5 items-center">
         <div className="lg:flex flex-col items-end">
