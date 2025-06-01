@@ -31,31 +31,6 @@ export default function Problem() {
   );
   const question = questionData?.data.readme || "Loading...";
 
-  useEffect(() => {
-    const takeQuestion = async () => {
-      try {
-        const response = await fetch(
-          `https://ojapi.ruien.me/api/gitea/question/${id}`,
-          {
-            method: "POST",
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-            },
-            body: "",
-          }
-        );
-
-        if (!response.ok) throw new Error("Failed to post data");
-        // const data = await response.json();
-      } catch (error) {
-        console.error("Error during POST request:", error);
-      }
-    };
-
-    takeQuestion();
-  }, []);
-
   return (
     <div className="flex-1">
       <Breadcrumbs links={links}></Breadcrumbs>

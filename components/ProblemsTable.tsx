@@ -8,11 +8,32 @@ type Props = {
     startTime: string;
     endTime: string;
     status: boolean;
+    has_question: boolean;
   }[];
 };
 
 export default function Table({ data }: Props) {
   const router = useRouter();
+  const takeQuestion = async (id: number) => {
+    try {
+      const response = await fetch(
+        `https://ojapi.ruien.me/api/gitea/question/${id}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+          body: "",
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to post data");
+      // const data = await response.json();
+    } catch (error) {
+      console.error("Error during POST request:", error);
+    }
+  };
   return (
     <div className="overflow-x-auto">
       <table className="table table-zebra table-lg">
@@ -30,7 +51,10 @@ export default function Table({ data }: Props) {
           {data.map((item, index) => (
             <tr
               key={index}
-              onClick={() => {
+              onClick={async () => {
+                if (!item.has_question) {
+                  await takeQuestion(item.id);
+                }
                 router.push(`/problem/${item.id}`);
               }}
               className="cursor-pointer"

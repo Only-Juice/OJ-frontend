@@ -20,6 +20,7 @@ export default function Problem() {
           startTime: question.start_time,
           endTime: question.end_time,
           status: false,
+          has_question: question.has_question,
         };
       }
     ) || [];
