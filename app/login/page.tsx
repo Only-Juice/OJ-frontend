@@ -1,9 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function Root() {
   const router = useRouter();
-
   function handleLogin() {
     const usernameInput = document.getElementById(
       "username"
@@ -32,13 +32,14 @@ export default function Root() {
         return response.json();
       })
       .then((data) => {
-        // console.log("Success:", data);
-        sessionStorage.setItem("authToken", data.data);
+        Cookies.set("auth", data.data, {
+          expires: 1, // 1 天有效期
+          path: "/", // 全站可用
+        });
         router.push("/problem");
       })
       .catch((error) => {
         document.getElementById("error_message")!.style.visibility = "visible";
-        // console.error("Error:", error);
       });
   }
 

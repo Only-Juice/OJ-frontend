@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import useSWR from "swr";
+import Cookies from "js-cookie";
 
 const Navbar = () => {
   const { data: userData } = useSWR("https://ojapi.ruien.me/api/gitea/user");
@@ -53,7 +54,7 @@ const Navbar = () => {
     { href: "/contest", label: "Contests" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/rank", label: "Rank" },
-  ]
+  ];
 
   return (
     <div
@@ -61,13 +62,15 @@ const Navbar = () => {
       style={{ position: "fixed", top: 0, width: "100%", zIndex: 1000 }}
     >
       <div className="flex-1">
-        {
-          links.map((link) => (
-            <Link key={link.href} href={link.href} className="btn btn-ghost text-xl">
-              {link.label}
-            </Link>
-          ))
-        }
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="btn btn-ghost text-xl"
+          >
+            {link.label}
+          </Link>
+        ))}
       </div>
       <div className="flex gap-5 items-center">
         <div className="lg:flex flex-col items-end">
@@ -118,7 +121,7 @@ const Navbar = () => {
               <a
                 className="text-error"
                 onClick={() => {
-                  sessionStorage.removeItem("authToken");
+                  Cookies.remove("auth");
                   window.location.href = "/login";
                 }}
               >
