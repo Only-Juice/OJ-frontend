@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
 
-export default function AdminLayout({
+export default function Drawer({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -26,7 +28,7 @@ export default function AdminLayout({
           {links.map((link) => (
             <Link
               key={link.href}
-              href={link.href}
+              href={`/admin${link.href}`}
               className="btn btn-ghost text-xl justify-start"
             >
               {link.label}

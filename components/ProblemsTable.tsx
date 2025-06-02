@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import cookie from "js-cookie";
 
 type Props = {
   data: {
@@ -22,7 +23,7 @@ export default function Table({ data }: Props) {
           method: "POST",
           headers: {
             accept: "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${cookie.get("auth")}`,
           },
           body: "",
         }

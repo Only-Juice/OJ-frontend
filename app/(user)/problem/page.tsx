@@ -6,14 +6,12 @@ import useSWR from "swr";
 
 export default function Problem() {
   const inks = [{ title: "Problems", href: "/problem" }];
-  const formatNumber = (num: number) => String(num).padStart(2, "0");
 
   const { data: questionData } = useSWR("https://ojapi.ruien.me/api/question");
 
   const questions =
     (questionData?.data?.questions || []).map(
       (question: any, index: number) => {
-        const day = formatNumber(index + 1);
         return {
           id: question.id,
           title: question.title,

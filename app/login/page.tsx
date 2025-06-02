@@ -1,9 +1,15 @@
 "use client";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
 import Cookies from "js-cookie";
 
-export default function Root() {
+export default function Login() {
   const router = useRouter();
+
+  const { data: _, mutate: refreshUser } = useSWR(
+    "https://ojapi.ruien.me/api/user"
+  );
+
   function handleLogin() {
     const usernameInput = document.getElementById(
       "username"
@@ -31,12 +37,16 @@ export default function Root() {
         }
         return response.json();
       })
-      .then((data) => {
-        Cookies.set("auth", data.data, {
-          expires: 1, // 1 天有效期
-          path: "/", // 全站可用
-        });
-        router.push("/problem");
+      .then(async (data) => {
+        Cookies.set("auth", data.data);
+        const refreshedData = await refreshUser();
+        const isAdmin = refreshedData?.data?.is_admin ?? false;
+  
+        if (isAdmin) {
+          router.push("/admin");
+        } else {
+          router.push("/problem");
+        }
       })
       .catch((error) => {
         document.getElementById("error_message")!.style.visibility = "visible";
