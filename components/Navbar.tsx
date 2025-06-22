@@ -33,7 +33,7 @@ const Navbar = () => {
           headers: {
             accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${Cookies.get("auth")}`,
           },
           body: JSON.stringify({ is_public: newVisibility }),
         }

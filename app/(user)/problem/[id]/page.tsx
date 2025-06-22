@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
+import Cookies from "js-cookie";
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import MarkdownPreview from "@uiw/react-markdown-preview";
@@ -206,9 +207,7 @@ export default function Problem() {
                       method: "POST",
                       headers: {
                         accept: "application/json",
-                        Authorization: `Bearer ${sessionStorage.getItem(
-                          "authToken"
-                        )}`,
+                        Authorization: `Bearer ${Cookies.get("auth")}`,
                       },
                       body: "",
                     }
