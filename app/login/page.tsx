@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import useSWR from "swr";
 import Cookies from "js-cookie";
 
@@ -10,47 +11,37 @@ export default function Login() {
     "https://ojapi.ruien.me/api/user"
   );
 
-  function handleLogin() {
-    const usernameInput = document.getElementById(
-      "username"
-    ) as HTMLInputElement;
-    const passwordInput = document.getElementById(
-      "password"
-    ) as HTMLInputElement;
-    const username = usernameInput?.value;
-    const password = passwordInput?.value;
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
 
-    fetch("https://ojapi.ruien.me/api/gitea/auth", {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        password,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then(async (data) => {
-        Cookies.set("auth", data.data);
-        const refreshedData = await refreshUser();
-        const isAdmin = refreshedData?.data?.is_admin ?? false;
-  
-        if (isAdmin) {
-          router.push("/admin");
-        } else {
-          router.push("/problem");
-        }
-      })
-      .catch((error) => {
-        document.getElementById("error_message")!.style.visibility = "visible";
+  async function handleLogin() {
+    setError(false); // 每次嘗試登入前先清除錯誤提示
+
+    try {
+      const response = await fetch("https://ojapi.ruien.me/api/gitea/auth", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
       });
+
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+
+      const data = await response.json();
+      Cookies.set("auth", data.data);
+
+      const refreshedData = await refreshUser();
+      const isAdmin = refreshedData?.data?.is_admin ?? false;
+
+      router.push(isAdmin ? "/admin" : "/problem");
+    } catch (error) {
+      setError(true); // 顯示錯誤訊息
+    }
   }
 
   return (
@@ -71,6 +62,7 @@ export default function Login() {
                 type="username"
                 className="input w-full"
                 placeholder="Username"
+                onChange={(e) => setUsername(e.target.value)}
               />
               <label className="label">Password</label>
               <input
@@ -78,13 +70,12 @@ export default function Login() {
                 type="password"
                 className="input w-full"
                 placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
               />
-              {/* <div> */}
               <a className="link text-end link-hover">Forgot password?</a>
-              {/* </div> */}
               <p
                 className="text-red-500 mt-6 text-center"
-                style={{ visibility: "hidden" }}
+                style={{ visibility: error ? "visible" : "hidden" }}
                 id="error_message"
               >
                 Login failed, please check your username and password.
