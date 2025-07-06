@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import useSWR from "swr";
-import Cookies from "js-cookie";
 
 const Navbar = () => {
   const { data: userData } = useSWR("https://ojapi.ruien.me/api/gitea/user");
@@ -33,8 +32,8 @@ const Navbar = () => {
           headers: {
             accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${Cookies.get("auth")}`,
           },
+          credentials: "include",
           body: JSON.stringify({ is_public: newVisibility }),
         }
       );
@@ -121,7 +120,6 @@ const Navbar = () => {
               <a
                 className="text-error"
                 onClick={() => {
-                  Cookies.remove("auth");
                   window.location.href = "/login";
                 }}
               >

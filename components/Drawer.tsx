@@ -1,6 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import {
+  UserRound,
+  ChartColumnBig,
+  Trophy,
+  Award,
+  FileText,
+} from "lucide-react";
 
 export default function Drawer({
   children,
@@ -8,10 +15,15 @@ export default function Drawer({
   children: React.ReactNode;
 }>) {
   const links = [
-    { href: "/problem", label: "Problems" },
-    { href: "/contest", label: "Contests" },
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/rank", label: "Rank" },
+    {
+      href: "/problem",
+      label: "Problems",
+      icon: <FileText />,
+    },
+    { href: "/contest", label: "Contests", icon: <Trophy /> },
+    { href: "/dashboard", label: "Dashboard", icon: <ChartColumnBig /> },
+    { href: "/rank", label: "Rank", icon: <Award /> },
+    { href: "/account", label: "Account", icon: <UserRound /> },
   ];
 
   return (
@@ -31,6 +43,7 @@ export default function Drawer({
               href={`/admin${link.href}`}
               className="btn btn-ghost text-xl justify-start"
             >
+              {link.icon && <span className="mr-2">{link.icon}</span>}
               {link.label}
             </Link>
           ))}
