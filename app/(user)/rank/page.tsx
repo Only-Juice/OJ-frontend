@@ -1,5 +1,7 @@
 "use client";
 
+import { Award } from "lucide-react";
+
 import useSWR from "swr";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
@@ -27,48 +29,27 @@ export default function Profile() {
                 {leaderboard.map((item: any, index: number) => {
                   return (
                     <tr key={index}>
-                      {index === 0 ? (
-                        <td>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            className="w-6 h-6"
-                          >
-                            <path
-                              fill="gold"
-                              d="M12 2L15 8L22 9L17 14L18 21L12 17L6 21L7 14L2 9L9 8L12 2Z"
-                            />
-                          </svg>
-                        </td>
-                      ) : index === 1 ? (
-                        <td>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            className="w-6 h-6"
-                          >
-                            <path
-                              fill="silver"
-                              d="M12 2L15 8L22 9L17 14L18 21L12 17L6 21L7 14L2 9L9 8L12 2Z"
-                            />
-                          </svg>
-                        </td>
-                      ) : index === 2 ? (
-                        <td>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            className="w-6 h-6"
-                          >
-                            <path
-                              fill="#cd7f32"
-                              d="M12 2L15 8L22 9L17 14L18 21L12 17L6 21L7 14L2 9L9 8L12 2Z"
-                            />
-                          </svg>
-                        </td>
-                      ) : (
-                        <td>{index + 1}</td>
-                      )}
+                      <Award
+                        className="w-6 h-6"
+                        color={
+                          index === 0
+                            ? "gold"
+                            : index === 1
+                            ? "silver"
+                            : index === 2
+                            ? "#cd7f32"
+                            : "gray"
+                        }
+                        fill={
+                          index === 0
+                            ? "gold"
+                            : index === 1
+                            ? "silver"
+                            : index === 2
+                            ? "#cd7f32"
+                            : "gray"
+                        }
+                      />
                       <td>{item.user_name}</td>
                       <td>{item.score}</td>
                     </tr>

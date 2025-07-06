@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
-import Cookies from "js-cookie";
+import { CircleCheck, CircleX, Copy, RotateCw } from "lucide-react";
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import MarkdownPreview from "@uiw/react-markdown-preview";
@@ -85,36 +85,11 @@ export default function Problem() {
                             className="list-row flex justify-between items-center"
                           >
                             <p>{t.name}</p>
+
                             {t.failures > 0 ? (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={2}
-                                stroke="red"
-                                className="size-8"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
+                              <CircleX className="text-red-500 size-8" />
                             ) : (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={2}
-                                stroke="green"
-                                className="size-8"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                />
-                              </svg>
+                              <CircleCheck className="text-green-500 size-8" />
                             )}
                           </div>
                         ))}
@@ -186,15 +161,7 @@ export default function Problem() {
                 readOnly
               />
               <button className="btn btn-primary join-item">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  className="fill-[var(--color-primary-content)]"
-                >
-                  <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" />
-                </svg>
+                <Copy />
               </button>
             </div>
             <button
@@ -207,7 +174,6 @@ export default function Problem() {
                       method: "POST",
                       headers: {
                         accept: "application/json",
-                        Authorization: `Bearer ${Cookies.get("auth")}`,
                       },
                       body: "",
                     }
@@ -222,16 +188,8 @@ export default function Problem() {
                 }
               }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="24px"
-                className="fill-[var(--color-primary-content)]"
-              >
-                <path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z" />
-              </svg>
               Rejudge
+              <RotateCw />
             </button>
           </div>
         </div>

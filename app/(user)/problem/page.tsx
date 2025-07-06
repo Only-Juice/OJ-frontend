@@ -1,30 +1,29 @@
 "use client";
 
 import Breadcrumbs from "@/components/Breadcrumbs";
-import ProblemsTable from "@/components/ProblemsTable";
+import ProblemsTable from "@/components/UserProblemsTable";
 import useSWR from "swr";
 
 export default function Problem() {
-  const inks = [{ title: "Problems", href: "/problem" }];
+  const links = [{ title: "Problems", href: "/problem" }];
 
   const { data: questionData } = useSWR("https://ojapi.ruien.me/api/question");
 
   const questions =
-    (questionData?.data?.questions || []).map(
-      (question: any, index: number) => {
-        return {
-          id: question.id,
-          title: question.title,
-          startTime: question.start_time,
-          endTime: question.end_time,
-          status: false,
-          has_question: question.has_question,
-        };
-      }
-    ) || [];
+    (questionData?.data?.questions || []).map((question: any) => {
+      return {
+        id: question.id,
+        title: question.title,
+        startTime: question.start_time,
+        endTime: question.end_time,
+        status: false,
+        has_question: question.has_question,
+      };
+    }) || [];
+
   return (
     <div className="flex-1">
-      <Breadcrumbs links={inks}></Breadcrumbs>
+      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex justify-center gap-10 flex-1">
         <div className="flex-3">
           <ProblemsTable data={questions}></ProblemsTable>
