@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import useSWR from "swr";
-import Cookies from "js-cookie";
 
 export default function Login() {
   const router = useRouter();
@@ -19,25 +18,21 @@ export default function Login() {
     setError(false); // 每次嘗試登入前先清除錯誤提示
 
     try {
-      const response = await fetch("https://ojapi.ruien.me/api/gitea/auth", {
+      const response = await fetch("https://ojapi.ruien.me/api/auth/login", {
         method: "POST",
         headers: {
           accept: "application/json",
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
         throw new Error("Login failed");
       }
-
-      const data = await response.json();
-      Cookies.set("auth", data.data);
-
       const refreshedData = await refreshUser();
       const isAdmin = refreshedData?.data?.is_admin ?? false;
-
       router.push(isAdmin ? "/admin" : "/problem");
     } catch (error) {
       setError(true); // 顯示錯誤訊息

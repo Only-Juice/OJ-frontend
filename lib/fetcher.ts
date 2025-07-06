@@ -1,15 +1,27 @@
 // lib/fetcher.ts
-import Cookies from "js-cookie";
+import Router from "next/router";
 
-const fetcher = (url: string) =>
-  fetch(url, {
+export default async function fetcher(url: string, options?: RequestInit) {
+  const res = await fetch(url, {
     headers: {
       accept: "application/json",
-      Authorization: `Bearer ${Cookies.get("auth")}`,
+      "Content-Type": "application/json",
     },
-  }).then((res) => {
-    if (!res.ok) throw new Error("Fetch failed");
-    return res.json();
+    credentials: "include",
+    ...options,
   });
 
-export default fetcher;
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      Router.push("/login");
+    }
+    throw new Error("Unauthorized");
+  }
+
+  if (!res.ok) {
+    throw new Error(`Fetch failed with status ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data;
+}
