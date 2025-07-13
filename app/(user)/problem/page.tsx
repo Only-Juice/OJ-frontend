@@ -6,8 +6,9 @@ import useSWR from "swr";
 
 export default function Problem() {
   const links = [{ title: "Problems", href: "/problem" }];
-
-  const { data: questionData } = useSWR("https://ojapi.ruien.me/api/question");
+  const { data: questionData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/question`
+  );
 
   const questions =
     (questionData?.data?.questions || []).map((question: any) => {
@@ -28,28 +29,34 @@ export default function Problem() {
         <div className="flex-3">
           <ProblemsTable data={questions}></ProblemsTable>
         </div>
-        <div className="flex-1">
-          <div className="card card-dash bg-base-100">
-            <div className="card-body flex justify-center items-center">
-              <div
-                className="radial-progress bg-primary text-primary-content border-primary border-4"
-                style={
-                  {
-                    "--value": "70",
-                    "--size": "12rem",
-                    "--thickness": "2rem",
-                  } /* as React.CSSProperties */
-                }
-                aria-valuenow={70}
-                role="progressbar"
-              >
-                70%
-              </div>
-              <div className="h-10"></div>
-              <p className="text-3xl">Point 600</p>
-            </div>
-          </div>
+        {/* <div className="flex-1">
+          <ProblemProgress></ProblemProgress>
+        </div> */}
+      </div>
+    </div>
+  );
+}
+
+function ProblemProgress() {
+  return (
+    <div className="card card-dash bg-base-100">
+      <div className="card-body flex justify-center items-center">
+        <div
+          className="radial-progress bg-primary text-primary-content border-primary border-4"
+          style={
+            {
+              "--value": "70",
+              "--size": "12rem",
+              "--thickness": "2rem",
+            } /* as React.CSSProperties */
+          }
+          aria-valuenow={70}
+          role="progressbar"
+        >
+          70%
         </div>
+        <div className="h-10"></div>
+        <p className="text-3xl">Point 600</p>
       </div>
     </div>
   );

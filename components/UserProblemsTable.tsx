@@ -40,7 +40,7 @@ export default function Table({ data }: Props) {
         {/* head */}
         <thead>
           <tr>
-            {/* <th></th> */}
+            <th>#</th>
             <th>Title</th>
             <th>Start date</th>
             <th>End Date</th>
@@ -59,7 +59,7 @@ export default function Table({ data }: Props) {
               }}
               className="cursor-pointer"
             >
-              {/* <th>{item.id}</th> */}
+              <th>{item.id}</th>
               <td>{item.title}</td>
               <td>{new Date(item.startTime).toLocaleString()}</td>
               <td>{new Date(item.endTime).toLocaleString()}</td>
