@@ -17,7 +17,7 @@ export default function Profile() {
   const [historyPage, setHistoryPage] = useState(1);
 
   const { data } = useSWR(
-    `https://ojapi.ruien.me/api/score/all?page=${historyPage}`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/all?page=${historyPage}`
   );
 
   const history = data?.data;
@@ -30,47 +30,34 @@ export default function Profile() {
       <div className="w-full flex justify-center gap-10 flex-1">
         <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100">
           <div className="card-body w-full flex flex-col">
-            <h2 className="card-title">Sunmit history</h2>
-            <ul className="list">
-              {history?.scores.map((score, index) => {
-                return (
-                  <li
-                    key={index}
-                    className="list-row cursor-pointer"
-                    onClick={() => {
-                      router.push(`/problem/${score.question_id}`);
-                    }}
-                  >
-                    <p>{score.question_id}</p>
-                    <p>{new Date(score.judge_time).toLocaleString()}</p>
-                    <p>{score.score}</p>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="flex-1"></div>
-            <div className="join justify-center mt-10">
-              <button
-                className="join-item btn"
-                onClick={() => {
-                  if (historyPage > 1) {
-                    setHistoryPage(historyPage - 1);
-                  }
-                }}
-              >
-                «
-              </button>
-              <button className="join-item btn">Page {historyPage}</button>
-              <button
-                className="join-item btn"
-                onClick={() => {
-                  if (history?.scores_count > historyPage * 10) {
-                    setHistoryPage(historyPage + 1);
-                  }
-                }}
-              >
-                »
-              </button>
+            <h2 className="card-title">Submit history</h2>
+            <div className="overflow-y-auto">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Question ID</th>
+                    <th>Time</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history?.scores.map((score, index) => {
+                    return (
+                      <tr
+                        key={index}
+                        className="list-row cursor-pointer"
+                        onClick={() => {
+                          router.push(`/problem/${score.question_id}`);
+                        }}
+                      >
+                        <td>{score.question_id}</td>
+                        <td>{new Date(score.judge_time).toLocaleString()}</td>
+                        <td>{score.score}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

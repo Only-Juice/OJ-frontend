@@ -19,7 +19,7 @@ export default function Problem() {
 
   const [historyPage, setHistoryPage] = useState(1);
   const { data: historyData } = useSWR(
-    `https://ojapi.ruien.me/api/score/question/${id}?page=${historyPage}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/question/${id}?page=${historyPage}`,
     {
       refreshInterval: 3000,
     }
@@ -28,7 +28,7 @@ export default function Problem() {
   const [historyIndex, setHistoryIndex] = useState(0);
 
   const { data: questionData } = useSWR(
-    `https://ojapi.ruien.me/api/question/user/id/${id}`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/question/user/id/${id}`
   );
   const question = questionData?.data.readme || "Loading...";
 
@@ -36,7 +36,7 @@ export default function Problem() {
     <div className="flex-1">
       <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex gap-10 flex-1">
-        <div className="tabs tabs-border tabs-box flex-3">
+        <div className="tabs tabs-border tabs-box flex-2">
           <input
             type="radio"
             name="my_tabs_1"
@@ -104,52 +104,37 @@ export default function Problem() {
           <div className="card bg-base-100 w-full shadow-sm h-[70vh]">
             <div className="card-body h-full">
               <h2 className="card-title">Submit history</h2>
-              <ul className="list overflow-y-auto flex-1 text-xs">
-                {histories?.scores?.map((score: any, index: number) => (
-                  <li
-                    key={index}
-                    className={`list-row cursor-pointer   ${
-                      historyIndex === index
-                        ? "bg-primary text-primary-content"
-                        : "hover:bg-base-200"
-                    }`}
-                    onClick={() => {
-                      setHistoryIndex(index);
-                    }}
-                  >
-                    <p>{new Date(score.judge_time).toLocaleString()}</p>
-                    {score.score >= 0 ? (
-                      <p>{score.score}</p>
-                    ) : (
-                      <p>{score.message}</p>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              <div className="join justify-center">
-                <button
-                  className="join-item btn"
-                  onClick={() => {
-                    if (historyPage > 1) {
-                      setHistoryIndex(0);
-                      setHistoryPage(historyPage - 1);
-                    }
-                  }}
-                >
-                  «
-                </button>
-                <button className="join-item btn">Page {historyPage}</button>
-                <button
-                  className="join-item btn"
-                  onClick={() => {
-                    if (histories?.scores_count > historyPage * 10) {
-                      setHistoryIndex(0);
-                      setHistoryPage(historyPage + 1);
-                    }
-                  }}
-                >
-                  »
-                </button>
+              <div className="overflow-y-auto">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Time</th>
+                      <th>Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {histories?.scores?.map((score: any, index: number) => (
+                      <tr
+                        key={index}
+                        className={`cursor-pointer ${
+                          historyIndex === index
+                            ? "bg-primary text-primary-content"
+                            : "hover:bg-base-200"
+                        }`}
+                        onClick={() => {
+                          setHistoryIndex(index);
+                        }}
+                      >
+                        <th>{index + 1}</th>
+                        <td>{new Date(score.judge_time).toLocaleString()}</td>
+                        <td>
+                          {score.score >= 0 ? score.score : score.message}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -169,12 +154,13 @@ export default function Problem() {
               onClick={async () => {
                 try {
                   const response = await fetch(
-                    `https://ojapi.ruien.me/api/score/user/rescore/${id}`,
+                    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/user/rescore/${id}`,
                     {
                       method: "POST",
                       headers: {
                         accept: "application/json",
                       },
+                      credentials: "include",
                       body: "",
                     }
                   );
