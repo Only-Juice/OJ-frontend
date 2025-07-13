@@ -32,8 +32,12 @@ export default function Drawer({
     { href: "/account", label: "Account", icon: <UserRound /> },
   ];
 
-  const { data: userData } = useSWR("${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user");
-  const { data: userInfoData } = useSWR("${process.env.NEXT_PUBLIC_API_BASE_URL}/user");
+  const { data: userData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user`
+  );
+  const { data: userInfoData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/user`
+  );
 
   const avatarUrl = userData?.data?.avatar_url ?? null;
   const username = userData?.data?.login ?? "";
@@ -41,7 +45,7 @@ export default function Drawer({
 
   const handleLogout = useCallback(async () => {
     try {
-      await fetch("${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
         method: "POST",
         headers: {
           accept: "application/json",

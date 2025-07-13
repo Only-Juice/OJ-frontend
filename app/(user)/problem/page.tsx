@@ -7,7 +7,7 @@ import useSWR from "swr";
 export default function Problem() {
   const links = [{ title: "Problems", href: "/problem" }];
   const { data: questionData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/question`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`
   );
 
   const questions =

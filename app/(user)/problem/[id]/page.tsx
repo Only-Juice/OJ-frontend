@@ -19,7 +19,7 @@ export default function Problem() {
 
   const [historyPage, setHistoryPage] = useState(1);
   const { data: historyData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/question/${id}?page=${historyPage}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question`,
     {
       refreshInterval: 3000,
     }
@@ -28,7 +28,7 @@ export default function Problem() {
   const [historyIndex, setHistoryIndex] = useState(0);
 
   const { data: questionData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/question/user/id/${id}`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/${id}/question`
   );
   const question = questionData?.data.readme || "Loading...";
 
@@ -154,7 +154,7 @@ export default function Problem() {
               onClick={async () => {
                 try {
                   const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/user/rescore/${id}`,
+                    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question/user_rescore`,
                     {
                       method: "POST",
                       headers: {

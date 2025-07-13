@@ -16,9 +16,7 @@ export default function Profile() {
 
   const [historyPage, setHistoryPage] = useState(1);
 
-  const { data } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/all?page=${historyPage}`
-  );
+  const { data } = useSWR(`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/all`);
 
   const history = data?.data;
 

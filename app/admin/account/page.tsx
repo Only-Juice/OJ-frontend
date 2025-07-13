@@ -30,7 +30,7 @@ export default function AccountPage() {
 
   const updateUser = async (userId, is_public, enable) => {
     await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user/${userId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/${userId}/user`,
       {
         method: "PATCH",
         headers: {
@@ -72,19 +72,22 @@ export default function AccountPage() {
     }
 
     try {
-      const res = await fetch("${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user/bulk", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          default_password: defaultPassword,
-          email_domain: domain,
-          usernames: rawUsernames, // 只要 username 陣列
-        }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/admin/user/bulk`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            default_password: defaultPassword,
+            email_domain: domain,
+            usernames: rawUsernames, // 只要 username 陣列
+          }),
+        }
+      );
 
       const result = await res.json();
 
@@ -117,14 +120,17 @@ export default function AccountPage() {
     if (!confirm("確定要重置密碼嗎？這將會生成一個新的隨機密碼。")) {
       return;
     }
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user/${userId}/reset_password`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-      },
-      credentials: "include",
-      body: "", // 空字串
-    })
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/${userId}/user/reset_password`,
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+        },
+        credentials: "include",
+        body: "", // 空字串
+      }
+    )
       .then(async (res) => {
         if (!res.ok) {
           const err = await res.json();

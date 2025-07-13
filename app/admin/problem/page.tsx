@@ -8,9 +8,11 @@ import { toDatetimeLocal, toLocalISOString } from "@/utils/datetimeUtils";
 import { on } from "events";
 
 export default function ProblemPage() {
-  const inks = [{ title: "Problems", href: "/admin/problem" }];
+  const links = [{ title: "Problems", href: "/admin/problem" }];
 
-  const { data: questionData } = useSWR("${process.env.NEXT_PUBLIC_API_BASE_URL}/question");
+  const { data: questionData, mutate: mutateQuestion } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`
+  );
 
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
@@ -31,27 +33,30 @@ export default function ProblemPage() {
     }
 
     try {
-      const response = await fetch("${process.env.NEXT_PUBLIC_API_BASE_URL}/question", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          title,
-          description,
-          git_repo_url: gitRepoUrl,
-          start_time: new Date(startTime).toISOString(),
-          end_time: new Date(endTime).toISOString(),
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/admin/question`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            title,
+            description,
+            git_repo_url: gitRepoUrl,
+            start_time: new Date(startTime).toISOString(),
+            end_time: new Date(endTime).toISOString(),
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "建立題目失敗");
       }
-      mutate("${process.env.NEXT_PUBLIC_API_BASE_URL}/question"); // 重新獲取問題列表
+      mutateQuestion();
       document.getElementById("create_modal")?.close();
     } catch (err: any) {
       setError(err.message || "發生錯誤");
@@ -67,7 +72,7 @@ export default function ProblemPage() {
       return;
     }
     // 發送 PATCH 請求到 /api/question/id/{id}
-    const updateUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/question/id/${id}`;
+    const updateUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/admin/${id}/question`;
     const updateBody = {
       title,
       description,
@@ -89,7 +94,7 @@ export default function ProblemPage() {
       const errorData = await updateResponse.json();
       throw new Error(errorData.message || "更新題目失敗");
     }
-    mutate("${process.env.NEXT_PUBLIC_API_BASE_URL}/question"); // 重新獲取問題列表
+    mutateQuestion();
     document.getElementById("create_modal")?.close();
   };
 
@@ -141,7 +146,7 @@ export default function ProblemPage() {
     }) || [];
   return (
     <div className="flex-1">
-      <Breadcrumbs links={inks}></Breadcrumbs>
+      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex gap-10 flex-1 flex-col">
         <div className="w-full flex justify-end">
           <div className="btn btn-primary" onClick={createBtnClick}>
