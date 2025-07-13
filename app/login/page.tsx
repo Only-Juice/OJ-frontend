@@ -6,10 +6,6 @@ import useSWR from "swr";
 export default function Login() {
   const router = useRouter();
 
-  const { data: _, mutate: refreshUser } = useSWR(
-    "https://ojapi.ruien.me/api/user"
-  );
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -18,7 +14,7 @@ export default function Login() {
     setError(false); // 每次嘗試登入前先清除錯誤提示
 
     try {
-      const response = await fetch("https://ojapi.ruien.me/api/auth/login", {
+      let response = await fetch("https://ojapi.ruien.me/api/auth/login", {
         method: "POST",
         headers: {
           accept: "application/json",
@@ -31,8 +27,18 @@ export default function Login() {
       if (!response.ok) {
         throw new Error("Login failed");
       }
-      const refreshedData = await refreshUser();
-      const isAdmin = refreshedData?.data?.is_admin ?? false;
+      response = await fetch("https://ojapi.ruien.me/api/user", {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }).then(function(res){
+        return res.json();
+      });
+
+      const isAdmin = response?.data?.is_admin ?? false;
       router.push(isAdmin ? "/admin" : "/problem");
     } catch (error) {
       setError(true); // 顯示錯誤訊息

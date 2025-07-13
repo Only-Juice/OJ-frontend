@@ -118,9 +118,23 @@ const Navbar = () => {
             </li>
             <li>
               <a
-                className="text-error"
-                onClick={() => {
-                  window.location.href = "/login";
+                className="text-error cursor-pointer"
+                onClick={async () => {
+                  try {
+                    await fetch("https://ojapi.ruien.me/api/auth/logout", {
+                      method: "POST",
+                      headers: {
+                        accept: "application/json",
+                        "Content-Type": "application/json",
+                      },
+                      credentials: "include",
+                    });
+                  } catch (err) {
+                    console.error("Logout failed", err);
+                  } finally {
+                    // 無論是否成功，都導向 login 頁
+                    window.location.href = "/login";
+                  }
                 }}
               >
                 Logout
