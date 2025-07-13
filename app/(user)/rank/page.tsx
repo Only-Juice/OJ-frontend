@@ -8,7 +8,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export default function Profile() {
   const links = [{ title: "Rank", href: "/rank" }];
 
-  const { data } = useSWR("https://ojapi.ruien.me/api/score/leaderboard");
+  const { data } = useSWR(`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/leaderboard`);
   const leaderboard = data?.data?.scores ?? [];
 
   return (

@@ -10,7 +10,7 @@ import { on } from "events";
 export default function ProblemPage() {
   const inks = [{ title: "Problems", href: "/admin/problem" }];
 
-  const { data: questionData } = useSWR("https://ojapi.ruien.me/api/question");
+  const { data: questionData } = useSWR("${process.env.NEXT_PUBLIC_API_BASE_URL}/question");
 
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
@@ -31,7 +31,7 @@ export default function ProblemPage() {
     }
 
     try {
-      const response = await fetch("https://ojapi.ruien.me/api/question", {
+      const response = await fetch("${process.env.NEXT_PUBLIC_API_BASE_URL}/question", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export default function ProblemPage() {
         const errorData = await response.json();
         throw new Error(errorData.message || "建立題目失敗");
       }
-      mutate("https://ojapi.ruien.me/api/question"); // 重新獲取問題列表
+      mutate("${process.env.NEXT_PUBLIC_API_BASE_URL}/question"); // 重新獲取問題列表
       document.getElementById("create_modal")?.close();
     } catch (err: any) {
       setError(err.message || "發生錯誤");
@@ -67,7 +67,7 @@ export default function ProblemPage() {
       return;
     }
     // 發送 PATCH 請求到 /api/question/id/{id}
-    const updateUrl = `https://ojapi.ruien.me/api/question/id/${id}`;
+    const updateUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/question/id/${id}`;
     const updateBody = {
       title,
       description,
@@ -89,7 +89,7 @@ export default function ProblemPage() {
       const errorData = await updateResponse.json();
       throw new Error(errorData.message || "更新題目失敗");
     }
-    mutate("https://ojapi.ruien.me/api/question"); // 重新獲取問題列表
+    mutate("${process.env.NEXT_PUBLIC_API_BASE_URL}/question"); // 重新獲取問題列表
     document.getElementById("create_modal")?.close();
   };
 

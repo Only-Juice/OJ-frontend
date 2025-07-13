@@ -14,7 +14,7 @@ export default function Login() {
     setError(false); // 每次嘗試登入前先清除錯誤提示
 
     try {
-      let response = await fetch("https://ojapi.ruien.me/api/auth/login", {
+      let response = await fetch("${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login", {
         method: "POST",
         headers: {
           accept: "application/json",
@@ -27,7 +27,7 @@ export default function Login() {
       if (!response.ok) {
         throw new Error("Login failed");
       }
-      response = await fetch("https://ojapi.ruien.me/api/user", {
+      response = await fetch("${process.env.NEXT_PUBLIC_API_BASE_URL}/user", {
         method: "GET",
         headers: {
           accept: "application/json",

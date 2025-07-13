@@ -18,7 +18,7 @@ export default function Table({ data }: Props) {
   const takeQuestion = async (id: number) => {
     try {
       const response = await fetch(
-        `https://ojapi.ruien.me/api/gitea/question/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/question/${id}`,
         {
           method: "POST",
           headers: {

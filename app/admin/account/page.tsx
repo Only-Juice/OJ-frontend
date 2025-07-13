@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 export default function AccountPage() {
   const links = [{ title: "Account", href: "/admin/account" }];
   const { data: usersData, mutate: mutateUsers } = useSWR(
-    `https://ojapi.ruien.me/api/admin/user`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user`
   );
   const users = usersData?.data || [];
 
@@ -29,17 +29,20 @@ export default function AccountPage() {
   }, [rawUsernames, domain]);
 
   const updateUser = async (userId, is_public, enable) => {
-    await fetch(`https://ojapi.ruien.me/api/admin/user/${userId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        enable: enable,
-        is_public: is_public,
-      }),
-    });
+    await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user/${userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          enable: enable,
+          is_public: is_public,
+        }),
+      }
+    );
   };
 
   // ⬇️ 當選擇檔案後觸發
@@ -69,7 +72,7 @@ export default function AccountPage() {
     }
 
     try {
-      const res = await fetch("https://ojapi.ruien.me/api/gitea/user/bulk", {
+      const res = await fetch("${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user/bulk", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,7 +117,7 @@ export default function AccountPage() {
     if (!confirm("確定要重置密碼嗎？這將會生成一個新的隨機密碼。")) {
       return;
     }
-    fetch(`https://ojapi.ruien.me/api/admin/user/${userId}/reset_password`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user/${userId}/reset_password`, {
       method: "POST",
       headers: {
         accept: "application/json",

@@ -5,7 +5,7 @@ let isRefreshing = false;
 let pendingRequests: (() => void)[] = [];
 
 async function refreshToken() {
-  const res = await fetch("https://ojapi.ruien.me/api/auth/refresh", {
+  const res = await fetch("${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh", {
     method: "POST",
     headers: {
       accept: "application/json",
