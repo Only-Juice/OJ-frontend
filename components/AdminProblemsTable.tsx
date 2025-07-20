@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Pen, Trash } from "lucide-react";
+import { Pen } from "lucide-react";
 
 type Props = {
   data: {
@@ -10,7 +10,6 @@ type Props = {
     endTime: string;
     status: boolean;
     onModify: () => void;
-    onDelete?: () => void;
   }[];
 };
 
@@ -19,16 +18,13 @@ export default function Table({ data }: Props) {
   return (
     <div className="overflow-x-auto">
       <table className="table table-zebra table-lg">
-        {/* head */}
         <thead>
           <tr>
-            {/* <th></th> */}
             <th>Title</th>
             <th>Start date</th>
             <th>End Date</th>
             <th>Status</th>
             <th>Modify</th>
-            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -48,11 +44,6 @@ export default function Table({ data }: Props) {
               <td>
                 <div className="btn btn-ghost btn-sm" onClick={item.onModify}>
                   <Pen />
-                </div>
-              </td>
-              <td>
-                <div className="btn btn-ghost btn-sm" onClick={item.onDelete}>
-                  <Trash />
                 </div>
               </td>
             </tr>

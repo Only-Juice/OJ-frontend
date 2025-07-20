@@ -27,8 +27,8 @@ export default function Drawer({
       icon: <FileText />,
     },
     { href: "/contest", label: "Contests", icon: <Trophy /> },
-    { href: "/dashboard", label: "Dashboard", icon: <ChartColumnBig /> },
-    { href: "/rank", label: "Rank", icon: <Award /> },
+    // { href: "/dashboard", label: "Dashboard", icon: <ChartColumnBig /> },
+    // { href: "/rank", label: "Rank", icon: <Award /> },
     { href: "/account", label: "Account", icon: <UserRound /> },
   ];
 

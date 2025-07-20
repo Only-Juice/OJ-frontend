@@ -1,9 +1,14 @@
 "use client";
 
-import Breadcrumbs from "@/components/Breadcrumbs";
+// next.js
 import useSWR from "swr";
-import { Plus, RotateCcw } from "lucide-react";
 import { useState, useEffect } from "react";
+
+// components
+import Breadcrumbs from "@/components/Breadcrumbs";
+
+// icons
+import { Plus, RotateCcw } from "lucide-react";
 
 export default function AccountPage() {
   const links = [{ title: "Account", href: "/admin/account" }];
@@ -147,21 +152,6 @@ export default function AccountPage() {
     <div className="w-full">
       <Breadcrumbs links={links} />
       <div className="flex flex-col w-full gap-10">
-        <div className="w-full flex justify-end">
-          <div
-            className="btn btn-primary"
-            onClick={() => {
-              setRawUsernames([]);
-              setDomain("");
-              setDefaultPassword("");
-              document.getElementById("create_account_modal")?.showModal();
-            }}
-          >
-            Create User
-            <Plus />
-          </div>
-        </div>
-
         <table className="table table-zebra table-lg">
           <thead>
             <tr>
@@ -206,7 +196,20 @@ export default function AccountPage() {
           </tbody>
         </table>
       </div>
-
+      <div className="fixed bottom-4 right-4">
+        <div
+          className="btn btn-primary"
+          onClick={() => {
+            setRawUsernames([]);
+            setDomain("");
+            setDefaultPassword("");
+            document.getElementById("create_account_modal")?.showModal();
+          }}
+        >
+          Create User
+          <Plus />
+        </div>
+      </div>
       {/* ⬇️ modal */}
       <dialog id="create_account_modal" className="modal">
         <div className="modal-box max-h-[90vh]">
