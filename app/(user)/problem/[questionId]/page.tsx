@@ -10,7 +10,7 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 
 export default function Problem() {
   const params = useParams();
-  const id = params.id;
+  const id = params.questionId;
 
   const links = [
     { title: "Problems", href: "/problem" },

@@ -2,31 +2,38 @@
 
 // next.js
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import useSWR from "swr";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProblemsTable from "@/components/UserProblemsTable";
 
-export default function Problem() {
+export default function Exam() {
   const router = useRouter();
-  const links = [{ title: "Problems", href: "/problem" }];
+  const params = useParams();
+  const id = params.contestId;
 
   const { data: questionData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/questions`
   );
 
-  const questions =
-    (questionData?.data?.questions || []).map((question: any) => {
+  const links = [
+    { title: "Contests", href: "/contest" },
+    { title: `Contest ${id}`, href: `/contest/${id}` },
+  ];
+
+  const examQuestions =
+    (questionData?.data || []).map((question: any) => {
       return {
         id: question.id,
         title: question.title,
         startTime: question.start_time,
         endTime: question.end_time,
         status: false,
-        has_question: question.has_question,
+        has_question: false,
         onClick: async () => {
-          router.push(`/problem/${question.id}`);
+          router.push(`/contest/${id}/question/${question.id}`);
         },
       };
     }) || [];
@@ -36,11 +43,8 @@ export default function Problem() {
       <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex justify-center gap-10 flex-1">
         <div className="flex-3">
-          <ProblemsTable data={questions}></ProblemsTable>
+          <ProblemsTable data={examQuestions}></ProblemsTable>
         </div>
-        {/* <div className="flex-1">
-          <ProblemProgress></ProblemProgress>
-        </div> */}
       </div>
     </div>
   );

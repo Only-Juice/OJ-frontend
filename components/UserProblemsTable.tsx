@@ -1,5 +1,4 @@
 "use client";
-import { useRouter } from "next/navigation";
 import { CircleCheck, CircleX } from "lucide-react";
 
 type Props = {
@@ -10,11 +9,11 @@ type Props = {
     endTime: string;
     status: boolean;
     has_question: boolean;
+    onClick?: () => void;
   }[];
 };
 
 export default function Table({ data }: Props) {
-  const router = useRouter();
   const takeQuestion = async (id: number) => {
     try {
       const response = await fetch(
@@ -55,7 +54,7 @@ export default function Table({ data }: Props) {
                 if (!item.has_question) {
                   await takeQuestion(item.id);
                 }
-                router.push(`/problem/${item.id}`);
+                item.onClick?.();
               }}
               className="cursor-pointer"
             >
