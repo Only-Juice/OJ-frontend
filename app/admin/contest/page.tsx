@@ -115,7 +115,11 @@ export default function Contest() {
               <h2 className="card-title">
                 {exam.title}
                 <div className="m-auto"></div>
-                <Settings />
+                <Link href={`/admin/contest/${exam.id}/settings`}>
+                  <button className="btn btn-ghost btn-sm">
+                    <Settings />
+                  </button>
+                </Link>
               </h2>
               <p>Start from {new Date(exam.start_time).toLocaleString()}</p>
               <p>End at {new Date(exam.end_time).toLocaleString()}</p>
