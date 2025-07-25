@@ -1,6 +1,13 @@
 "use client";
+
+// next.js
 import { useRouter } from "next/navigation";
+
+// icons
 import { Pen } from "lucide-react";
+
+// utils
+import { toLocalString } from "@/utils/datetimeUtils";
 
 type Props = {
   data: {
@@ -32,8 +39,8 @@ export default function Table({ data }: Props) {
             <tr key={index}>
               {/* <th>{item.id}</th> */}
               <td>{item.title}</td>
-              <td>{new Date(item.startTime).toLocaleString()}</td>
-              <td>{new Date(item.endTime).toLocaleString()}</td>
+              <td>{toLocalString(new Date(item.startTime))}</td>
+              <td>{toLocalString(new Date(item.endTime))}</td>
               <td>
                 <input
                   type="checkbox"

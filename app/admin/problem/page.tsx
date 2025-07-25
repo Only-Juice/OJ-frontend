@@ -9,7 +9,11 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import AdminProblemsTable from "@/components/AdminProblemsTable";
 
 // utils
-import { toDatetimeLocal, toLocalISOString } from "@/utils/datetimeUtils";
+import {
+  toDatetimeLocal,
+  toLocalISOString,
+  toLocalString,
+} from "@/utils/datetimeUtils";
 
 // icons
 import { Plus } from "lucide-react";

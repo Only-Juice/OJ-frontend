@@ -23,8 +23,8 @@ export default function Problem() {
         title: question.title,
         startTime: question.start_time,
         endTime: question.end_time,
-        status: false,
         has_question: question.has_question,
+        top_score: question.top_score,
         onClick: async () => {
           router.push(`/problem/${question.id}`);
         },

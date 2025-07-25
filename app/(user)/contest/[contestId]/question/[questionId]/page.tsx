@@ -1,12 +1,21 @@
 "use client";
 
+// next.js
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useSWR from "swr";
+
+// components
+import Breadcrumbs from "@/components/Breadcrumbs";
+
+// third-party
+import MarkdownPreview from "@uiw/react-markdown-preview";
+
+// icons
 import { CircleCheck, CircleX, Copy, RotateCw } from "lucide-react";
 
-import Breadcrumbs from "@/components/Breadcrumbs";
-import MarkdownPreview from "@uiw/react-markdown-preview";
+// utils
+import { toLocalString } from "@/utils/datetimeUtils";
 
 export default function Problem() {
   const params = useParams();
@@ -14,8 +23,14 @@ export default function Problem() {
 
   const links = [
     { title: "Contests", href: "/contest" },
-    { title: `Contest ${params.contestId}`, href: `/contest/${params.contestId}` },
-    { title: `Question ${id}`, href: `/contest/${params.contestId}/question/${id}` }
+    {
+      title: `Contest ${params.contestId}`,
+      href: `/contest/${params.contestId}`,
+    },
+    {
+      title: `Question ${id}`,
+      href: `/contest/${params.contestId}/question/${id}`,
+    },
   ];
 
   const [historyPage, setHistoryPage] = useState(1);
@@ -128,7 +143,7 @@ export default function Problem() {
                         }}
                       >
                         <th>{index + 1}</th>
-                        <td>{new Date(score.judge_time).toLocaleString()}</td>
+                        <td>{toLocalString(new Date(score.judge_time))}</td>
                         <td>
                           {score.score >= 0 ? score.score : score.message}
                         </td>

@@ -9,7 +9,11 @@ import { useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 // utils
-import { toDatetimeLocal, toLocalISOString } from "@/utils/datetimeUtils";
+import {
+  toDatetimeLocal,
+  toLocalISOString,
+  toLocalString,
+} from "@/utils/datetimeUtils";
 
 // icons
 import { Plus, Settings } from "lucide-react";
@@ -37,8 +41,8 @@ export default function Contest() {
     const contestData = {
       title: contestTitle,
       description: contestDescription,
-      start_time: toLocalISOString(new Date(startTime)),
-      end_time: toLocalISOString(new Date(endTime)),
+      start_time: toLocalISOString(startTime),
+      end_time: toLocalISOString(endTime),
     };
 
     try {
@@ -121,8 +125,8 @@ export default function Contest() {
                   </button>
                 </Link>
               </h2>
-              <p>Start from {new Date(exam.start_time).toLocaleString()}</p>
-              <p>End at {new Date(exam.end_time).toLocaleString()}</p>
+              <p>Start from: {toLocalString(new Date(exam.start_time))}</p>
+              <p>End at: {toLocalString(new Date(exam.end_time))}</p>
               <div className="card-actions justify-end">
                 <button
                   className="btn btn-error"

@@ -1,9 +1,15 @@
 "use client";
 
+// next.js
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Breadcrumbs from "@/components/Breadcrumbs";
 import useSWR from "swr";
+
+// components
+import Breadcrumbs from "@/components/Breadcrumbs";
+
+// utils
+import { toLocalString } from "@/utils/datetimeUtils";
 
 const fakeData = Array.from({ length: 20 }, () => {
   const colors = ["#1CBABA", "#FFB700", "#F63737"];
@@ -49,7 +55,7 @@ export default function Profile() {
                         }}
                       >
                         <td>{score.question_id}</td>
-                        <td>{new Date(score.judge_time).toLocaleString()}</td>
+                        <td>{toLocalString(new Date(score.judge_time))}</td>
                         <td>{score.score}</td>
                       </tr>
                     );

@@ -121,6 +121,7 @@ export default function AccountPage() {
     }
   };
 
+  // TODO 可以使用寄信的
   function resetPassword(userId: number) {
     if (!confirm("確定要重置密碼嗎？這將會生成一個新的隨機密碼。")) {
       return;

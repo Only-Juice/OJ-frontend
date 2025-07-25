@@ -8,7 +8,9 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export default function Profile() {
   const links = [{ title: "Rank", href: "/rank" }];
 
-  const { data } = useSWR(`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/leaderboard`);
+  const { data } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/leaderboard`
+  );
   const leaderboard = data?.data?.scores ?? [];
 
   return (
@@ -29,29 +31,36 @@ export default function Profile() {
                 {leaderboard.map((item: any, index: number) => {
                   return (
                     <tr key={index}>
-                      <Award
-                        className="w-6 h-6"
-                        color={
-                          index === 0
-                            ? "gold"
-                            : index === 1
-                            ? "silver"
-                            : index === 2
-                            ? "#cd7f32"
-                            : "gray"
-                        }
-                        fill={
-                          index === 0
-                            ? "gold"
-                            : index === 1
-                            ? "silver"
-                            : index === 2
-                            ? "#cd7f32"
-                            : "gray"
-                        }
-                      />
+                      {index < 3 ? (
+                        <td>
+                          <Award
+                            className="w-6 h-6"
+                            color={
+                              index === 0
+                                ? "gold"
+                                : index === 1
+                                ? "silver"
+                                : index === 2
+                                ? "#cd7f32"
+                                : "gray"
+                            }
+                            fill={
+                              index === 0
+                                ? "gold"
+                                : index === 1
+                                ? "silver"
+                                : index === 2
+                                ? "#cd7f32"
+                                : "gray"
+                            }
+                          />
+                        </td>
+                      ) : (
+                        <td>{index + 1}</td>
+                      )}
+
                       <td>{item.user_name}</td>
-                      <td>{item.score}</td>
+                      <td>{item.total_score}</td>
                     </tr>
                   );
                 })}

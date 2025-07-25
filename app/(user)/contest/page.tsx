@@ -1,7 +1,14 @@
 "use client";
-import Breadcrumbs from "@/components/Breadcrumbs";
+
+// next.js
 import useSWR from "swr";
 import Link from "next/link";
+
+// components
+import Breadcrumbs from "@/components/Breadcrumbs";
+
+// utils
+import { toLocalString } from "@/utils/datetimeUtils";
 
 export default function Exam() {
   const links = [{ title: "Contests", href: "/contest" }];
@@ -22,8 +29,8 @@ export default function Exam() {
             </figure>
             <div className="card-body">
               <h2 className="card-title">{exam.title}</h2>
-              <p>Start from {new Date(exam.start_time).toLocaleString()}</p>
-              <p>End at {new Date(exam.end_time).toLocaleString()}</p>
+              <p>Start from: {toLocalString(new Date(exam.start_time))}</p>
+              <p>End at: {toLocalString(new Date(exam.end_time))}</p>
               <div className="card-actions justify-end">
                 <Link href={`/contest/${exam.id}`}>
                   <button className="btn btn-primary">Join</button>

@@ -1,12 +1,21 @@
 "use client";
 
+// next.js
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import useSWR from "swr";
+
+// components
+import Breadcrumbs from "@/components/Breadcrumbs";
+
+// third-party
+import MarkdownPreview from "@uiw/react-markdown-preview";
+
+// icons
 import { CircleCheck, CircleX, Copy, RotateCw } from "lucide-react";
 
-import Breadcrumbs from "@/components/Breadcrumbs";
-import MarkdownPreview from "@uiw/react-markdown-preview";
+// utils
+import { toLocalString } from "@/utils/datetimeUtils";
 
 export default function Problem() {
   const params = useParams();
@@ -28,9 +37,16 @@ export default function Problem() {
   const [historyIndex, setHistoryIndex] = useState(0);
 
   const { data: questionData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/${id}/question`
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/user/${id}/question`
   );
   const question = questionData?.data.readme || "Loading...";
+
+  const [sshUrl, setSshUrl] = useState("");
+  useEffect(() => {
+    setSshUrl(
+      `${process.env.NEXT_PUBLIC_GITEA_BASE_URL}/${questionData?.data?.git_repo_url}.git`
+    );
+  }, [questionData]);
 
   return (
     <div className="flex-1">
@@ -127,7 +143,7 @@ export default function Problem() {
                         }}
                       >
                         <th>{index + 1}</th>
-                        <td>{new Date(score.judge_time).toLocaleString()}</td>
+                        <td>{toLocalString(new Date(score.judge_time))}</td>
                         <td>
                           {score.score >= 0 ? score.score : score.message}
                         </td>
@@ -138,19 +154,20 @@ export default function Problem() {
               </div>
             </div>
           </div>
-          <div className="flex gap-10">
-            <div className="join">
+          <div className="flex gap-8">
+            <div className="join flex-1">
               <input
                 className="input join-item"
                 placeholder="ssh url"
                 readOnly
+                value={sshUrl}
               />
               <button className="btn btn-primary join-item">
                 <Copy />
               </button>
             </div>
             <button
-              className="btn btn-primary flex-1"
+              className="btn btn-primary"
               onClick={async () => {
                 try {
                   const response = await fetch(

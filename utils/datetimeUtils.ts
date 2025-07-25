@@ -7,6 +7,7 @@
  */
 export function toDatetimeLocal(isoString: string): string {
   const date = new Date(isoString);
+  // return toLocalString(date)
   const pad = (n: number) => String(n).padStart(2, "0");
 
   const year = date.getFullYear();
@@ -33,5 +34,24 @@ export function toLocalISOString(localString: string): string {
   const offsetMinutes = pad(tzOffset % 60);
 
   // 切掉 ".000Z" 並加上時區
-  return `${date.toISOString().slice(0, 19)}${sign}${offsetHours}:${offsetMinutes}`;
+  return `${date
+    .toISOString()
+    .slice(0, 19)}${sign}${offsetHours}:${offsetMinutes}`;
+}
+
+/**
+ * 將 Date 或 ISO 字串轉為本地 24 小時制、0 填充的字串
+ * @param date Date 物件
+ * @returns 例如 "2025-06-29 19:50"
+ */
+export function toLocalString(date: Date): string {
+  return date.toLocaleString("zh-TW", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
 }

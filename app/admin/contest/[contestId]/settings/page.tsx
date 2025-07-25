@@ -24,16 +24,16 @@ export default function Create() {
     { title: `Contest ${id}`, href: `/admin/contest/${id}/settings` },
   ];
 
-  // Fetch contest data
-  const { data: contestData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`
-  );
-
   // State for contest details
   const [contestTitle, setContestTitle] = useState("");
   const [contestDescription, setContestDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+
+  // Fetch contest data
+  const { data: contestData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`
+  );
 
   // Fetch existing contest details
   useEffect(() => {
@@ -49,6 +49,24 @@ export default function Create() {
   const [problems, setProblems] = useState<
     { title: string; gitRepoUrl: string; description: string }[]
   >([]);
+
+  // Function to handle contest deletion
+  const { data: problemsData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/questions`
+  );
+
+  // Fetch existing problems
+  useEffect(() => {
+    if (problemsData?.data) {
+      setProblems(
+        problemsData.data.map((problem: any) => ({
+          title: problem.title,
+          gitRepoUrl: problem.git_repo_url,
+          description: problem.description,
+        }))
+      );
+    }
+  }, [problemsData]);
 
   // Function to add a new problem row
   const handleAddProblem = () => {
@@ -89,14 +107,17 @@ export default function Create() {
     };
 
     // Make API call to update contest
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedContest),
-      credentials: "include",
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedContest),
+        credentials: "include",
+      }
+    );
 
     if (response.ok) {
       alert("Contest updated successfully!");
@@ -152,6 +173,7 @@ export default function Create() {
         <div className="divider divider-horizontal"></div>
 
         <div className="flex-2">
+          {/* TODO: 多一個按鈕可以切換顯示模式和顯示模式 */}
           <table className="table">
             <thead>
               <tr>

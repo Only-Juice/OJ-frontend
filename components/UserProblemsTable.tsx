@@ -1,5 +1,10 @@
 "use client";
+
+// icon
 import { CircleCheck, CircleX } from "lucide-react";
+
+// utils
+import { toLocalString } from "@/utils/datetimeUtils";
 
 type Props = {
   data: {
@@ -7,8 +12,8 @@ type Props = {
     title: string;
     startTime: string;
     endTime: string;
-    status: boolean;
     has_question: boolean;
+    top_score: number;
     onClick?: () => void;
   }[];
 };
@@ -17,13 +22,14 @@ export default function Table({ data }: Props) {
   const takeQuestion = async (id: number) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/question/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/${id}/question`,
         {
           method: "POST",
           headers: {
             accept: "application/json",
           },
           body: "",
+          credentials: "include",
         }
       );
 
@@ -60,10 +66,10 @@ export default function Table({ data }: Props) {
             >
               <th>{item.id}</th>
               <td>{item.title}</td>
-              <td>{new Date(item.startTime).toLocaleString()}</td>
-              <td>{new Date(item.endTime).toLocaleString()}</td>
+              <td>{toLocalString(new Date(item.startTime))}</td>
+              <td>{toLocalString(new Date(item.endTime))}</td>
               <td>
-                {item.status ? (
+                {item.top_score == 100 ? (
                   <CircleCheck className="text-green-500" />
                 ) : (
                   <CircleX className="text-red-500" />
