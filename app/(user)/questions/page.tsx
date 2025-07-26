@@ -6,11 +6,11 @@ import useSWR from "swr";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
-import ProblemsTable from "@/components/UserProblemsTable";
+import QuestionsTable from "@/components/UserQuestionsTable";
 
 export default function Problem() {
   const router = useRouter();
-  const links = [{ title: "Problems", href: "/problem" }];
+  const links = [{ title: "Questions", href: "/questions" }];
 
   const { data: questionData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`
@@ -26,7 +26,7 @@ export default function Problem() {
         has_question: question.has_question,
         top_score: question.top_score,
         onClick: async () => {
-          router.push(`/problem/${question.id}`);
+          router.push(`/questions/${question.id}`);
         },
       };
     }) || [];
@@ -36,11 +36,8 @@ export default function Problem() {
       <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex justify-center gap-10 flex-1">
         <div className="flex-3">
-          <ProblemsTable data={questions}></ProblemsTable>
+          <QuestionsTable data={questions}></QuestionsTable>
         </div>
-        {/* <div className="flex-1">
-          <ProblemProgress></ProblemProgress>
-        </div> */}
       </div>
     </div>
   );

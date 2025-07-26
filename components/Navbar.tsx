@@ -52,7 +52,7 @@ const Navbar = () => {
   };
 
   const links = [
-    { href: "/problem", label: "Problems" },
+    { href: "/questions", label: "Questions" },
     { href: "/contest", label: "Contests" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/rank", label: "Rank" },

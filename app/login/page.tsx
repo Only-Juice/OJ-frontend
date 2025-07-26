@@ -1,7 +1,8 @@
 "use client";
+
+// next.js
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import useSWR from "swr";
 
 export default function Login() {
   const router = useRouter();
@@ -14,15 +15,18 @@ export default function Login() {
     setError(false); // 每次嘗試登入前先清除錯誤提示
 
     try {
-      let response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ username, password }),
-      });
+      let response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ username, password }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Login failed");
@@ -34,12 +38,12 @@ export default function Login() {
           "Content-Type": "application/json",
         },
         credentials: "include",
-      }).then(function(res){
+      }).then(function (res) {
         return res.json();
       });
 
       const isAdmin = response?.data?.is_admin ?? false;
-      router.push(isAdmin ? "/admin" : "/problem");
+      router.push(isAdmin ? "/admin" : "/questions");
     } catch (error) {
       setError(true); // 顯示錯誤訊息
     }

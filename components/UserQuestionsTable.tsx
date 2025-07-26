@@ -45,7 +45,6 @@ export default function Table({ data }: Props) {
         {/* head */}
         <thead>
           <tr>
-            <th>#</th>
             <th>Title</th>
             <th>Start date</th>
             <th>End Date</th>
@@ -64,7 +63,6 @@ export default function Table({ data }: Props) {
               }}
               className="cursor-pointer"
             >
-              <th>{item.id}</th>
               <td>{item.title}</td>
               <td>{toSystemDateFormat(new Date(item.startTime))}</td>
               <td>{toSystemDateFormat(new Date(item.endTime))}</td>

@@ -7,7 +7,7 @@ import useSWR from "swr";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
-import ProblemsTable from "@/components/UserProblemsTable";
+import ProblemsTable from "@/components/UserQuestionsTable";
 
 export default function Exam() {
   const router = useRouter();

@@ -20,8 +20,6 @@ const fakeData = Array.from({ length: 20 }, () => {
 export default function Profile() {
   const links = [{ title: "Dashboard", href: "/dashboard" }];
 
-  const [historyPage, setHistoryPage] = useState(1);
-
   const { data } = useSWR(`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/all`);
 
   const history = data?.data;
@@ -51,7 +49,7 @@ export default function Profile() {
                         key={index}
                         className="list-row cursor-pointer"
                         onClick={() => {
-                          router.push(`/problem/${score.question_id}`);
+                          router.push(`/questions/${score.question_id}`);
                         }}
                       >
                         <td>{score.question_id}</td>

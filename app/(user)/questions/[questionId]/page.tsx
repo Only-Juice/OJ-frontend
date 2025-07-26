@@ -27,8 +27,8 @@ export default function Problem() {
   const question = questionData?.data.readme || "Loading...";
 
   const links = [
-    { title: "Problems", href: "/problem" },
-    { title: `${questionData?.data.title}`, href: `/problem/${id}` },
+    { title: "Questions", href: "/questions" },
+    { title: `${questionData?.data.title}`, href: `/questions/${id}` },
   ];
 
   const [historyPage, setHistoryPage] = useState(1);

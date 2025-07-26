@@ -21,6 +21,10 @@ export default function Problem() {
   const params = useParams();
   const id = params.questionId;
 
+  const { data: questionData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/${id}/question`
+  );
+
   const links = [
     { title: "Contests", href: "/contest" },
     {
@@ -28,7 +32,7 @@ export default function Problem() {
       href: `/contest/${params.contestId}`,
     },
     {
-      title: `Question ${id}`,
+      title: `${questionData?.data.title || "Loading..."}`,
       href: `/contest/${params.contestId}/question/${id}`,
     },
   ];
@@ -43,9 +47,6 @@ export default function Problem() {
   const histories = historyData?.data || null;
   const [historyIndex, setHistoryIndex] = useState(0);
 
-  const { data: questionData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/${id}/question`
-  );
   const question = questionData?.data.readme || "Loading...";
 
   return (
