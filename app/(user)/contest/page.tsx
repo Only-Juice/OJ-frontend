@@ -8,7 +8,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 // utils
-import { toLocalString } from "@/utils/datetimeUtils";
+import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
 export default function Exam() {
   const links = [{ title: "Contests", href: "/contest" }];
@@ -29,8 +29,8 @@ export default function Exam() {
             </figure>
             <div className="card-body">
               <h2 className="card-title">{exam.title}</h2>
-              <p>Start from: {toLocalString(new Date(exam.start_time))}</p>
-              <p>End at: {toLocalString(new Date(exam.end_time))}</p>
+              <p>Start from: {toSystemDateFormat(new Date(exam.start_time))}</p>
+              <p>End at: {toSystemDateFormat(new Date(exam.end_time))}</p>
               <div className="card-actions justify-end">
                 <Link href={`/contest/${exam.id}`}>
                   <button className="btn btn-primary">Join</button>

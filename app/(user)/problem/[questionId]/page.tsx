@@ -15,15 +15,20 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 import { CircleCheck, CircleX, Copy, RotateCw } from "lucide-react";
 
 // utils
-import { toLocalString } from "@/utils/datetimeUtils";
+import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
 export default function Problem() {
   const params = useParams();
   const id = params.questionId;
 
+  const { data: questionData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/user/${id}/question`
+  );
+  const question = questionData?.data.readme || "Loading...";
+
   const links = [
     { title: "Problems", href: "/problem" },
-    { title: `Problem ${id}`, href: `/problem/${id}` },
+    { title: `${questionData?.data.title}`, href: `/problem/${id}` },
   ];
 
   const [historyPage, setHistoryPage] = useState(1);
@@ -35,11 +40,6 @@ export default function Problem() {
   );
   const histories = historyData?.data || null;
   const [historyIndex, setHistoryIndex] = useState(0);
-
-  const { data: questionData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/user/${id}/question`
-  );
-  const question = questionData?.data.readme || "Loading...";
 
   const [sshUrl, setSshUrl] = useState("");
   useEffect(() => {
@@ -143,7 +143,9 @@ export default function Problem() {
                         }}
                       >
                         <th>{index + 1}</th>
-                        <td>{toLocalString(new Date(score.judge_time))}</td>
+                        <td>
+                          {toSystemDateFormat(new Date(score.judge_time))}
+                        </td>
                         <td>
                           {score.score >= 0 ? score.score : score.message}
                         </td>

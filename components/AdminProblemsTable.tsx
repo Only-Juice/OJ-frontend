@@ -1,13 +1,10 @@
 "use client";
 
-// next.js
-import { useRouter } from "next/navigation";
-
 // icons
 import { Pen } from "lucide-react";
 
 // utils
-import { toLocalString } from "@/utils/datetimeUtils";
+import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
 type Props = {
   data: {
@@ -15,13 +12,38 @@ type Props = {
     title: string;
     startTime: string;
     endTime: string;
-    status: boolean;
+    is_active: boolean;
     onModify: () => void;
   }[];
 };
 
 export default function Table({ data }: Props) {
-  const router = useRouter();
+  const handleProblemStatusChange = (id: number, new_is_active: boolean) => {
+    try {
+      const response = fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/admin/${id}/question`,
+        {
+          method: "PATCH",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            description: "Question Description",
+            end_time: "2006-01-02T15:04:05Z",
+            git_repo_url: "user_name/repo_name",
+            start_time: "2006-01-02T15:04:05Z",
+            title: "Question Title",
+            is_active: false,
+          }),
+        }
+      );
+    } catch (error) {
+      console.error("Error updating user visibility:", error);
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="table table-zebra table-lg">
@@ -39,13 +61,16 @@ export default function Table({ data }: Props) {
             <tr key={index}>
               {/* <th>{item.id}</th> */}
               <td>{item.title}</td>
-              <td>{toLocalString(new Date(item.startTime))}</td>
-              <td>{toLocalString(new Date(item.endTime))}</td>
+              <td>{toSystemDateFormat(new Date(item.startTime))}</td>
+              <td>{toSystemDateFormat(new Date(item.endTime))}</td>
               <td>
                 <input
                   type="checkbox"
-                  defaultChecked
+                  checked={item.is_active}
                   className="toggle toggle-primary"
+                  onChange={(e) =>
+                    handleProblemStatusChange(item.id, e.target.checked)
+                  }
                 />
               </td>
               <td>

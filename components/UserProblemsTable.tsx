@@ -4,7 +4,7 @@
 import { CircleCheck, CircleX } from "lucide-react";
 
 // utils
-import { toLocalString } from "@/utils/datetimeUtils";
+import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
 type Props = {
   data: {
@@ -66,8 +66,8 @@ export default function Table({ data }: Props) {
             >
               <th>{item.id}</th>
               <td>{item.title}</td>
-              <td>{toLocalString(new Date(item.startTime))}</td>
-              <td>{toLocalString(new Date(item.endTime))}</td>
+              <td>{toSystemDateFormat(new Date(item.startTime))}</td>
+              <td>{toSystemDateFormat(new Date(item.endTime))}</td>
               <td>
                 {item.top_score == 100 ? (
                   <CircleCheck className="text-green-500" />

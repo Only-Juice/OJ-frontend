@@ -12,7 +12,7 @@ import AdminProblemsTable from "@/components/AdminProblemsTable";
 import {
   toDatetimeLocal,
   toLocalISOString,
-  toLocalString,
+  toSystemDateFormat,
 } from "@/utils/datetimeUtils";
 
 // icons
@@ -32,6 +32,7 @@ export default function ProblemPage() {
         title: question.title,
         startTime: question.start_time,
         endTime: question.end_time,
+        is_active: question.is_active,
         onModify: () => {
           modifyBtnClick(question);
         },

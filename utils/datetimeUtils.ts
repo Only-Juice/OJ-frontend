@@ -44,7 +44,7 @@ export function toLocalISOString(localString: string): string {
  * @param date Date 物件
  * @returns 例如 "2025-06-29 19:50"
  */
-export function toLocalString(date: Date): string {
+export function toSystemDateFormat(date: Date): string {
   return date.toLocaleString("zh-TW", {
     year: "numeric",
     month: "2-digit",

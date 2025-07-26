@@ -1,10 +1,13 @@
 "use client";
 
+// next.js
 import Link from "next/link";
 import useSWR from "swr";
 
 const Navbar = () => {
-  const { data: userData } = useSWR(`${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user`);
+  const { data: userData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user`
+  );
 
   const { data: userInfoData, mutate: mutateUserInfo } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/user`
@@ -121,14 +124,17 @@ const Navbar = () => {
                 className="text-error cursor-pointer"
                 onClick={async () => {
                   try {
-                    await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
-                      method: "POST",
-                      headers: {
-                        accept: "application/json",
-                        "Content-Type": "application/json",
-                      },
-                      credentials: "include",
-                    });
+                    await fetch(
+                      `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`,
+                      {
+                        method: "POST",
+                        headers: {
+                          accept: "application/json",
+                          "Content-Type": "application/json",
+                        },
+                        credentials: "include",
+                      }
+                    );
                   } catch (err) {
                     console.error("Logout failed", err);
                   } finally {

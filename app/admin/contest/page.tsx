@@ -12,7 +12,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   toDatetimeLocal,
   toLocalISOString,
-  toLocalString,
+  toSystemDateFormat,
 } from "@/utils/datetimeUtils";
 
 // icons
@@ -125,8 +125,8 @@ export default function Contest() {
                   </button>
                 </Link>
               </h2>
-              <p>Start from: {toLocalString(new Date(exam.start_time))}</p>
-              <p>End at: {toLocalString(new Date(exam.end_time))}</p>
+              <p>Start from: {toSystemDateFormat(new Date(exam.start_time))}</p>
+              <p>End at: {toSystemDateFormat(new Date(exam.end_time))}</p>
               <div className="card-actions justify-end">
                 <button
                   className="btn btn-error"
