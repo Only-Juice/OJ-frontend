@@ -11,7 +11,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
 export default function Exam() {
-  const links = [{ title: "Contests", href: "/contest" }];
+  const links = [{ title: "Exams", href: "/exams" }];
 
   const { data: examsData } = useSWR("https://ojapi.ruien.me/api/exams");
 
@@ -32,7 +32,7 @@ export default function Exam() {
               <p>Start from: {toSystemDateFormat(new Date(exam.start_time))}</p>
               <p>End at: {toSystemDateFormat(new Date(exam.end_time))}</p>
               <div className="card-actions justify-end">
-                <Link href={`/contest/${exam.id}`}>
+                <Link href={`/exams/${exam.id}`}>
                   <button className="btn btn-primary">Join</button>
                 </Link>
               </div>

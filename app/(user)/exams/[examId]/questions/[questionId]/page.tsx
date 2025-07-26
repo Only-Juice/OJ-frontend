@@ -26,14 +26,14 @@ export default function Problem() {
   );
 
   const links = [
-    { title: "Contests", href: "/contest" },
+    { title: "Exams", href: "/exams" },
     {
-      title: `Contest ${params.contestId}`,
-      href: `/contest/${params.contestId}`,
+      title: `Exam ${params.examId}`,
+      href: `/exams/${params.examId}`,
     },
     {
       title: `${questionData?.data.title || "Loading..."}`,
-      href: `/contest/${params.contestId}/question/${id}`,
+      href: `/exams/${params.examId}/questions/${id}`,
     },
   ];
 

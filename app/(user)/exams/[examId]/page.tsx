@@ -12,15 +12,15 @@ import ProblemsTable from "@/components/UserQuestionsTable";
 export default function Exam() {
   const router = useRouter();
   const params = useParams();
-  const id = params.contestId;
+  const id = params.examId;
 
   const { data: questionData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/questions`
   );
 
   const links = [
-    { title: "Contests", href: "/contest" },
-    { title: `Contest ${id}`, href: `/contest/${id}` },
+    { title: "Exams", href: "/exams" },
+    { title: `Exam ${id}`, href: `/exams/${id}` },
   ];
 
   const examQuestions =
@@ -33,7 +33,7 @@ export default function Exam() {
         status: false,
         has_question: false,
         onClick: async () => {
-          router.push(`/contest/${id}/question/${question.id}`);
+          router.push(`/exams/${id}/questions/${question.id}`);
         },
       };
     }) || [];
