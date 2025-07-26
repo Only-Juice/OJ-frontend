@@ -28,13 +28,11 @@ export default function Table({ data }: Props) {
           headers: {
             accept: "application/json",
           },
-          body: "",
           credentials: "include",
         }
       );
 
       if (!response.ok) throw new Error("Failed to post data");
-      // const data = await response.json();
     } catch (error) {
       console.error("Error during POST request:", error);
     }
@@ -42,7 +40,6 @@ export default function Table({ data }: Props) {
   return (
     <div className="overflow-x-auto">
       <table className="table table-zebra table-lg">
-        {/* head */}
         <thead>
           <tr>
             <th>Title</th>
