@@ -1,11 +1,15 @@
 "use client";
 
-import { Award } from "lucide-react";
-
+// next.js
 import useSWR from "swr";
+
+// components
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-export default function Profile() {
+// icon
+import { Award } from "lucide-react";
+
+export default function Rank() {
   const links = [{ title: "Rank", href: "/rank" }];
 
   const { data } = useSWR(
