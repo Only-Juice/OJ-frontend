@@ -18,29 +18,29 @@ import {
 // icons
 import { Plus, Settings } from "lucide-react";
 
-export default function Contest() {
-  const links = [{ title: "Contests", href: "/admin/contest" }];
+export default function Exam() {
+  const links = [{ title: "Exams", href: "/admin/exams" }];
 
   const { data: examsData, mutate: mutateExams } = useSWR(
     "https://ojapi.ruien.me/api/exams"
   );
 
-  const [contestTitle, setContestTitle] = useState("");
-  const [contestDescription, setContestDescription] = useState("");
+  const [examTitle, setExamTitle] = useState("");
+  const [examDescription, setExamDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  // Function to handle contest deletion
-  const handleCreateContest = async () => {
-    // Validate contest details
-    if (!contestTitle || !contestDescription || !startTime || !endTime) {
-      alert("Please fill in all contest fields");
+  // Function to handle exam deletion
+  const handleCreateExam = async () => {
+    // Validate exam details
+    if (!examTitle || !examDescription || !startTime || !endTime) {
+      alert("Please fill in all exam fields");
       return;
     }
 
-    const contestData = {
-      title: contestTitle,
-      description: contestDescription,
+    const examData = {
+      title: examTitle,
+      description: examDescription,
       start_time: toLocalISOString(startTime),
       end_time: toLocalISOString(endTime),
     };
@@ -53,27 +53,27 @@ export default function Contest() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(contestData),
+          body: JSON.stringify(examData),
           credentials: "include",
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to create contest");
+        throw new Error("Failed to create exam");
       }
 
-      alert("Contest created successfully!");
+      alert("Exam created successfully!");
       // Reset form after successful creation
-      setContestTitle("");
-      setContestDescription("");
+      setExamTitle("");
+      setExamDescription("");
       setStartTime("");
       setEndTime("");
-      mutateExams(); // Refresh the contest list
+      mutateExams(); // Refresh the exam list
       document.getElementById("create_modal")?.close();
     } catch (error) {}
   };
 
-  // Function to handle contest deletion
+  // Function to handle exam deletion
   const handleDeleteExam = async (examId) => {
     if (!confirm("Are you sure you want to delete this exam?")) return;
 
@@ -94,7 +94,7 @@ export default function Contest() {
       }
 
       alert("Exam deleted successfully!");
-      mutateExams(); // Refresh the contest list
+      mutateExams(); // Refresh the exam list
     } catch (error) {
       console.error("Error deleting exam:", error);
     }
@@ -108,7 +108,7 @@ export default function Contest() {
           className="btn btn-primary"
           onClick={() => document.getElementById("create_modal")?.showModal()}
         >
-          Create Exam
+          Create exam
           <Plus />
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function Contest() {
               <h2 className="card-title">
                 {exam.title}
                 <div className="m-auto"></div>
-                <Link href={`/admin/contest/${exam.id}/settings`}>
+                <Link href={`/admin/exams/${exam.id}/settings`}>
                   <button className="btn btn-ghost btn-sm">
                     <Settings />
                   </button>
@@ -146,7 +146,7 @@ export default function Contest() {
               ✕
             </button>
           </form>
-          <h3 className="font-bold text-lg">Create Contest</h3>
+          <h3 className="font-bold text-lg">Create exam</h3>
           <div className="flex flex-col items-center gap-6 max-w-xl mx-auto mt-5">
             <div className="w-full flex flex-col gap-2">
               <label>Title</label>
@@ -154,8 +154,8 @@ export default function Contest() {
                 type="text"
                 placeholder="Title"
                 className="input input-bordered w-full"
-                value={contestTitle}
-                onChange={(e) => setContestTitle(e.target.value)}
+                value={examTitle}
+                onChange={(e) => setExamTitle(e.target.value)}
               />
             </div>
 
@@ -164,8 +164,8 @@ export default function Contest() {
               <textarea
                 className="textarea textarea-bordered w-full"
                 placeholder="Description"
-                value={contestDescription}
-                onChange={(e) => setContestDescription(e.target.value)}
+                value={examDescription}
+                onChange={(e) => setExamDescription(e.target.value)}
               ></textarea>
             </div>
 
@@ -190,7 +190,7 @@ export default function Contest() {
             </div>
             <button
               className="btn btn-primary w-full"
-              onClick={handleCreateContest}
+              onClick={handleCreateExam}
             >
               Create
             </button>

@@ -12,6 +12,7 @@ import {
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
+import { fetchWithRefresh } from "@/utils/apiUtils";
 
 export default function Drawer({
   children,
@@ -22,13 +23,11 @@ export default function Drawer({
 
   const links = [
     {
-      href: "/problem",
-      label: "Problems",
+      href: "/questions",
+      label: "Questions",
       icon: <FileText />,
     },
-    { href: "/contest", label: "Contests", icon: <Trophy /> },
-    // { href: "/dashboard", label: "Dashboard", icon: <ChartColumnBig /> },
-    // { href: "/rank", label: "Rank", icon: <Award /> },
+    { href: "/exams", label: "Exams", icon: <Trophy /> },
     { href: "/account", label: "Account", icon: <UserRound /> },
   ];
 
@@ -43,22 +42,22 @@ export default function Drawer({
   const username = userData?.data?.login ?? "";
   const isPublic = userInfoData?.data?.is_public ?? false;
 
-  const handleLogout = useCallback(async () => {
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-    } catch (err) {
-      console.error("Logout failed", err);
-    } finally {
-      router.push("/login"); // SPA 跳轉
-    }
-  }, [router]);
+  const handleLogout = async () => {
+    fetchWithRefresh(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error("Logout failed");
+      }
+      // 登出成功後，重定向到登入頁面
+      router.push("/login");
+    });
+  };
 
   return (
     <div className="drawer drawer-open">
@@ -72,13 +71,9 @@ export default function Drawer({
         ></label>
         <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4 gap-4">
           {/* 頭像與名稱 */}
-          <li>
+          <li className="pointer-events-none hover:bg-transparent">
             <div className="flex items-center gap-4">
-              <div
-                tabIndex={0}
-                role="button"
-                className="btn btn-ghost btn-circle avatar"
-              >
+              <div tabIndex={0} role="button" className="avatar">
                 {avatarUrl === null ? (
                   <div className="skeleton h-10 w-10 shrink-0 rounded-full"></div>
                 ) : (
@@ -93,7 +88,9 @@ export default function Drawer({
                   </div>
                 )}
               </div>
-              <span className="text-lg font-medium">{username || "Guest"}</span>
+              <span className="text-lg font-medium ">
+                {username || "Guest"}
+              </span>
             </div>
           </li>
 

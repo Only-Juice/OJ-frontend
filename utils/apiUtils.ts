@@ -15,7 +15,7 @@ export async function refreshToken() {
       return res.json();
     })
     .catch((err) => {
-      console.error("Error refreshing token:", err);
+      throw new Error(`Error refreshing token: ${err.message}`);
     });
 }
 

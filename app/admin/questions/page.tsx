@@ -18,8 +18,8 @@ import {
 // icons
 import { Plus } from "lucide-react";
 
-export default function ProblemPage() {
-  const links = [{ title: "Problems", href: "/admin/problem" }];
+export default function Questions() {
+  const links = [{ title: "Questions", href: "/admin/questions" }];
 
   const { data: questionData, mutate: mutateQuestion } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`
@@ -167,7 +167,7 @@ export default function ProblemPage() {
             </button>
           </form>
           <h3 className="font-bold text-lg">
-            {isCreate ? "Create New Problem" : "Update Problem"}
+            {isCreate ? "Create New Question" : "Update Question"}
           </h3>
           <div className="flex flex-col items-center gap-6 max-w-xl mx-auto mt-5">
             <div className="w-full flex flex-col gap-2">
@@ -192,10 +192,10 @@ export default function ProblemPage() {
             </div>
 
             <div className="w-full flex flex-col gap-2">
-              <label>GitHub Repository URL</label>
+              <label>Gitea Repository URL</label>
               <input
                 type="text"
-                placeholder="GitHub Repository URL"
+                placeholder="Gitea Repository URL"
                 className="input input-bordered w-full"
                 value={gitRepoUrl}
                 onChange={(e) => setGitRepoUrl(e.target.value)}

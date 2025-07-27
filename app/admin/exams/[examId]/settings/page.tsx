@@ -16,41 +16,41 @@ import { Trash } from "lucide-react";
 
 export default function Create() {
   const params = useParams();
-  const id = params.contestId;
+  const id = params.examId;
 
   // Breadcrumbs links
   const links = [
-    { title: "Contest", href: "/admin/contest" },
-    { title: `Contest ${id}`, href: `/admin/contest/${id}/settings` },
+    { title: "Exams", href: "/admin/exams" },
+    { title: `Exam ${id}`, href: `/admin/exams/${id}/settings` },
   ];
 
-  // State for contest details
-  const [contestTitle, setContestTitle] = useState("");
-  const [contestDescription, setContestDescription] = useState("");
+  // State for exam details
+  const [examTitle, setExamTitle] = useState("");
+  const [examDescription, setExamDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  // Fetch contest data
-  const { data: contestData } = useSWR(
+  // Fetch exam data
+  const { data: examData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`
   );
 
-  // Fetch existing contest details
+  // Fetch existing exam details
   useEffect(() => {
-    if (contestData?.data) {
-      setContestTitle(contestData.data.title);
-      setContestDescription(contestData.data.description);
-      setStartTime(toDatetimeLocal(contestData.data.start_time));
-      setEndTime(toDatetimeLocal(contestData.data.end_time));
+    if (examData?.data) {
+      setExamTitle(examData.data.title);
+      setExamDescription(examData.data.description);
+      setStartTime(toDatetimeLocal(examData.data.start_time));
+      setEndTime(toDatetimeLocal(examData.data.end_time));
     }
-  }, [contestData]);
+  }, [examData]);
 
   // State for problems
   const [problems, setProblems] = useState<
     { title: string; gitRepoUrl: string; description: string }[]
   >([]);
 
-  // Function to handle contest deletion
+  // Function to handle exam deletion
   const { data: problemsData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/questions`
   );
@@ -96,17 +96,17 @@ export default function Create() {
     setProblems(problems.filter((_, i) => i !== index));
   };
 
-  // Function to handle contest update
-  const handleUpdateContest = async () => {
-    const updatedContest = {
-      title: contestTitle,
-      description: contestDescription,
+  // Function to handle exam update
+  const handleUpdateExam = async () => {
+    const updatedExam = {
+      title: examTitle,
+      description: examDescription,
       start_time: toLocalISOString(startTime),
       end_time: toLocalISOString(endTime),
       problems,
     };
 
-    // Make API call to update contest
+    // Make API call to update exam
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`,
       {
@@ -114,15 +114,15 @@ export default function Create() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedContest),
+        body: JSON.stringify(updatedExam),
         credentials: "include",
       }
     );
 
     if (response.ok) {
-      alert("Contest updated successfully!");
+      alert("Exam updated successfully!");
     } else {
-      alert("Failed to update contest.");
+      alert("Failed to update exam.");
     }
   };
 
@@ -132,22 +132,22 @@ export default function Create() {
       <div className="flex-1 flex flex-row gap-4">
         <div className="flex-1 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <label>Contest Title</label>
+            <label>Exam Title</label>
             <input
               type="text"
-              placeholder="Contest Title"
+              placeholder="Exam Title"
               className="input input-bordered w-full"
-              value={contestTitle}
-              onChange={(e) => setContestTitle(e.target.value)}
+              value={examTitle}
+              onChange={(e) => setExamTitle(e.target.value)}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label>Contest Description</label>
+            <label>Exam Description</label>
             <textarea
               className="textarea textarea-bordered w-full"
-              value={contestDescription}
-              onChange={(e) => setContestDescription(e.target.value)}
-              placeholder="Contest Description"
+              value={examDescription}
+              onChange={(e) => setExamDescription(e.target.value)}
+              placeholder="Exam Description"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -247,7 +247,7 @@ export default function Create() {
       <button
         className="btn btn-primary fixed bottom-4 right-4"
         onClick={() => {
-          handleUpdateContest();
+          handleUpdateExam();
         }}
       >
         Save
