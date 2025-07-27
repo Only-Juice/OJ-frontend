@@ -7,6 +7,8 @@ import useSWR from "swr";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
+import SubmitHistoryTable from "@/components/SubmitHistoryTable";
+import type { SubmitResult } from "@/components/SubmitHistoryTable";
 
 // third-party
 import MarkdownPreview from "@uiw/react-markdown-preview";
@@ -43,29 +45,10 @@ export default function Problem() {
     );
   }, [questionData]);
 
-  // history data
-  const [historyIndex, setHistoryIndex] = useState(0);
-
-  const [historyPage, setHistoryPage] = useState(1);
+  // submit history data
+  const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
 
   const tabRef = useRef<HTMLInputElement>(null);
-
-  const { data: historyData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question?page=${historyPage}&limit=${LIMIT}`
-  );
-  const histories = historyData?.data || null;
-
-  const addHistoryPage = () => {
-    const totalPage = Math.ceil(historyData?.data?.scores_count / LIMIT);
-    if (historyPage >= totalPage) return;
-    setHistoryPage((prev) => prev + 1);
-    setHistoryIndex(0);
-  };
-
-  const subtractHistoryPage = () => {
-    setHistoryPage((prev) => (prev > 1 ? prev - 1 : 1));
-    setHistoryIndex(0);
-  };
 
   // html elements
   return (
@@ -95,41 +78,43 @@ export default function Problem() {
             aria-label="Submit history details"
           />
           <div className="tab-content p-2">
-            {histories?.scores[historyIndex]?.score >= 0
-              ? SubmitHistoryDetailCollapse(
-                  histories?.scores[historyIndex].message
-                )
-              : histories?.scores[historyIndex].message}
+            {submitResult?.score >= 0
+              ? SubmitHistoryDetailCollapse(submitResult?.message)
+              : submitResult?.message}
           </div>
         </div>
         <div className="flex-1 gap-10 flex flex-col sticky top-35 self-start">
           <div className="card bg-base-100 w-full shadow-sm h-[70vh]">
             <div className="card-body h-full flex flex-col">
               <h2 className="card-title">Submit history</h2>
-              <div className="overflow-y-auto flex-1">
-                {histories?.scores ? (
-                  SubmitHistoryTable(
-                    histories.scores,
-                    historyIndex,
-                    historyData?.data?.scores_count - (historyPage - 1) * LIMIT,
-                    (index) => {
-                      tabRef.current?.click();
-                      setHistoryIndex(index);
-                    }
-                  )
-                ) : (
-                  <p className="text-center">No submission history found.</p>
+              <SubmitHistoryTable
+                url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question`}
+                limit={LIMIT}
+                enableHightlight={true}
+                theadShow={() => (
+                  <>
+                    <th>#</th>
+                    <th>Judge Time</th>
+                    <th>Score</th>
+                  </>
                 )}
-              </div>
-              <div className="join items-center justify-center mt-4">
-                <button className="join-item btn" onClick={subtractHistoryPage}>
-                  «
-                </button>
-                <button className="join-item btn">Page {historyPage}</button>
-                <button className="join-item btn" onClick={addHistoryPage}>
-                  »
-                </button>
-              </div>
+                tbodyShow={(item) => (
+                  <>
+                    <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
+                    {item.score >= 0 ? (
+                      <td>{item.score}</td>
+                    ) : (
+                      <td>{item.message}</td>
+                    )}
+                  </>
+                )}
+                onRowClick={(item, callByClickRow) => {
+                  setSubmitResult(item);
+                  if (callByClickRow) {
+                    tabRef.current?.click();
+                  }
+                }}
+              />
             </div>
           </div>
           <SSHUrlAndRejudgeButton
@@ -149,7 +134,7 @@ export default function Problem() {
                   if (!res.ok) {
                     throw new Error("Failed to rejudge");
                   }
-                  setHistoryIndex(0);
+                  // setHistoryIndex(0);
                   return res.json();
                 })
                 .catch((error) => {
@@ -210,48 +195,6 @@ function SubmitHistoryDetailCollapse(message: string) {
         );
       })}
     </div>
-  );
-}
-
-// 顯示提交歷史分數的 table
-function SubmitHistoryTable(
-  histories: any[],
-  historyIndex: number,
-  startIndex: number,
-  setHistoryIndex: (index: number) => void
-) {
-  return (
-    <table className="table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Time</th>
-          <th>Score</th>
-        </tr>
-      </thead>
-      <tbody>
-        {histories.map((score: any, index: number) => {
-          const displayNumber = startIndex - index;
-          return (
-            <tr
-              key={index}
-              className={`cursor-pointer ${
-                historyIndex === index
-                  ? "bg-primary text-primary-content"
-                  : "hover:bg-base-200"
-              }`}
-              onClick={() => {
-                setHistoryIndex(index);
-              }}
-            >
-              <th>{displayNumber}</th>
-              <td>{toSystemDateFormat(new Date(score.judge_time))}</td>
-              <td>{score.score >= 0 ? score.score : score.message}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
   );
 }
 
