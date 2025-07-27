@@ -6,7 +6,7 @@ import useSWR from "swr";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
-import AdminProblemsTable from "@/components/AdminProblemsTable";
+import PaginationTable from "@/components/PaginationTable";
 
 // utils
 import {
@@ -16,7 +16,10 @@ import {
 } from "@/utils/datetimeUtils";
 
 // icons
-import { Plus } from "lucide-react";
+import { Plus, Pen } from "lucide-react";
+
+// types
+import { Question } from "@/types/api";
 
 export default function Questions() {
   const links = [{ title: "Questions", href: "/admin/questions" }];
@@ -150,7 +153,49 @@ export default function Questions() {
     <div className="flex-1">
       <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex gap-10 flex-1 flex-col">
-        <AdminProblemsTable data={questions}></AdminProblemsTable>
+        <PaginationTable<Question>
+          classname="table-lg"
+          url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`}
+          limit={15}
+          totalField="question_count"
+          dataField="questions"
+          theadShow={() => (
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Status</th>
+              <th>Modify</th>
+            </tr>
+          )}
+          tbodyShow={(item, rowIndex, total, page) => (
+            <tr key={rowIndex}>
+              <td>{item.id}</td>
+              <td>{item.title}</td>
+              <td>{toSystemDateFormat(new Date(item.start_time))}</td>
+              <td>{toSystemDateFormat(new Date(item.end_time))}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={item.is_active}
+                  className="toggle toggle-primary"
+                  // onChange={(e) =>
+                  //   // handleProblemStatusChange(item.id, e.target.checked)
+                  // }
+                />
+              </td>
+              <td>
+                <div
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => modifyBtnClick(item)}
+                >
+                  <Pen />
+                </div>
+              </td>
+            </tr>
+          )}
+        />
       </div>
       <div className="fixed bottom-4 right-4">
         <div className="btn btn-primary" onClick={createBtnClick}>

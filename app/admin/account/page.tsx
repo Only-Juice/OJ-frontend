@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
+import PaginationTable from "@/components/PaginationTable";
 
 // icons
 import { Plus, RotateCcw } from "lucide-react";
@@ -153,6 +154,8 @@ export default function AccountPage() {
     <div className="w-full">
       <Breadcrumbs links={links} />
       <div className="flex flex-col w-full gap-10">
+        {/* TODO */}
+        {/* <PaginationTable/ */}
         <table className="table table-zebra table-lg">
           <thead>
             <tr>

@@ -2,7 +2,7 @@
 
 // next.js
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 
 // components
@@ -19,8 +19,15 @@ import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
 export default function Problem() {
   const params = useParams();
+  const examId = params.examId;
   const id = params.questionId;
 
+  // exam data
+  const { data: examData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${examId}/exam`
+  );
+
+  // question data
   const { data: questionData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/${id}/question`
   );
@@ -28,12 +35,12 @@ export default function Problem() {
   const links = [
     { title: "Exams", href: "/exams" },
     {
-      title: `Exam ${params.examId}`,
-      href: `/exams/${params.examId}`,
+      title: `${examData?.data.exam_title || "Loading..."}`,
+      href: `/exams/${examId}`,
     },
     {
       title: `${questionData?.data.title || "Loading..."}`,
-      href: `/exams/${params.examId}/questions/${id}`,
+      href: `/exams/${examId}/questions/${id}`,
     },
   ];
 

@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
-import SubmitHistoryTable from "@/components/SubmitHistoryTable";
+import PaginationTable from "@/components/PaginationTable";
+
+// type
+import type { QuestionSubmitResult } from "@/types/api";
+
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
@@ -21,30 +25,33 @@ export default function Dashboard() {
         <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100">
           <div className="card-body w-full flex flex-col">
             <h2 className="card-title">Submit history</h2>
-            <SubmitHistoryTable
+            <PaginationTable<QuestionSubmitResult>
               url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/all`}
               limit={10}
-              enableHightlight={false}
+              totalField="scores_count"
+              dataField="scores"
               theadShow={() => (
-                <>
+                <tr>
                   <th>#</th>
                   <th>Question ID</th>
                   <th>Time</th>
                   <th>Score</th>
-                </>
+                </tr>
               )}
-              tbodyShow={(item) => (
-                <>
+              tbodyShow={(item, index, total, page) => (
+                <tr
+                  key={index}
+                  className="cursor-pointer hover:bg-base-200"
+                  onClick={() => {
+                    router.push(`/questions/${item.question_id}`);
+                  }}
+                >
+                  <td>{total - index - (page - 1) * 10}</td>
                   <td>{item.question_id}</td>
                   <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
                   <td>{item.score >= 0 ? item.score : item.message}</td>
-                </>
+                </tr>
               )}
-              onRowClick={(item, callByClickRow) => {
-                if (callByClickRow) {
-                  router.push(`/questions/${item.question_id}`);
-                }
-              }}
             />
           </div>
         </div>

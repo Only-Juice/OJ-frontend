@@ -13,6 +13,21 @@ import { toDatetimeLocal, toLocalISOString } from "@/utils/datetimeUtils";
 
 // icons
 import { Trash } from "lucide-react";
+import { fetchWithRefresh } from "@/utils/apiUtils";
+import { start } from "repl";
+
+type operate = "delete" | "update" | "create";
+
+type Question = {
+  id: number;
+  title: string;
+  git_repo_url: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  isInDb: boolean;
+  operate: operate;
+};
 
 export default function Create() {
   const params = useParams();
@@ -45,55 +60,70 @@ export default function Create() {
     }
   }, [examData]);
 
-  // State for problems
-  const [problems, setProblems] = useState<
-    { title: string; gitRepoUrl: string; description: string }[]
-  >([]);
+  // State for questions
+  const [questions, setQuestions] = useState<Question[]>([]);
 
-  // Function to handle exam deletion
-  const { data: problemsData } = useSWR(
+  // Fetch existing questions
+  const { data: questionsData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/questions`
   );
 
-  // Fetch existing problems
+  // Fetch existing questions
   useEffect(() => {
-    if (problemsData?.data) {
-      setProblems(
-        problemsData.data.map((problem: any) => ({
-          title: problem.title,
-          gitRepoUrl: problem.git_repo_url,
-          description: problem.description,
-        }))
+    if (questionsData?.data) {
+      setQuestions(
+        questionsData.data.map((question: Question) => {
+          return {
+            ...question,
+            startTime: "",
+            endTime: "",
+            isInDb: true,
+            operate: "update",
+          };
+        })
       );
     }
-  }, [problemsData]);
+  }, [questionsData]);
 
-  // Function to add a new problem row
-  const handleAddProblem = () => {
-    setProblems([
-      ...problems,
+  // Function to add a new question row
+  const handleAddQuestion = () => {
+    setQuestions([
+      ...questions,
       {
+        id: 0,
         title: "",
-        gitRepoUrl: "",
+        git_repo_url: "",
         description: "",
+        startTime: "",
+        endTime: "",
+        isInDb: false,
+        operate: "create",
       },
     ]);
   };
 
-  // Function to handle changes in problem fields
-  const handleProblemChange = (
+  // Function to handle changes in question fields
+  const handleQuestionChange = (
     index: number,
-    field: "title" | "gitRepoUrl" | "description",
+    field: "title" | "git_repo_url" | "description",
     value: string
   ) => {
-    const updated = [...problems];
+    const updated = [...questions];
     updated[index][field] = value;
-    setProblems(updated);
+    setQuestions(updated);
   };
 
-  // Function to remove a problem row
-  const handleRemoveProblem = (index: number) => {
-    setProblems(problems.filter((_, i) => i !== index));
+  // Function to remove a question row
+  const handleRemoveQuestion = (index: number) => {
+    if (questions[index].isInDb) {
+      // If the question is in the database, mark it for deletion
+      const updated = [...questions];
+      updated[index].operate = "delete";
+      setQuestions(updated);
+    } else {
+      // If the question is not in the database, remove it from the state
+      setQuestions(questions.filter((_, i) => i !== index));
+    }
   };
 
   // Function to handle exam update
@@ -103,11 +133,10 @@ export default function Create() {
       description: examDescription,
       start_time: toLocalISOString(startTime),
       end_time: toLocalISOString(endTime),
-      problems,
     };
 
     // Make API call to update exam
-    const response = await fetch(
+    fetchWithRefresh(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`,
       {
         method: "PUT",
@@ -117,13 +146,90 @@ export default function Create() {
         body: JSON.stringify(updatedExam),
         credentials: "include",
       }
-    );
+    ).then((response) => {
+      if (response.ok) {
+        handleUpdateQuestions();
+      }
+    });
+  };
 
-    if (response.ok) {
-      alert("Exam updated successfully!");
-    } else {
-      alert("Failed to update exam.");
-    }
+  const handleUpdateQuestions = async () => {
+    questions.forEach(async (question) => {
+      if (question.operate === "create") {
+        // Create new question
+        fetchWithRefresh(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/admin/question`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: question.title,
+              git_repo_url: question.git_repo_url,
+              description: question.description,
+              start_time: toLocalISOString(startTime),
+              end_time: toLocalISOString(endTime),
+            }),
+            credentials: "include",
+          }
+        )
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to create question");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            fetchWithRefresh(
+              `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/questions/${data.data.id}/question`,
+              {
+                method: "POST",
+                credentials: "include",
+              }
+            );
+            console.log("Question created successfully:", data);
+          });
+      } else if (question.operate === "update") {
+        // Update existing question
+        await fetchWithRefresh(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/admin/${question.id}/question`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: question.title,
+              git_repo_url: question.git_repo_url,
+              description: question.description,
+              start_time: toLocalISOString(startTime),
+              end_time: toLocalISOString(endTime),
+            }),
+            credentials: "include",
+          }
+        );
+      } else if (question.operate === "delete") {
+        // Delete existing question
+        fetchWithRefresh(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/questions/${question.id}/question`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        ).then((response) => {
+          if (response.ok) {
+            fetchWithRefresh(
+              `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/admin/${question.id}/question`,
+              {
+                method: "DELETE",
+                credentials: "include",
+              }
+            );
+          }
+        });
+      }
+    });
   };
 
   return (
@@ -183,63 +289,70 @@ export default function Create() {
               </tr>
             </thead>
             <tbody>
-              {problems.map((problem, index) => (
-                <tr key={index}>
-                  <td className="align-top">
-                    <input
-                      type="text"
-                      className="input input-bordered w-full"
-                      value={problem.title}
-                      onChange={(e) =>
-                        handleProblemChange(index, "title", e.target.value)
-                      }
-                      placeholder="Problem Title"
-                    />
-                  </td>
-                  <td className="align-top">
-                    <input
-                      type="text"
-                      className="input input-bordered w-full"
-                      value={problem.gitRepoUrl}
-                      onChange={(e) =>
-                        handleProblemChange(index, "gitRepoUrl", e.target.value)
-                      }
-                      placeholder="Git repo URL"
-                    />
-                  </td>
-                  <td className="align-top">
-                    <textarea
-                      className="textarea textarea-bordered w-full"
-                      value={problem.description}
-                      onChange={(e) =>
-                        handleProblemChange(
-                          index,
-                          "description",
-                          e.target.value
-                        )
-                      }
-                      placeholder="Problem Description"
-                    />
-                  </td>
+              {questions.map(
+                (question, index) =>
+                  question.operate !== "delete" && (
+                    <tr key={index}>
+                      <td className="align-top">
+                        <input
+                          type="text"
+                          className="input input-bordered w-full"
+                          value={question.title}
+                          onChange={(e) =>
+                            handleQuestionChange(index, "title", e.target.value)
+                          }
+                          placeholder="Question Title"
+                        />
+                      </td>
+                      <td className="align-top">
+                        <input
+                          type="text"
+                          className="input input-bordered w-full"
+                          value={question.git_repo_url}
+                          onChange={(e) =>
+                            handleQuestionChange(
+                              index,
+                              "git_repo_url",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Git repo URL"
+                        />
+                      </td>
+                      <td className="align-top">
+                        <textarea
+                          className="textarea textarea-bordered w-full"
+                          value={question.description}
+                          onChange={(e) =>
+                            handleQuestionChange(
+                              index,
+                              "description",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Question Description"
+                        />
+                      </td>
 
-                  <td className="align-top">
-                    <div
-                      className="btn btn-ghost btn-sm"
-                      onClick={() => handleRemoveProblem(index)}
-                    >
-                      <Trash />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      <td className="align-top">
+                        <div
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => handleRemoveQuestion(index)}
+                        >
+                          <Trash />
+                        </div>
+                      </td>
+                    </tr>
+                  )
+              )}
             </tbody>
           </table>
 
           <button
             className="btn btn-primary w-full mt-2"
-            onClick={handleAddProblem}
+            onClick={handleAddQuestion}
           >
-            Add Problem
+            Add Question
           </button>
         </div>
       </div>

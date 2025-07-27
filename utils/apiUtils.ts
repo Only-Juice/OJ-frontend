@@ -54,3 +54,18 @@ export function fetchWithRefresh(
     return res;
   });
 }
+
+export async function takeQuestion(id: number) {
+  return fetchWithRefresh(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/${id}/question`,
+    {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+      },
+      credentials: "include",
+    }
+  ).then((response) => {
+    if (!response.ok) throw new Error("Failed to post data");
+  });
+}

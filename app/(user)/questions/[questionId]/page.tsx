@@ -7,8 +7,10 @@ import useSWR from "swr";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
-import SubmitHistoryTable from "@/components/SubmitHistoryTable";
-import type { SubmitResult } from "@/components/SubmitHistoryTable";
+import PaginationTable from "@/components/PaginationTable";
+
+// type
+import type { QuestionSubmitResult } from "@/types/api";
 
 // third-party
 import MarkdownPreview from "@uiw/react-markdown-preview";
@@ -46,9 +48,13 @@ export default function Problem() {
   }, [questionData]);
 
   // submit history data
-  const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
+  const [submitResult, setSubmitResult] = useState<QuestionSubmitResult | null>(
+    null
+  );
 
   const tabRef = useRef<HTMLInputElement>(null);
+
+  const [selectIndex, setSelectIndex] = useState(0);
 
   // html elements
   return (
@@ -87,32 +93,44 @@ export default function Problem() {
           <div className="card bg-base-100 w-full shadow-sm h-[70vh]">
             <div className="card-body h-full flex flex-col">
               <h2 className="card-title">Submit history</h2>
-              <SubmitHistoryTable
+              <PaginationTable<QuestionSubmitResult>
                 url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question`}
                 limit={LIMIT}
-                enableHightlight={true}
+                totalField="scores_count"
+                dataField="scores"
                 theadShow={() => (
-                  <>
+                  <tr>
                     <th>#</th>
                     <th>Judge Time</th>
                     <th>Score</th>
-                  </>
+                  </tr>
                 )}
-                tbodyShow={(item) => (
-                  <>
+                tbodyShow={(item, index, total, page) => (
+                  <tr
+                    key={index}
+                    className={`cursor-pointer ${
+                      selectIndex === index
+                        ? "bg-primary text-primary-content"
+                        : "hover:bg-base-200"
+                    }`}
+                    onClick={() => {
+                      setSubmitResult(item);
+                      setSelectIndex(index);
+                      tabRef.current?.click();
+                    }}
+                  >
+                    <td>{total - index - (page - 1) * LIMIT}</td>
                     <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
                     {item.score >= 0 ? (
                       <td>{item.score}</td>
                     ) : (
                       <td>{item.message}</td>
                     )}
-                  </>
+                  </tr>
                 )}
-                onRowClick={(item, callByClickRow) => {
-                  setSubmitResult(item);
-                  if (callByClickRow) {
-                    tabRef.current?.click();
-                  }
+                onDataLoaded={(data) => {
+                  setSelectIndex(0);
+                  setSubmitResult(data[0]);
                 }}
               />
             </div>
