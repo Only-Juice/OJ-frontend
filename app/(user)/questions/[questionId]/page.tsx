@@ -16,7 +16,7 @@ import { CircleCheck, CircleX, Copy, RotateCw } from "lucide-react";
 
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
-import { start } from "repl";
+import { fetchWithRefresh } from "@/utils/apiUtils";
 
 const LIMIT = 10;
 
@@ -67,6 +67,7 @@ export default function Problem() {
     setHistoryIndex(0);
   };
 
+  // html elements
   return (
     <div className="flex-1">
       <Breadcrumbs links={links}></Breadcrumbs>
@@ -131,47 +132,31 @@ export default function Problem() {
               </div>
             </div>
           </div>
-          <div className="flex gap-8">
-            <div className="join flex-1">
-              <input
-                className="input join-item"
-                placeholder="ssh url"
-                readOnly
-                value={sshUrl}
-              />
-              <button className="btn btn-primary join-item">
-                <Copy />
-              </button>
-            </div>
-            <button
-              className="btn btn-primary"
-              onClick={async () => {
-                try {
-                  const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question/user_rescore`,
-                    {
-                      method: "POST",
-                      headers: {
-                        accept: "application/json",
-                      },
-                      credentials: "include",
-                      body: "",
-                    }
-                  );
-
-                  if (!response.ok) throw new Error("Failed to rescore");
-                  const data = await response.json();
-                  setHistoryIndex(0);
-                  console.log("Rescore successful:", data);
-                } catch (error) {
-                  console.error("Error during rescore request:", error);
+          <SSHUrlAndRejudgeButton
+            sshUrl={sshUrl}
+            onRejudge={() => {
+              fetchWithRefresh(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question/user_rescore`,
+                {
+                  method: "POST",
+                  headers: {
+                    accept: "application/json",
+                  },
+                  credentials: "include",
                 }
-              }}
-            >
-              Rejudge
-              <RotateCw />
-            </button>
-          </div>
+              )
+                .then((res) => {
+                  if (!res.ok) {
+                    throw new Error("Failed to rejudge");
+                  }
+                  setHistoryIndex(0);
+                  return res.json();
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                });
+            }}
+          />
         </div>
       </div>
     </div>
@@ -267,5 +252,42 @@ function SubmitHistoryTable(
         })}
       </tbody>
     </table>
+  );
+}
+
+// 顯示 SSH URL 和重新評分按鈕的組件
+function SSHUrlAndRejudgeButton({
+  sshUrl,
+  onRejudge,
+}: {
+  sshUrl: string;
+  onRejudge: () => void;
+}) {
+  const handleCopy = () => {
+    navigator.clipboard.writeText(sshUrl).then(
+      () => {
+        alert("SSH URL copied to clipboard!");
+      },
+      (err) => {}
+    );
+  };
+  return (
+    <div className="flex gap-8">
+      <div className="join flex-1">
+        <input
+          className="input join-item flex-1"
+          placeholder="ssh url"
+          readOnly
+          value={sshUrl}
+        />
+        <button className="btn btn-primary join-item" onClick={handleCopy}>
+          <Copy />
+        </button>
+      </div>
+      <button className="btn btn-primary" onClick={onRejudge}>
+        Rejudge
+        <RotateCw />
+      </button>
+    </div>
   );
 }
