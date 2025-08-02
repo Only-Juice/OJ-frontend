@@ -5,18 +5,12 @@
  * @param isoString 例如 "2025-06-29T19:50:00+08:00"
  * @returns 例如 "2025-06-29T19:50"
  */
-export function toDatetimeLocal(isoString: string): string {
-  const date = new Date(isoString);
-  // return toLocalString(date)
-  const pad = (n: number) => String(n).padStart(2, "0");
+export function toDatetimeLocalString(isoString: string): string {
+  const date = new Date(isoString); // 會自動根據時區轉換為本地時間
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - offset * 60 * 1000); // 調整為本地時間
 
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
+  return localDate.toISOString().slice(0, 16); // 截取到分鐘 "YYYY-MM-DDTHH:MM"
 }
 
 /**
@@ -24,19 +18,9 @@ export function toDatetimeLocal(isoString: string): string {
  * @param localString 例如 "2025-06-29T19:50"
  * @returns 例如 "2025-06-29T19:50:00+08:00"
  */
-export function toLocalISOString(localString: string): string {
+export function toISOStringFromLocal(localString: string): string {
   const date = new Date(localString);
-  const tzOffset = -date.getTimezoneOffset(); // minutes
-  const sign = tzOffset >= 0 ? "+" : "-";
-  const pad = (n: number) => String(Math.floor(Math.abs(n))).padStart(2, "0");
-
-  const offsetHours = pad(tzOffset / 60);
-  const offsetMinutes = pad(tzOffset % 60);
-
-  // 切掉 ".000Z" 並加上時區
-  return `${date
-    .toISOString()
-    .slice(0, 19)}${sign}${offsetHours}:${offsetMinutes}`;
+  return date.toISOString();
 }
 
 /**
@@ -51,7 +35,7 @@ export function toSystemDateFormat(date: Date): string {
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit",
+    // second: "2-digit",
     hour12: false,
   });
 }

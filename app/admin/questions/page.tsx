@@ -2,16 +2,16 @@
 
 // next.js
 import { useState } from "react";
-import useSWR from "swr";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
+import DateTimePicker from "@/components/DatePicker";
 
 // utils
 import {
-  toDatetimeLocal,
-  toLocalISOString,
+  toDatetimeLocalString,
+  toISOStringFromLocal,
   toSystemDateFormat,
 } from "@/utils/datetimeUtils";
 
@@ -23,24 +23,6 @@ import { Question } from "@/types/api";
 
 export default function Questions() {
   const links = [{ title: "Questions", href: "/admin/questions" }];
-
-  const { data: questionData, mutate: mutateQuestion } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`
-  );
-
-  const questions =
-    (questionData?.data?.questions || []).map((question: any) => {
-      return {
-        id: question.id,
-        title: question.title,
-        startTime: question.start_time,
-        endTime: question.end_time,
-        is_active: question.is_active,
-        onModify: () => {
-          modifyBtnClick(question);
-        },
-      };
-    }) || [];
 
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
@@ -84,7 +66,6 @@ export default function Questions() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to create question");
       }
-      mutateQuestion();
       document.getElementById("create_modal")?.close();
     } catch (err: any) {
       setError(err.message || "An error occurred");
@@ -122,7 +103,7 @@ export default function Questions() {
       const errorData = await updateResponse.json();
       throw new Error(errorData.message || "Failed to update question");
     }
-    mutateQuestion();
+    // mutateQuestion();
     document.getElementById("create_modal")?.close();
   };
 
@@ -249,21 +230,17 @@ export default function Questions() {
 
             <div className="w-full flex flex-col gap-2">
               <label>Start Time</label>
-              <input
-                type="datetime-local"
-                className="input input-bordered w-full"
-                value={toDatetimeLocal(startTime)}
-                onChange={(e) => setStartTime(toLocalISOString(e.target.value))}
+              <DateTimePicker
+                value={startTime}
+                onChange={(value) => setStartTime(toISOStringFromLocal(value))}
               />
             </div>
 
             <div className="w-full flex flex-col gap-2">
               <label>End Time</label>
-              <input
-                type="datetime-local"
-                className="input input-bordered w-full"
-                value={toDatetimeLocal(endTime)}
-                onChange={(e) => setEndTime(toLocalISOString(e.target.value))}
+              <DateTimePicker
+                value={endTime}
+                onChange={(value) => setEndTime(toISOStringFromLocal(value))}
               />
             </div>
 

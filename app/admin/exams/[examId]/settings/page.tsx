@@ -9,7 +9,10 @@ import useSWR from "swr";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 // utils
-import { toDatetimeLocal, toLocalISOString } from "@/utils/datetimeUtils";
+import {
+  toDatetimeLocalString,
+  toISOStringFromLocal,
+} from "@/utils/datetimeUtils";
 
 // icons
 import { Trash } from "lucide-react";
@@ -55,8 +58,8 @@ export default function Create() {
     if (examData?.data) {
       setExamTitle(examData.data.title);
       setExamDescription(examData.data.description);
-      setStartTime(toDatetimeLocal(examData.data.start_time));
-      setEndTime(toDatetimeLocal(examData.data.end_time));
+      setStartTime(toDatetimeLocalString(examData.data.start_time));
+      setEndTime(toDatetimeLocalString(examData.data.end_time));
     }
   }, [examData]);
 
@@ -131,8 +134,8 @@ export default function Create() {
     const updatedExam = {
       title: examTitle,
       description: examDescription,
-      start_time: toLocalISOString(startTime),
-      end_time: toLocalISOString(endTime),
+      start_time: toISOStringFromLocal(startTime),
+      end_time: toISOStringFromLocal(endTime),
     };
 
     // Make API call to update exam
@@ -168,8 +171,8 @@ export default function Create() {
               title: question.title,
               git_repo_url: question.git_repo_url,
               description: question.description,
-              start_time: toLocalISOString(startTime),
-              end_time: toLocalISOString(endTime),
+              start_time: toISOStringFromLocal(startTime),
+              end_time: toISOStringFromLocal(endTime),
             }),
             credentials: "include",
           }
@@ -203,8 +206,8 @@ export default function Create() {
               title: question.title,
               git_repo_url: question.git_repo_url,
               description: question.description,
-              start_time: toLocalISOString(startTime),
-              end_time: toLocalISOString(endTime),
+              start_time: toISOStringFromLocal(startTime),
+              end_time: toISOStringFromLocal(endTime),
             }),
             credentials: "include",
           }

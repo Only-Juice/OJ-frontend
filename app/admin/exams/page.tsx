@@ -10,8 +10,8 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 
 // utils
 import {
-  toDatetimeLocal,
-  toLocalISOString,
+  toDatetimeLocalString,
+  toISOStringFromLocal,
   toSystemDateFormat,
 } from "@/utils/datetimeUtils";
 
@@ -41,8 +41,8 @@ export default function Exam() {
     const examData = {
       title: examTitle,
       description: examDescription,
-      start_time: toLocalISOString(startTime),
-      end_time: toLocalISOString(endTime),
+      start_time: toISOStringFromLocal(startTime),
+      end_time: toISOStringFromLocal(endTime),
     };
 
     try {
@@ -174,8 +174,10 @@ export default function Exam() {
               <input
                 type="datetime-local"
                 className="input input-bordered w-full"
-                value={toDatetimeLocal(startTime)}
-                onChange={(e) => setStartTime(toLocalISOString(e.target.value))}
+                value={toDatetimeLocalString(startTime)}
+                onChange={(e) =>
+                  setStartTime(toISOStringFromLocal(e.target.value))
+                }
               />
             </div>
 
@@ -184,8 +186,10 @@ export default function Exam() {
               <input
                 type="datetime-local"
                 className="input input-bordered w-full"
-                value={toDatetimeLocal(endTime)}
-                onChange={(e) => setEndTime(toLocalISOString(e.target.value))}
+                value={toDatetimeLocalString(endTime)}
+                onChange={(e) =>
+                  setEndTime(toISOStringFromLocal(e.target.value))
+                }
               />
             </div>
             <button
