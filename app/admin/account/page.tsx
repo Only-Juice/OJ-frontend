@@ -11,6 +11,9 @@ import PaginationTable from "@/components/PaginationTable";
 // icons
 import { Plus, RotateCcw } from "lucide-react";
 
+// type
+import { Account } from "@/types/api";
+
 export default function AccountPage() {
   const links = [{ title: "Account", href: "/admin/account" }];
   const { data: usersData, mutate: mutateUsers } = useSWR(
@@ -154,10 +157,13 @@ export default function AccountPage() {
     <div className="w-full">
       <Breadcrumbs links={links} />
       <div className="flex flex-col w-full gap-10">
-        {/* TODO */}
-        {/* <PaginationTable/ */}
-        <table className="table table-zebra table-lg">
-          <thead>
+        <PaginationTable<Account>
+          classname="table-lg"
+          url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user`}
+          limit={15}
+          totalField="total"
+          dataField="items"
+          theadShow={() => (
             <tr>
               <th>Id</th>
               <th>Username</th>
@@ -165,40 +171,34 @@ export default function AccountPage() {
               <th>Enable</th>
               <th>Reset Password</th>
             </tr>
-          </thead>
-          <tbody>
-            {users.map((item, index) => (
-              <tr key={index} className="cursor-pointer">
-                <td>{item.id}</td>
-                <td>{item.user_name}</td>
-                <td>{item.email}</td>
-                <td>
-                  <input
-                    type="checkbox"
-                    defaultChecked={item.enable}
-                    className="toggle toggle-primary"
-                    onChange={async (e) => {
-                      await updateUser(
-                        item.id,
-                        item.is_public,
-                        e.target.checked
-                      );
-                    }}
-                  />
-                </td>
-                <td>
-                  <div
-                    className="btn btn-primary btn-sm"
-                    onClick={() => resetPassword(item.id)}
-                  >
-                    Reset Password
-                    <RotateCcw />
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          )}
+          tbodyShow={(item, rowIndex, total, page) => (
+            <tr key={rowIndex}>
+              <td>{item.id}</td>
+              <td>{item.user_name}</td>
+              <td>{item.email}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  defaultChecked={item.enable}
+                  className="toggle toggle-primary"
+                  onChange={async (e) => {
+                    await updateUser(item.id, item.is_public, e.target.checked);
+                  }}
+                />
+              </td>
+              <td>
+                <div
+                  className="btn btn-primary btn-sm"
+                  onClick={() => resetPassword(item.id)}
+                >
+                  Reset Password
+                  <RotateCcw />
+                </div>
+              </td>
+            </tr>
+          )}
+        />
       </div>
       <div className="fixed bottom-4 right-4">
         <div

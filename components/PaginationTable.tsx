@@ -71,9 +71,9 @@ export default function PaginationTable<T>({
         <table className={`table ${classname}`}>
           <thead>{theadShow()}</thead>
           <tbody>
-            {items.map((item, index) => (
-              <>{tbodyShow(item, index, totalCount, page)}</>
-            ))}
+            {items.map((item, index) =>
+              tbodyShow(item, index, totalCount, page)
+            )}
           </tbody>
         </table>
       </div>

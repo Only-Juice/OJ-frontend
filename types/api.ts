@@ -1,3 +1,4 @@
+// 題目上傳結果
 export type QuestionSubmitResult = {
   score: number;
   message: string;
@@ -5,6 +6,7 @@ export type QuestionSubmitResult = {
   question_id: number;
 };
 
+// 題目
 export type Question = {
   id: number;
   title: string;
@@ -17,8 +19,18 @@ export type Question = {
   top_score: number;
 };
 
+// 考試頁面的題目
 export type ExamQuestion = {
   question: Question;
   point: number;
   has_question: boolean;
+};
+
+// 使用者
+export type Account = {
+  id: number;
+  email: string;
+  enable: boolean;
+  user_name: string;
+  is_public: boolean;
 };
