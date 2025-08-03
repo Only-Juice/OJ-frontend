@@ -7,6 +7,7 @@ import { useState } from "react";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
+import DateTimePicker from "@/components/DatePicker";
 
 // utils
 import {
@@ -171,25 +172,17 @@ export default function Exam() {
 
             <div className="w-full flex flex-col gap-2">
               <label>Start Time</label>
-              <input
-                type="datetime-local"
-                className="input input-bordered w-full"
-                value={toDatetimeLocalString(startTime)}
-                onChange={(e) =>
-                  setStartTime(toISOStringFromLocal(e.target.value))
-                }
+              <DateTimePicker
+                value={startTime}
+                onChange={(value) => setStartTime(toISOStringFromLocal(value))}
               />
             </div>
 
             <div className="w-full flex flex-col gap-2">
               <label>End Time</label>
-              <input
-                type="datetime-local"
-                className="input input-bordered w-full"
-                value={toDatetimeLocalString(endTime)}
-                onChange={(e) =>
-                  setEndTime(toISOStringFromLocal(e.target.value))
-                }
+              <DateTimePicker
+                value={endTime}
+                onChange={(value) => setEndTime(toISOStringFromLocal(value))}
               />
             </div>
             <button

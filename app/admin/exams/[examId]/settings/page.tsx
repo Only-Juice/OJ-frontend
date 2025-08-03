@@ -7,6 +7,7 @@ import useSWR from "swr";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
+import DateTimePicker from "@/components/DatePicker";
 
 // utils
 import {
@@ -17,7 +18,6 @@ import {
 // icons
 import { Trash } from "lucide-react";
 import { fetchWithRefresh } from "@/utils/apiUtils";
-import { start } from "repl";
 
 type operate = "delete" | "update" | "create";
 
@@ -261,20 +261,16 @@ export default function Create() {
           </div>
           <div className="flex flex-col gap-2">
             <label>Start Time</label>
-            <input
-              type="datetime-local"
-              className="input input-bordered w-full"
+            <DateTimePicker
               value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
+              onChange={(value) => setStartTime(toISOStringFromLocal(value))}
             />
           </div>
           <div className="flex flex-col gap-2">
             <label>End Time</label>
-            <input
-              type="datetime-local"
-              className="input input-bordered w-full"
+            <DateTimePicker
               value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
+              onChange={(value) => setEndTime(toISOStringFromLocal(value))}
             />
           </div>
         </div>
