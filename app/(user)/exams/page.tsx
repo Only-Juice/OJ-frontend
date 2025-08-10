@@ -13,7 +13,9 @@ import { toSystemDateFormat } from "@/utils/datetimeUtils";
 export default function Exam() {
   const links = [{ title: "Exams", href: "/exams" }];
 
-  const { data: examsData } = useSWR("https://ojapi.ruien.me/api/exams");
+  const { data: examsData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams`
+  );
 
   return (
     <div className="flex flex-1 flex-col">

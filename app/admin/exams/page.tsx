@@ -23,7 +23,7 @@ export default function Exam() {
   const links = [{ title: "Exams", href: "/admin/exams" }];
 
   const { data: examsData, mutate: mutateExams } = useSWR(
-    "https://ojapi.ruien.me/api/exams"
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams`
   );
 
   const [examTitle, setExamTitle] = useState("");
