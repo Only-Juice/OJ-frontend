@@ -11,10 +11,10 @@ import DateTimePicker from "@/components/DatePicker";
 
 // utils
 import {
-  toDatetimeLocalString,
   toISOStringFromLocal,
   toSystemDateFormat,
 } from "@/utils/datetimeUtils";
+import { fetchWithRefresh } from "@/utils/apiUtils";
 
 // icons
 import { Plus, Settings } from "lucide-react";
@@ -50,7 +50,7 @@ export default function Exam() {
     };
 
     try {
-      const response = await fetch(
+      const response = await fetchWithRefresh(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin`,
         {
           method: "POST",
@@ -82,7 +82,7 @@ export default function Exam() {
     if (!confirm("Are you sure you want to delete this exam?")) return;
 
     try {
-      const response = await fetch(
+      const response = await fetchWithRefresh(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${examId}/exam`,
         {
           method: "DELETE",

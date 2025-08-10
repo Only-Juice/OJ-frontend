@@ -4,6 +4,9 @@
 import Link from "next/link";
 import useSWR from "swr";
 
+// utils
+import { fetchWithRefresh } from "@/utils/apiUtils";
+
 const Navbar = () => {
   const { data: userData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user`
@@ -28,7 +31,7 @@ const Navbar = () => {
     );
 
     try {
-      const response = await fetch(
+      const response = await fetchWithRefresh(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/is_public`,
         {
           method: "POST",
@@ -124,7 +127,7 @@ const Navbar = () => {
                 className="text-error cursor-pointer"
                 onClick={async () => {
                   try {
-                    await fetch(
+                    await fetchWithRefresh(
                       `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`,
                       {
                         method: "POST",

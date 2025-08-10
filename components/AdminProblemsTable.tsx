@@ -5,6 +5,7 @@ import { Pen } from "lucide-react";
 
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
+import { fetchWithRefresh } from "@/utils/apiUtils";
 
 type Props = {
   data: {
@@ -20,7 +21,7 @@ type Props = {
 export default function Table({ data }: Props) {
   const handleProblemStatusChange = (id: number, new_is_active: boolean) => {
     try {
-      const response = fetch(
+      fetchWithRefresh(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/admin/${id}/question`,
         {
           method: "PATCH",

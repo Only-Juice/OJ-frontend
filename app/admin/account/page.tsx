@@ -1,7 +1,7 @@
 "use client";
 
 // next.js
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -12,6 +12,9 @@ import { Plus, RotateCcw, ChevronRight } from "lucide-react";
 
 // type
 import { Account } from "@/types/api";
+
+// utils
+import { fetchWithRefresh } from "@/utils/apiUtils";
 
 export default function AccountPage() {
   const links = [{ title: "Account", href: "/admin/account" }];
@@ -36,7 +39,7 @@ export default function AccountPage() {
     is_public: boolean,
     enable: boolean
   ) => {
-    await fetch(
+    await fetchWithRefresh(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/${userId}/user`,
       {
         method: "PATCH",
@@ -127,7 +130,7 @@ export default function AccountPage() {
     if (!confirm("確定要重置密碼嗎？這將會生成一個新的隨機密碼。")) {
       return;
     }
-    fetch(
+    fetchWithRefresh(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/${userId}/user/reset_password`,
       {
         method: "POST",

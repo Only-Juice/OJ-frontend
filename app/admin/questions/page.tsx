@@ -10,10 +10,10 @@ import DateTimePicker from "@/components/DatePicker";
 
 // utils
 import {
-  toDatetimeLocalString,
   toISOStringFromLocal,
   toSystemDateFormat,
 } from "@/utils/datetimeUtils";
+import { fetchWithRefresh } from "@/utils/apiUtils";
 
 // icons
 import { Plus, Pen } from "lucide-react";
@@ -43,7 +43,7 @@ export default function Questions() {
     }
 
     try {
-      const response = await fetch(
+      const response = await fetchWithRefresh(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/admin/question`,
         {
           method: "POST",
@@ -93,7 +93,7 @@ export default function Questions() {
       start_time: new Date(startTime).toISOString(),
       end_time: new Date(endTime).toISOString(),
     };
-    const updateResponse = await fetch(updateUrl, {
+    const updateResponse = await fetchWithRefresh(updateUrl, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
