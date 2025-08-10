@@ -1,14 +1,17 @@
 "use client";
 
+// third-party
+import Papa from "papaparse";
+
 // next.js
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // icons
-import { Plus, RotateCcw, ChevronRight } from "lucide-react";
+import { Plus, RotateCcw } from "lucide-react";
 
 // type
 import { Account } from "@/types/api";
@@ -16,23 +19,18 @@ import { Account } from "@/types/api";
 // utils
 import { fetchWithRefresh } from "@/utils/apiUtils";
 
+export type ImportUserRow = {
+  username: string;
+  email: string;
+  password: string;
+};
+
 export default function AccountPage() {
   const links = [{ title: "Account", href: "/admin/account" }];
 
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const importUserModalRef = useRef<HTMLDialogElement>(null);
 
-  const [previewUsers, setPreviewUsers] = useState<
-    { username: string; email: string; password: string }[]
-  >([]);
-
-  const addToTable = () => {
-    setPreviewUsers((prev) => [...prev, { username, email, password }]);
-    setUsername("");
-    setEmail("");
-    setPassword("");
-  };
+  const [previewUsers, setPreviewUsers] = useState<ImportUserRow[]>([]);
 
   const updateUser = async (
     userId: number,
@@ -55,75 +53,53 @@ export default function AccountPage() {
     );
   };
 
-  // ⬇️ 當選擇檔案後觸發
+  // 當選擇檔案後觸發
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-
-      const lines = content
-        .split("\n")
-        .map((line) => line.trim())
-        .filter((line) => line.length > 0);
-
-      // setRawUsernames(lines); // 儲存原始使用者名稱
-    };
-
-    reader.readAsText(file);
+    Papa.parse<ImportUserRow>(file as File, {
+      header: true, // 讀取第一行作為欄位名稱
+      skipEmptyLines: true, // 跳過空行
+      complete: (results) => {
+        // results.data 會是陣列 [{username: "...", email: "...", password: "..."}, ...]
+        setPreviewUsers(results.data);
+      },
+      error: (err) => {
+        console.error("解析錯誤：", err);
+      },
+    });
   };
 
-  // const handleCreateAccounts = async () => {
-  //   if (!domain || !defaultPassword || previewUsers.length === 0) {
-  //     alert("請輸入 domain、預設密碼並上傳使用者清單");
-  //     return;
-  //   }
-
-  //   try {
-  //     const res = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/admin/user/bulk`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           accept: "application/json",
-  //         },
-  //         credentials: "include",
-  //         body: JSON.stringify({
-  //           default_password: defaultPassword,
-  //           email_domain: domain,
-  //           usernames: rawUsernames, // 只要 username 陣列
-  //         }),
-  //       }
-  //     );
-
-  //     const result = await res.json();
-
-  //     if (!res.ok) {
-  //       throw new Error(result.message || "建立失敗");
-  //     }
-
-  //     // 顯示結果
-  //     const failed = Object.keys(result.data.failed_users || {});
-  //     const success = result.data.successful_users || [];
-
-  //     alert(
-  //       `成功建立 ${success.length} 位使用者\n失敗 ${
-  //         failed.length
-  //       } 位\n${failed.join(", ")}`
-  //     );
-
-  //     // 關閉 modal
-  //     (
-  //       document.getElementById("create_account_modal") as HTMLDialogElement
-  //     )?.close();
-  //   } catch (err: any) {
-  //     console.error(err);
-  //     alert("建立失敗：" + err.message);
-  //   }
-  // };
+  const handleImport = async () => {
+    if (previewUsers.length === 0) {
+      return;
+    }
+    fetchWithRefresh(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/admin/user/bulk_v2`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          user: previewUsers,
+        }),
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("匯入失敗");
+        }
+        alert("匯入成功！");
+        setPreviewUsers([]);
+        importUserModalRef.current?.close();
+      })
+      .catch((err) => {
+        console.error("匯入失敗：", err);
+      });
+  };
 
   // TODO 可以使用寄信的
   function resetPassword(userId: number) {
@@ -153,9 +129,26 @@ export default function AccountPage() {
         alert("錯誤：" + e.message);
       });
   }
+
   return (
     <div className="w-full">
       <Breadcrumbs links={links} />
+      <div className="flex justify-end mb-4 gap-4">
+        <div
+          className="btn btn-primary"
+          onClick={() => {
+            setPreviewUsers([]);
+            importUserModalRef.current?.showModal();
+          }}
+        >
+          Import User
+          <Plus />
+        </div>
+        <div className="btn btn-primary" onClick={() => {}}>
+          Create User
+          <Plus />
+        </div>
+      </div>
       <div className="flex flex-col w-full gap-10">
         <PaginationTable<Account>
           classname="table-lg"
@@ -200,104 +193,67 @@ export default function AccountPage() {
           )}
         />
       </div>
-      <div className="fixed bottom-4 right-4">
-        <div
-          className="btn btn-primary"
-          onClick={() => {
-            setPreviewUsers([]);
-            (
-              document.getElementById(
-                "create_account_modal"
-              ) as HTMLDialogElement
-            )?.showModal();
-          }}
-        >
-          Create User
-          <Plus />
-        </div>
-      </div>
       {/* ⬇️ modal */}
-      <dialog id="create_account_modal" className="modal">
-        <div className="modal-box max-h-[90vh] w-11/12 max-w-7xl">
+      <dialog
+        id="create_account_modal"
+        className="modal"
+        ref={importUserModalRef}
+      >
+        <div className="modal-box h-[80vh] w-11/12 max-w-7xl flex flex-col">
+          {/* 關閉按鈕 */}
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
           </form>
-          <h3 className="font-bold text-lg mb-4">Create User</h3>
-          <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <fieldset className="fieldset">
-                  <legend className="legend">Add single user</legend>
-                  <label className="label">Username</label>
-                  <input
-                    type="text"
-                    className="input w-full"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                  <label className="label">Email</label>
-                  <input
-                    type="email"
-                    className="input w-full"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <label className="label">Password</label>
-                  <input
-                    type="password"
-                    className="input w-full"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <button
-                    className="btn btn-primary mt-4 w-full"
-                    onClick={addToTable}
-                  >
-                    Add to table
-                    <ChevronRight />
-                  </button>
-                </fieldset>
-                <div className="divider"></div>
-                <fieldset className="fieldset">
-                  {/* TODO: example file or example image */}
-                  <legend className="legend">Add from CSV</legend>
-                  <input
-                    type="file"
-                    className="file-input"
-                    onChange={handleFileChange}
-                  />
-                </fieldset>
-              </div>
-              <div className="divider divider-horizontal"></div>
-              <div className="flex-2">
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Username</th>
-                      <th>Email</th>
-                      <th>Password</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {previewUsers.map((user, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{user.username}</td>
-                        <td>{user.email}</td>
-                        <td>{user.password}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <button className="btn btn-primary">Create</button>
+
+          <h3 className="font-bold text-lg mb-4">Import User</h3>
+
+          {/* 上方區域 */}
+          <div className="flex flex-row items-center gap-4 flex-shrink-0">
+            <input
+              type="file"
+              className="file-input"
+              onChange={handleFileChange}
+            />
+            <a
+              className="link link-primary"
+              href="/example.csv"
+              download="import_template.csv"
+            >
+              example file
+            </a>
+          </div>
+
+          {/* table 區域（可滾動） */}
+          <div className="flex-1 overflow-y-auto">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Password</th>
+                </tr>
+              </thead>
+              <tbody>
+                {previewUsers.map((user, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{user.username}</td>
+                    <td>{user.email}</td>
+                    <td>{user.password}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 下方按鈕區 */}
+          <div className="flex justify-end mt-4 flex-shrink-0">
+            <button className="btn btn-primary" onClick={handleImport}>
+              Import
+            </button>
           </div>
         </div>
       </dialog>

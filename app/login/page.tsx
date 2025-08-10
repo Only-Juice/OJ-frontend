@@ -15,37 +15,35 @@ export default function Login() {
     setError(false); // 每次嘗試登入前先清除錯誤提示
 
     try {
-      const loginResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ username, password }),
-        }
-      );
-
-      if (!loginResponse.ok) {
-        throw new Error("Login failed");
-      }
-      const userResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/user`,
-        {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
-
-      const userData = await userResponse.json();
-      const isAdmin = userData?.is_admin ?? false;
-      router.push(isAdmin ? "/admin" : "/questions");
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ username, password }),
+      })
+        .then((loginResponse) => {
+          if (!loginResponse.ok) {
+            throw new Error("Login failed");
+          }
+          return fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user`, {
+            method: "GET",
+            headers: {
+              accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          });
+        })
+        .then((userResponse) => userResponse.json())
+        .then((userData) => {
+          router.push(userData.data.is_admin ? "/admin" : "/questions");
+        })
+        .catch((error) => {
+          console.error("Login or user fetch failed:", error);
+        });
     } catch (error) {
       setError(true); // 顯示錯誤訊息
     }
