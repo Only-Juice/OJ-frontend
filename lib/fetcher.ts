@@ -27,22 +27,20 @@ export default async function fetcher(url: string, options?: RequestInit) {
       return res.json();
     });
   };
-
+  
   try {
     return await doFetch();
-  } catch (error: any) {
-    if (error.message === "Unauthorized") {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === "Unauthorized") {
       if (!isRefreshing) {
         isRefreshing = true;
 
         try {
           await refreshToken();
-
           pendingRequests.forEach((cb) => cb());
           pendingRequests = [];
-        } catch (err) {
+        } catch {
           window.location.href = "/login";
-
           throw new Error("Unable to refresh token");
         } finally {
           isRefreshing = false;
@@ -59,6 +57,11 @@ export default async function fetcher(url: string, options?: RequestInit) {
           }
         });
       });
+    }
+
+    // 不是 Error 物件時，統一轉成 Error
+    if (!(error instanceof Error)) {
+      throw new Error(String(error));
     }
 
     throw error;

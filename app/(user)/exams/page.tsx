@@ -10,6 +10,9 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
+// types
+import type { Exam } from "@/types/api";
+
 export default function Exam() {
   const links = [{ title: "Exams", href: "/exams" }];
 
@@ -21,7 +24,7 @@ export default function Exam() {
     <div className="flex flex-1 flex-col">
       <Breadcrumbs links={links} />
       <div className="flex flex-wrap gap-8">
-        {examsData?.data?.map((exam) => (
+        {examsData?.data?.map((exam: Exam) => (
           <div className="card bg-base-100 w-96 shadow-sm" key={exam.id}>
             <div className="card-body">
               <h2 className="card-title">{exam.title}</h2>

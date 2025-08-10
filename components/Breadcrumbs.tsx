@@ -14,7 +14,11 @@ export default function Breadcrumbs({ links }: Props) {
       <ul>
         {links.map((link) => (
           <li key={link.href}>
-            <Link href={link.href}>{truncateText(link.title, 10)}</Link>
+            {link.title == "undefined" ? (
+              "Loading..."
+            ) : (
+              <Link href={link.href}>{truncateText(link.title, 10)}</Link>
+            )}
           </li>
         ))}
       </ul>

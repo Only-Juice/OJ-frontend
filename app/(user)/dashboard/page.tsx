@@ -8,7 +8,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // type
-import type { QuestionSubmitResult } from "@/types/api";
+import type { SubmitResultOnDashboard } from "@/types/api";
 
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
@@ -25,7 +25,7 @@ export default function Dashboard() {
         <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100">
           <div className="card-body w-full flex flex-col">
             <h2 className="card-title">Submit history</h2>
-            <PaginationTable<QuestionSubmitResult>
+            <PaginationTable<SubmitResultOnDashboard>
               url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/all`}
               limit={10}
               totalField="scores_count"
@@ -33,7 +33,7 @@ export default function Dashboard() {
               theadShow={() => (
                 <tr>
                   <th>#</th>
-                  <th>Question ID</th>
+                  <th>Question Title</th>
                   <th>Time</th>
                   <th>Score</th>
                 </tr>
@@ -47,7 +47,7 @@ export default function Dashboard() {
                   }}
                 >
                   <td>{total - index - (page - 1) * 10}</td>
-                  <td>{item.question_id}</td>
+                  <td>{item.question_title}</td>
                   <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
                   <td>{item.score >= 0 ? item.score : item.message}</td>
                 </tr>

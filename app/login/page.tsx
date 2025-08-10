@@ -15,7 +15,7 @@ export default function Login() {
     setError(false); // 每次嘗試登入前先清除錯誤提示
 
     try {
-      let response = await fetch(
+      const loginResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
         {
           method: "POST",
@@ -28,21 +28,23 @@ export default function Login() {
         }
       );
 
-      if (!response.ok) {
+      if (!loginResponse.ok) {
         throw new Error("Login failed");
       }
-      response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user`, {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      }).then(function (res) {
-        return res.json();
-      });
+      const userResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/user`,
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
 
-      const isAdmin = response?.data?.is_admin ?? false;
+      const userData = await userResponse.json();
+      const isAdmin = userData?.is_admin ?? false;
       router.push(isAdmin ? "/admin" : "/questions");
     } catch (error) {
       setError(true); // 顯示錯誤訊息

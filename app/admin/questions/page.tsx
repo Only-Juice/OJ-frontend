@@ -24,12 +24,12 @@ import { Question } from "@/types/api";
 export default function Questions() {
   const links = [{ title: "Questions", href: "/admin/questions" }];
 
-  const [id, setId] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [gitRepoUrl, setGitRepoUrl] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [id, setId] = useState<number | null>(null);
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [gitRepoUrl, setGitRepoUrl] = useState<string>("");
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
   const [error, setError] = useState("");
   const [isCreate, setIsCreate] = useState(true);
 
@@ -66,9 +66,13 @@ export default function Questions() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to create question");
       }
-      document.getElementById("create_modal")?.close();
-    } catch (err: any) {
-      setError(err.message || "An error occurred");
+      (document.getElementById("create_modal") as HTMLDialogElement)?.close();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "An error occurred");
+      } else {
+        setError("An unknown error occurred");
+      }
     }
   };
 
@@ -104,7 +108,7 @@ export default function Questions() {
       throw new Error(errorData.message || "Failed to update question");
     }
     // mutateQuestion();
-    document.getElementById("create_modal")?.close();
+    (document.getElementById("create_modal") as HTMLDialogElement)?.close();
   };
 
   const createBtnClick = () => {
@@ -115,10 +119,10 @@ export default function Questions() {
     setStartTime("");
     setEndTime("");
     setIsCreate(true);
-    document.getElementById("create_modal")?.showModal();
+    (document.getElementById("create_modal") as HTMLDialogElement)?.showModal();
   };
 
-  const modifyBtnClick = (question: any) => {
+  const modifyBtnClick = (question: Question) => {
     setError("");
     setId(question.id);
     setTitle(question.title);
@@ -127,7 +131,7 @@ export default function Questions() {
     setStartTime(question.start_time);
     setEndTime(question.end_time);
     setIsCreate(false);
-    document.getElementById("create_modal")?.showModal();
+    (document.getElementById("create_modal") as HTMLDialogElement)?.showModal();
   };
 
   return (

@@ -3,15 +3,12 @@
 import Link from "next/link";
 import {
   UserRound,
-  ChartColumnBig,
   Trophy,
-  Award,
   FileText,
   LogOut,
 } from "lucide-react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
 import { fetchWithRefresh } from "@/utils/apiUtils";
 
 export default function Drawer({

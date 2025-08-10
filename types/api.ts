@@ -1,12 +1,20 @@
-// 題目上傳結果
-export type QuestionSubmitResult = {
+// 單個題目頁面的上結果
+export type SubmitResult = {
   score: number;
   message: string;
   judge_time: string;
+};
+
+// dashboard 上的上傳結果
+export type SubmitResultOnDashboard = {
+  score: number;
+  message: string;
+  judge_time: string;
+  question_title: string;
   question_id: number;
 };
 
-// 題目
+// 全部題目畫面的題目
 export type Question = {
   id: number;
   title: string;
@@ -33,4 +41,54 @@ export type Account = {
   enable: boolean;
   user_name: string;
   is_public: boolean;
+};
+
+// 考試
+export type Exam = {
+  id: number;
+  title: string;
+  description: string;
+  start_time: string;
+  end_time: string;
+};
+
+// 排名
+export type Rank = {
+  user_name: string;
+  total_score: number;
+  question_scores: Array<{
+    git_user_repo_url: string;
+    question_id: number;
+    question_title: string;
+    score: number;
+  }>;
+};
+
+// 上傳結果的 message
+export type TestSuiteSummary = {
+  name: string;
+  tests: number;
+  failures: number;
+  disabled: number;
+  errors: number;
+  timestamp: string; // ISO datetime string
+  time: string;
+  testsuite: TestCase[];
+};
+
+export type TestCase = {
+  name: string;
+  file: string;
+  line: number;
+  status: string;
+  result: string;
+  timestamp: string; // ISO datetime string
+  time: string;
+  classname: string;
+  failures?: Failure[];
+};
+
+export type Failure = {
+  failure: string;
+  type: string;
 };

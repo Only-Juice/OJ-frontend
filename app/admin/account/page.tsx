@@ -1,7 +1,6 @@
 "use client";
 
 // next.js
-import useSWR from "swr";
 import { useState, useEffect } from "react";
 
 // components
@@ -9,35 +8,34 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // icons
-import { Plus, RotateCcw } from "lucide-react";
+import { Plus, RotateCcw, ChevronRight } from "lucide-react";
 
 // type
 import { Account } from "@/types/api";
 
 export default function AccountPage() {
   const links = [{ title: "Account", href: "/admin/account" }];
-  const { data: usersData, mutate: mutateUsers } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user`
-  );
-  const users = usersData?.data || [];
 
-  const [domain, setDomain] = useState("");
-  const [defaultPassword, setDefaultPassword] = useState("");
-  const [rawUsernames, setRawUsernames] = useState<string[]>([]);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const [previewUsers, setPreviewUsers] = useState<
-    { username: string; email: string }[]
+    { username: string; email: string; password: string }[]
   >([]);
 
-  useEffect(() => {
-    const users = rawUsernames.map((username) => ({
-      username,
-      email: `${username}@${domain}`,
-    }));
-    console.log(users);
-    setPreviewUsers(users);
-  }, [rawUsernames, domain]);
+  const addToTable = () => {
+    setPreviewUsers((prev) => [...prev, { username, email, password }]);
+    setUsername("");
+    setEmail("");
+    setPassword("");
+  };
 
-  const updateUser = async (userId, is_public, enable) => {
+  const updateUser = async (
+    userId: number,
+    is_public: boolean,
+    enable: boolean
+  ) => {
     await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/${userId}/user`,
       {
@@ -68,62 +66,61 @@ export default function AccountPage() {
         .map((line) => line.trim())
         .filter((line) => line.length > 0);
 
-      setRawUsernames(lines); // 儲存原始使用者名稱
+      // setRawUsernames(lines); // 儲存原始使用者名稱
     };
 
     reader.readAsText(file);
   };
 
-  const handleCreateAccounts = async () => {
-    if (!domain || !defaultPassword || previewUsers.length === 0) {
-      alert("請輸入 domain、預設密碼並上傳使用者清單");
-      return;
-    }
+  // const handleCreateAccounts = async () => {
+  //   if (!domain || !defaultPassword || previewUsers.length === 0) {
+  //     alert("請輸入 domain、預設密碼並上傳使用者清單");
+  //     return;
+  //   }
 
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/admin/user/bulk`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            accept: "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            default_password: defaultPassword,
-            email_domain: domain,
-            usernames: rawUsernames, // 只要 username 陣列
-          }),
-        }
-      );
+  //   try {
+  //     const res = await fetch(
+  //       `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/admin/user/bulk`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           accept: "application/json",
+  //         },
+  //         credentials: "include",
+  //         body: JSON.stringify({
+  //           default_password: defaultPassword,
+  //           email_domain: domain,
+  //           usernames: rawUsernames, // 只要 username 陣列
+  //         }),
+  //       }
+  //     );
 
-      const result = await res.json();
+  //     const result = await res.json();
 
-      if (!res.ok) {
-        throw new Error(result.message || "建立失敗");
-      }
+  //     if (!res.ok) {
+  //       throw new Error(result.message || "建立失敗");
+  //     }
 
-      // 顯示結果
-      const failed = Object.keys(result.data.failed_users || {});
-      const success = result.data.successful_users || [];
+  //     // 顯示結果
+  //     const failed = Object.keys(result.data.failed_users || {});
+  //     const success = result.data.successful_users || [];
 
-      alert(
-        `成功建立 ${success.length} 位使用者\n失敗 ${
-          failed.length
-        } 位\n${failed.join(", ")}`
-      );
+  //     alert(
+  //       `成功建立 ${success.length} 位使用者\n失敗 ${
+  //         failed.length
+  //       } 位\n${failed.join(", ")}`
+  //     );
 
-      await mutateUsers();
-      // 關閉 modal
-      (
-        document.getElementById("create_account_modal") as HTMLDialogElement
-      )?.close();
-    } catch (err: any) {
-      console.error(err);
-      alert("建立失敗：" + err.message);
-    }
-  };
+  //     // 關閉 modal
+  //     (
+  //       document.getElementById("create_account_modal") as HTMLDialogElement
+  //     )?.close();
+  //   } catch (err: any) {
+  //     console.error(err);
+  //     alert("建立失敗：" + err.message);
+  //   }
+  // };
 
   // TODO 可以使用寄信的
   function resetPassword(userId: number) {
@@ -204,10 +201,12 @@ export default function AccountPage() {
         <div
           className="btn btn-primary"
           onClick={() => {
-            setRawUsernames([]);
-            setDomain("");
-            setDefaultPassword("");
-            document.getElementById("create_account_modal")?.showModal();
+            setPreviewUsers([]);
+            (
+              document.getElementById(
+                "create_account_modal"
+              ) as HTMLDialogElement
+            )?.showModal();
           }}
         >
           Create User
@@ -216,62 +215,86 @@ export default function AccountPage() {
       </div>
       {/* ⬇️ modal */}
       <dialog id="create_account_modal" className="modal">
-        <div className="modal-box max-h-[90vh]">
+        <div className="modal-box max-h-[90vh] w-11/12 max-w-7xl">
           <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
           </form>
           <h3 className="font-bold text-lg mb-4">Create User</h3>
-
           <div className="flex flex-col gap-4">
-            {/* ⬇️ input file，觸發處理函式 */}
-            <input
-              type="file"
-              className="file-input"
-              onChange={handleFileChange}
-            />
-
-            <div className="flex flex-col gap-4">
-              <input
-                type="text"
-                placeholder="Domain: ( e.g. example.com )"
-                className="input input-bordered w-full"
-                value={domain}
-                onChange={(e) => setDomain(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Default Password: ( e.g. password )"
-                className="input input-bordered w-full"
-                value={defaultPassword}
-                onChange={(e) => setDefaultPassword(e.target.value)}
-              />
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <fieldset className="fieldset">
+                  <legend className="legend">Add single user</legend>
+                  <label className="label">Username</label>
+                  <input
+                    type="text"
+                    className="input w-full"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                  <label className="label">Email</label>
+                  <input
+                    type="email"
+                    className="input w-full"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <label className="label">Password</label>
+                  <input
+                    type="password"
+                    className="input w-full"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-primary mt-4 w-full"
+                    onClick={addToTable}
+                  >
+                    Add to table
+                    <ChevronRight />
+                  </button>
+                </fieldset>
+                <div className="divider"></div>
+                <fieldset className="fieldset">
+                  {/* TODO: example file or example image */}
+                  <legend className="legend">Add from CSV</legend>
+                  <input
+                    type="file"
+                    className="file-input"
+                    onChange={handleFileChange}
+                  />
+                </fieldset>
+              </div>
+              <div className="divider divider-horizontal"></div>
+              <div className="flex-2">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Password</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {previewUsers.map((user, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{user.username}</td>
+                        <td>{user.email}</td>
+                        <td>{user.password}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-
-            {/* ⬇️ 預覽 txt 中的帳號資料 */}
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>username</th>
-                  <th>email</th>
-                </tr>
-              </thead>
-              <tbody>
-                {previewUsers.map((user, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{user.username}</td>
-                    <td>{user.email}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className="btn btn-primary" onClick={handleCreateAccounts}>
-              Create
-            </div>
+            <button className="btn btn-primary">Create</button>
           </div>
         </div>
       </dialog>

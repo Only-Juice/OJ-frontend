@@ -19,6 +19,9 @@ import {
 // icons
 import { Plus, Settings } from "lucide-react";
 
+// type
+import type { Exam } from "@/types/api";
+
 export default function Exam() {
   const links = [{ title: "Exams", href: "/admin/exams" }];
 
@@ -70,12 +73,12 @@ export default function Exam() {
       setStartTime("");
       setEndTime("");
       mutateExams(); // Refresh the exam list
-      document.getElementById("create_modal")?.close();
+      (document.getElementById("create_modal") as HTMLDialogElement)?.close();
     } catch (error) {}
   };
 
   // Function to handle exam deletion
-  const handleDeleteExam = async (examId) => {
+  const handleDeleteExam = async (examId: number) => {
     if (!confirm("Are you sure you want to delete this exam?")) return;
 
     try {
@@ -107,14 +110,18 @@ export default function Exam() {
       <div className="fixed bottom-4 right-4">
         <div
           className="btn btn-primary"
-          onClick={() => document.getElementById("create_modal")?.showModal()}
+          onClick={() =>
+            (
+              document.getElementById("create_modal") as HTMLDialogElement
+            )?.showModal()
+          }
         >
           Create exam
           <Plus />
         </div>
       </div>
       <div className="flex flex-1 flex-wrap gap-8">
-        {examsData?.data?.map((exam) => (
+        {examsData?.data?.map((exam: Exam) => (
           <div className="card bg-base-100 w-96 shadow-sm" key={exam.id}>
             <div className="card-body">
               <h2 className="card-title">

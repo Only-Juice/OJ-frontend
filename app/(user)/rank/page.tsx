@@ -9,6 +9,9 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 // icon
 import { Award } from "lucide-react";
 
+// type
+import type { Rank } from "@/types/api";
+
 export default function Rank() {
   const links = [{ title: "Rank", href: "/rank" }];
 
@@ -32,7 +35,7 @@ export default function Rank() {
                 </tr>
               </thead>
               <tbody>
-                {leaderboard.map((item: any, index: number) => {
+                {leaderboard.map((item: Rank, index: number) => {
                   return (
                     <tr key={index}>
                       {index < 3 ? (

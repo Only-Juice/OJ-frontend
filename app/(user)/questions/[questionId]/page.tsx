@@ -10,7 +10,12 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // type
-import type { QuestionSubmitResult } from "@/types/api";
+import type {
+  SubmitResult,
+  TestSuiteSummary,
+  TestCase,
+  Failure,
+} from "@/types/api";
 
 // third-party
 import MarkdownPreview from "@uiw/react-markdown-preview";
@@ -48,9 +53,7 @@ export default function Problem() {
   }, [questionData]);
 
   // submit history data
-  const [submitResult, setSubmitResult] = useState<QuestionSubmitResult | null>(
-    null
-  );
+  const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
 
   const tabRef = useRef<HTMLInputElement>(null);
 
@@ -84,8 +87,10 @@ export default function Problem() {
             aria-label="Submit history details"
           />
           <div className="tab-content p-2">
-            {submitResult?.score >= 0
-              ? SubmitHistoryDetailCollapse(submitResult?.message)
+            {submitResult &&
+            submitResult.score !== undefined &&
+            submitResult.score >= 0
+              ? SubmitHistoryDetailCollapse(submitResult.message)
               : submitResult?.message}
           </div>
         </div>
@@ -93,7 +98,7 @@ export default function Problem() {
           <div className="card bg-base-100 w-full shadow-sm h-[70vh]">
             <div className="card-body h-full flex flex-col">
               <h2 className="card-title">Submit history</h2>
-              <PaginationTable<QuestionSubmitResult>
+              <PaginationTable<SubmitResult>
                 url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question`}
                 limit={LIMIT}
                 totalField="scores_count"
@@ -172,8 +177,8 @@ function SubmitHistoryDetailCollapse(message: string) {
   const testsuites = json.testsuites || [];
   return (
     <div>
-      {testsuites.map((test: any, index: number) => {
-        let pass = test.tests - test.failures - test.disabled - test.errors;
+      {testsuites.map((test: TestSuiteSummary, index: number) => {
+        const pass = test.tests - test.failures - test.disabled - test.errors;
         {
           /* 可打開的物件 */
         }
@@ -194,18 +199,27 @@ function SubmitHistoryDetailCollapse(message: string) {
             </div>
             {/* 打開後的內容 */}
             <div className="collapse-content text-lg list">
-              {Array.from(test.testsuite).map((t: any, i) => (
+              {Array.from(test.testsuite).map((t: TestCase, i) => (
                 <div
                   key={i}
-                  className="list-row flex justify-between items-center"
+                  className="list-row flex justify-between items-center flex-col"
                 >
-                  <p>{t.name}</p>
-
-                  {t.failures > 0 ? (
-                    <CircleX className="text-red-500 size-8" />
-                  ) : (
-                    <CircleCheck className="text-green-500 size-8" />
-                  )}
+                  <div className="flex flex-row w-full">
+                    <p>{t.name}</p>
+                    <div className="flex-1"></div>
+                    {t.failures?.length ? (
+                      <CircleX className="text-red-500 size-8" />
+                    ) : (
+                      <CircleCheck className="text-green-500 size-8" />
+                    )}
+                  </div>
+                  {t.failures?.length ? (
+                    <ul className="text-sm text-red-600 mt-2 list-disc ml-6">
+                      {t.failures.map((f: Failure, i) => (
+                        <li key={i}>{f.failure}</li>
+                      ))}
+                    </ul>
+                  ) : null}
                 </div>
               ))}
             </div>

@@ -16,9 +16,6 @@ import { takeQuestion } from "@/utils/apiUtils";
 // type
 import type { ExamQuestion } from "@/types/api";
 
-// icon
-import { CircleCheck, CircleX } from "lucide-react";
-
 export default function Exam() {
   const router = useRouter();
   const params = useParams();
