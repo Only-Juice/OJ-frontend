@@ -97,8 +97,8 @@ function generateQuestionColumns(questions: Question[]) {
 }
 
 function GradientTd({ value }: { value: number }) {
-  const start = [255, 77, 79]; // RGB for #52C41A
-  const end = [82, 196, 26]; // RGB for #FF4D4F
+  const start = [214, 69, 69]; // RGB for #3A9D23
+  const end = [58, 157, 35]; // RGB for #D64545
 
   const v = Math.max(0, Math.min(100, value));
 
