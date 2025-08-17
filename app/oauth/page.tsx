@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { verifyOAuthState } from '@/utils/oauthUtils';
 
@@ -96,6 +96,31 @@ const statusConfigs: Record<OAuthStatus, StatusConfig> = {
 };
 
 export default function OAuthCallbackPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-base-200 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+                <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                    <div className="bg-base-100 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                        <div className="text-center text-base-content">
+                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                                <svg className="w-8 h-8 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <h2 className="text-2xl font-bold mb-2">載入中...</h2>
+                            <p className="mb-6">正在處理OAuth登入，請稍候...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }>
+            <OAuthCallbackContent />
+        </Suspense>
+    );
+}
+
+function OAuthCallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [status, setStatus] = useState<OAuthStatus>('loading');
@@ -201,7 +226,7 @@ export default function OAuthCallbackPage() {
             // 設置倒數計時
             const startTime = Date.now();
             const countdownInterval = setInterval(() => {
-                setCountdown(prev => {
+                setCountdown(() => {
                     const elapsed = Date.now() - startTime;
                     const remaining = Math.max(0, Math.ceil((config.redirectDelay! - elapsed) / 1000));
                     return remaining;
