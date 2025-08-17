@@ -127,22 +127,29 @@ export default function Exam() {
               <h2 className="card-title">
                 {exam.title}
                 <div className="m-auto"></div>
-                <Link href={`/admin/exams/${exam.id}/settings`}>
-                  <button className="btn btn-ghost btn-sm">
+                <details className="dropdown dropdown-end">
+                  <summary className="btn btn-ghost btn-sm m-1">
                     <Settings />
-                  </button>
-                </Link>
+                  </summary>
+                  <ul className="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                    <li>
+                      <Link href={`/admin/exams/${exam.id}/settings`}>
+                        Setting
+                      </Link>
+                    </li>
+                    <li>
+                      <button
+                        className="text-error"
+                        onClick={() => handleDeleteExam(exam.id)}
+                      >
+                        Delete
+                      </button>
+                    </li>
+                  </ul>
+                </details>
               </h2>
               <p>Start from: {toSystemDateFormat(new Date(exam.start_time))}</p>
               <p>End at: {toSystemDateFormat(new Date(exam.end_time))}</p>
-              <div className="card-actions justify-end">
-                <button
-                  className="btn btn-error"
-                  onClick={() => handleDeleteExam(exam.id)}
-                >
-                  Delete
-                </button>
-              </div>
             </div>
           </div>
         ))}

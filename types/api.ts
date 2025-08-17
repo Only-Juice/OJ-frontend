@@ -34,6 +34,17 @@ export type ExamQuestion = {
   has_question: boolean;
 };
 
+type QuestionOperate = "delete" | "update" | "create";
+
+// 考試頁面的題目
+export type ExamQuestionInAdmin = {
+  question: Question;
+  point: number;
+  has_question: boolean;
+  isInDb: boolean;
+  operate: QuestionOperate;
+};
+
 // 使用者
 export type Account = {
   id: number;
@@ -41,6 +52,7 @@ export type Account = {
   enable: boolean;
   user_name: string;
   is_public: boolean;
+  is_admin: boolean;
 };
 
 // 考試

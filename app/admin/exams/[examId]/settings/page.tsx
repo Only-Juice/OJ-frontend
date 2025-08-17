@@ -19,6 +19,9 @@ import {
 import { Trash } from "lucide-react";
 import { fetchWithRefresh } from "@/utils/apiUtils";
 
+// type
+import type { ExamQuestionInAdmin } from "@/types/api";
+
 type operate = "delete" | "update" | "create";
 
 type Question = {
@@ -36,10 +39,18 @@ export default function Create() {
   const params = useParams();
   const id = params.examId;
 
+  // Fetch exam data
+  const { data: examData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`
+  );
+
   // Breadcrumbs links
   const links = [
     { title: "Exams", href: "/admin/exams" },
-    { title: `Exam ${id}`, href: `/admin/exams/${id}/settings` },
+    {
+      title: `Exam ${examData?.data?.title}`,
+      href: `/admin/exams/${id}/settings`,
+    },
   ];
 
   // State for exam details
@@ -47,11 +58,6 @@ export default function Create() {
   const [examDescription, setExamDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-
-  // Fetch exam data
-  const { data: examData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`
-  );
 
   // Fetch existing exam details
   useEffect(() => {
@@ -75,9 +81,9 @@ export default function Create() {
   useEffect(() => {
     if (questionsData?.data) {
       setQuestions(
-        questionsData.data.map((question: Question) => {
+        questionsData.data.questions.map((question: ExamQuestionInAdmin) => {
           return {
-            ...question,
+            ...question.question,
             startTime: "",
             endTime: "",
             isInDb: true,
