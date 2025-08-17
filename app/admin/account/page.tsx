@@ -30,6 +30,10 @@ export default function AccountPage() {
 
   const importUserModalRef = useRef<HTMLDialogElement>(null);
 
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const [previewUsers, setPreviewUsers] = useState<ImportUserRow[]>([]);
 
   const updateUser = async (
@@ -158,7 +162,7 @@ export default function AccountPage() {
           dataField="items"
           theadShow={() => (
             <tr>
-              <th>Id</th>
+              <th>ID</th>
               <th>Username</th>
               <th>Email</th>
               <th>Enable</th>
@@ -171,14 +175,20 @@ export default function AccountPage() {
               <td>{item.user_name}</td>
               <td>{item.email}</td>
               <td>
-                <input
-                  type="checkbox"
-                  defaultChecked={item.enable}
-                  className="toggle toggle-primary"
-                  onChange={async (e) => {
-                    await updateUser(item.id, item.is_public, e.target.checked);
-                  }}
-                />
+                {!item.is_admin && (
+                  <input
+                    type="checkbox"
+                    defaultChecked={item.enable}
+                    className="toggle toggle-primary"
+                    onChange={async (e) => {
+                      await updateUser(
+                        item.id,
+                        item.is_public,
+                        e.target.checked
+                      );
+                    }}
+                  />
+                )}
               </td>
               <td>
                 <div
@@ -193,9 +203,9 @@ export default function AccountPage() {
           )}
         />
       </div>
-      {/* ⬇️ modal */}
+      {/* ⬇️ modal import_account_modal */}
       <dialog
-        id="create_account_modal"
+        id="import_account_modal"
         className="modal"
         ref={importUserModalRef}
       >
