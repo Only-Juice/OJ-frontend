@@ -78,6 +78,11 @@ export default function PaginationTable<T>({
         </table>
       </div>
 
+      <div className="text-right">
+        {(page - 1) * limit + 1}-{Math.min(page * limit, totalCount)} of{" "}
+        {totalCount}
+      </div>
+
       <div className="join items-center justify-center mt-4">
         <button className="join-item btn" onClick={subtractPage}>
           «
