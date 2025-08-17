@@ -43,8 +43,8 @@ export default function Login() {
         .then((userData) => {
           router.push(userData.data.is_admin ? "/admin" : "/questions");
         })
-        .catch((error) => {
-          console.error("Login or user fetch failed:", error);
+        .catch((_error) => {
+          console.error("Login or user fetch failed:", _error);
         });
     } catch (error) {
       setError(true); // 顯示錯誤訊息
@@ -61,9 +61,9 @@ export default function Login() {
 
       // Redirect to Gitea OAuth authorization page
       window.location.href = authURL;
-    } catch (error) {
+    } catch (_error) {
       setError(true);
-      console.error("OAuth login error:", error);
+      console.error("OAuth login error:", _error);
       setOauthLoading(false);
     }
   }
@@ -136,6 +136,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
