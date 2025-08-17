@@ -93,7 +93,7 @@ function generateRankColumns(index: number, total: number, page: number) {
 }
 
 function generateQuestionColumns(questions: Question[]) {
-  return questions.map((question: Question) => <td>{question.title}</td>);
+  return questions.map((question: Question) => <td key={question.id}>{question.title}</td>);
 }
 
 function GradientTd({ value }: { value: number }) {
