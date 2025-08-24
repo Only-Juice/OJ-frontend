@@ -4,17 +4,18 @@ import {
   toDatetimeLocalString,
 } from "@/utils/datetimeUtils";
 
-
 interface DateTimePickerProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  requiredHint?: String;
 }
 
 const DateTimePicker: React.FC<DateTimePickerProps> = ({
   value,
   onChange,
   placeholder = "Pick a date",
+  requiredHint,
 }) => {
   const hiddenInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,16 +37,20 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
       {/* 顯示格式化後的時間 */}
       <input
         type="text"
-        className="input input-bordered w-full"
+        className={`input input-bordered w-full ${
+          requiredHint ? "validator" : ""
+        }`}
         placeholder={placeholder}
         value={
           value && !isNaN(new Date(value).getTime())
             ? toSystemDateFormat(new Date(value))
             : ""
         }
-        readOnly
+        {...(requiredHint ? { required: true } : {})}
+        // readOnly
         onClick={() => hiddenInputRef.current?.showPicker()}
       />
+      <p className="validator-hint">{requiredHint}</p>
     </div>
   );
 };
