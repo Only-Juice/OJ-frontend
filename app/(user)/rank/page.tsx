@@ -40,7 +40,7 @@ export default function Rank() {
                 <th className="text-center">#</th>
                 <th>Username</th>
                 {generateQuestionColumns(questions)}
-                <th>Total Score</th>
+                <th className="text-center">Total Score</th>
               </tr>
             )}
             tbodyShow={(item, index, total, page) => (
@@ -93,7 +93,9 @@ function generateRankColumns(index: number, total: number, page: number) {
 }
 
 function generateQuestionColumns(questions: Question[]) {
-  return questions.map((question: Question) => <td key={question.id}>{question.title}</td>);
+  return questions.map((question: Question) => (
+    <td className="text-center">{question.title}</td>
+  ));
 }
 
 function GradientTd({ value }: { value: number }) {
