@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Nabla } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "../app/globals.css";
 
 import { SWRProvider } from "@/providers/swr-provider";
