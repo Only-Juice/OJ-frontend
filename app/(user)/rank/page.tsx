@@ -25,45 +25,38 @@ export default function Rank() {
       .sort((a: Question, b: Question) => a.id - b.id) ?? [];
 
   return (
-    <div className="flex-1">
+    <div className="flex-1 flex flex-col">
       <Breadcrumbs links={links}></Breadcrumbs>
-      <div className="w-full flex justify-center gap-10 card flex-1">
-        <div className="card-body w-full">
-          <PaginationTable<Rank>
-            classname="table-pin-rows table-pin-cols border-separate border-spacing-2"
-            url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/leaderboard`}
-            limit={15}
-            totalField="count"
-            dataField="scores"
-            theadShow={() => (
-              <tr>
-                <th className="text-center">#</th>
-                <th>Username</th>
-                {generateQuestionColumns(questions)}
-                <th className="text-center">Total Score</th>
-              </tr>
-            )}
-            tbodyShow={(item, index, total, page) => (
-              <tr key={index}>
-                {generateRankColumns(index, total, page)}
-                <th>{item.user_name}</th>
-                {questions.map((question: Question) => {
-                  const score = item.question_scores.find(
-                    (q) => q.question_id === question.id
-                  );
-                  return (
-                    <GradientTd
-                      value={score ? score.score : 0}
-                      key={question.id}
-                    />
-                  );
-                })}
-                <th className="text-center">{item.total_score}</th>
-              </tr>
-            )}
-          />
-        </div>
-      </div>
+      <PaginationTable<Rank>
+        classname="table-pin-rows table-pin-cols border-separate border-spacing-2"
+        url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/leaderboard`}
+        limit={15}
+        totalField="count"
+        dataField="scores"
+        theadShow={() => (
+          <tr>
+            <th className="text-center">#</th>
+            <th>Username</th>
+            {generateQuestionColumns(questions)}
+            <th className="text-center">Total Score</th>
+          </tr>
+        )}
+        tbodyShow={(item, index, total, page) => (
+          <tr key={index}>
+            {generateRankColumns(index, total, page)}
+            <th>{item.user_name}</th>
+            {questions.map((question: Question) => {
+              const score = item.question_scores.find(
+                (q) => q.question_id === question.id
+              );
+              return (
+                <GradientTd value={score ? score.score : 0} key={question.id} />
+              );
+            })}
+            <th className="text-center">{item.total_score}</th>
+          </tr>
+        )}
+      />
     </div>
   );
 }

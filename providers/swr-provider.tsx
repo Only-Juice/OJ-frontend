@@ -10,6 +10,7 @@ export function SWRProvider({ children }: { children: React.ReactNode }) {
         fetcher,
         revalidateOnFocus: false,
         shouldRetryOnError: false,
+        keepPreviousData: true,
       }}
     >
       {children}

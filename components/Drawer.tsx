@@ -1,12 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  UserRound,
-  Trophy,
-  FileText,
-  LogOut,
-} from "lucide-react";
+import { UserRound, Trophy, FileText, LogOut } from "lucide-react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { fetchWithRefresh } from "@/utils/apiUtils";
@@ -59,7 +54,7 @@ export default function Drawer({
   return (
     <div className="drawer drawer-open">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content p-10 flex">{children}</div>
+      <div className="drawer-content p-10 flex h-screen">{children}</div>
       <div className="drawer-side">
         <label
           htmlFor="my-drawer"

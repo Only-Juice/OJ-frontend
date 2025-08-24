@@ -135,59 +135,57 @@ export default function Questions() {
   };
 
   return (
-    <div className="flex-1">
+    <div className="flex flex-col flex-1 ">
       <Breadcrumbs links={links}></Breadcrumbs>
-      <div className="w-full flex gap-10 flex-1 flex-col">
-        <PaginationTable<Question>
-          classname="table-lg"
-          url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`}
-          limit={15}
-          totalField="question_count"
-          dataField="questions"
-          theadShow={() => (
-            <tr>
-              <th>#</th>
-              <th>Title</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Status</th>
-              <th>Modify</th>
-            </tr>
-          )}
-          tbodyShow={(item, rowIndex, total, page) => (
-            <tr key={rowIndex}>
-              <td>{item.id}</td>
-              <td>{item.title}</td>
-              <td>{toSystemDateFormat(new Date(item.start_time))}</td>
-              <td>{toSystemDateFormat(new Date(item.end_time))}</td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={item.is_active}
-                  className="toggle toggle-primary"
-                  // onChange={(e) =>
-                  //   // handleProblemStatusChange(item.id, e.target.checked)
-                  // }
-                />
-              </td>
-              <td>
-                <div
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => modifyBtnClick(item)}
-                >
-                  <Pen />
-                </div>
-              </td>
-            </tr>
-          )}
-        />
-      </div>
-      <div className="fixed bottom-4 right-4">
+      <div className="flex justify-end mb-4 gap-4">
         <div className="btn btn-primary" onClick={createBtnClick}>
           Create New Question
           <Plus />
         </div>
       </div>
+      <PaginationTable<Question>
+        classname="table-lg"
+        url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`}
+        totalField="question_count"
+        dataField="questions"
+        theadShow={() => (
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Modify</th>
+          </tr>
+        )}
+        tbodyShow={(item, rowIndex, total, page) => (
+          <tr key={rowIndex}>
+            <td>{item.id}</td>
+            <td>{item.title}</td>
+            <td>{toSystemDateFormat(new Date(item.start_time))}</td>
+            <td>{toSystemDateFormat(new Date(item.end_time))}</td>
+            <td>
+              <input
+                type="checkbox"
+                checked={item.is_active}
+                className="toggle toggle-primary"
+                // onChange={(e) =>
+                //   // handleProblemStatusChange(item.id, e.target.checked)
+                // }
+              />
+            </td>
+            <td>
+              <div
+                className="btn btn-ghost btn-sm"
+                onClick={() => modifyBtnClick(item)}
+              >
+                <Pen />
+              </div>
+            </td>
+          </tr>
+        )}
+      />
+
       {/* dialog */}
       <dialog id="create_modal" className="modal">
         <div className="modal-box">

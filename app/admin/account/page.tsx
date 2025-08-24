@@ -135,7 +135,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col">
       <Breadcrumbs links={links} />
       <div className="flex justify-end mb-4 gap-4">
         <div
@@ -153,56 +153,50 @@ export default function AccountPage() {
           <Plus />
         </div>
       </div>
-      <div className="flex flex-col w-full gap-10">
-        <PaginationTable<Account>
-          classname="table-lg"
-          url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user`}
-          limit={15}
-          totalField="total"
-          dataField="items"
-          theadShow={() => (
-            <tr>
-              <th>ID</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Enable</th>
-              <th>Reset Password</th>
-            </tr>
-          )}
-          tbodyShow={(item, rowIndex, total, page) => (
-            <tr key={rowIndex}>
-              <td>{item.id}</td>
-              <td>{item.user_name}</td>
-              <td>{item.email}</td>
-              <td>
-                {!item.is_admin && (
-                  <input
-                    type="checkbox"
-                    defaultChecked={item.enable}
-                    className="toggle toggle-primary"
-                    onChange={async (e) => {
-                      await updateUser(
-                        item.id,
-                        item.is_public,
-                        e.target.checked
-                      );
-                    }}
-                  />
-                )}
-              </td>
-              <td>
-                <div
-                  className="btn btn-primary btn-sm"
-                  onClick={() => resetPassword(item.id)}
-                >
-                  Reset Password
-                  <RotateCcw />
-                </div>
-              </td>
-            </tr>
-          )}
-        />
-      </div>
+      <PaginationTable<Account>
+        classname="table-lg"
+        url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user`}
+        totalField="totalCount"
+        dataField="items"
+        theadShow={() => (
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Enable</th>
+            <th>Reset Password</th>
+          </tr>
+        )}
+        tbodyShow={(item, rowIndex, total, page) => (
+          <tr key={rowIndex}>
+            <td>{item.id}</td>
+            <td>{item.user_name}</td>
+            <td>{item.email}</td>
+            <td>
+              {!item.is_admin && (
+                <input
+                  type="checkbox"
+                  defaultChecked={item.enable}
+                  className="toggle toggle-primary"
+                  onChange={async (e) => {
+                    await updateUser(item.id, item.is_public, e.target.checked);
+                  }}
+                />
+              )}
+            </td>
+            <td>
+              <div
+                className="btn btn-primary btn-sm"
+                onClick={() => resetPassword(item.id)}
+              >
+                Reset Password
+                <RotateCcw />
+              </div>
+            </td>
+          </tr>
+        )}
+      />
+
       {/* ⬇️ modal import_account_modal */}
       <dialog
         id="import_account_modal"

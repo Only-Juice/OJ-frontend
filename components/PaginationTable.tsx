@@ -10,7 +10,7 @@ import useSWR from "swr";
 interface PaginationTableProps<T> {
   classname?: string;
   url: string;
-  limit: number;
+  limit?: number;
   totalField: string;
   dataField: string;
   theadShow: () => JSX.Element;
@@ -27,7 +27,7 @@ interface PaginationTableProps<T> {
 export default function PaginationTable<T>({
   classname = "",
   url,
-  limit,
+  limit = 10,
   totalField,
   dataField,
   theadShow,
@@ -37,7 +37,7 @@ export default function PaginationTable<T>({
 }: PaginationTableProps<T>) {
   const [page, setPage] = useState(1);
 
-  const { data } = useSWR(`${url}?page=${page}&limit=${limit}`);
+  const { data, isLoading } = useSWR(`${url}?page=${page}&limit=${limit}`);
 
   const items: T[] = data?.data?.[dataField] || [];
 
@@ -78,7 +78,8 @@ export default function PaginationTable<T>({
         </table>
       </div>
 
-      <div className="text-right">
+      <div className="text-right flex items-center justify-end gap-2 mt-4">
+        {isLoading && <span className="loading loading-spinner"></span>}
         {(page - 1) * limit + 1}-{Math.min(page * limit, totalCount)} of{" "}
         {totalCount}
       </div>
