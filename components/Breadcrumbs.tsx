@@ -17,7 +17,7 @@ export default function Breadcrumbs({ links }: Props) {
             {link.title == "undefined" ? (
               "Loading..."
             ) : (
-              <Link href={link.href}>{truncateText(link.title, 10)}</Link>
+              <Link href={link.href}>{link.title}</Link>
             )}
           </li>
         ))}
