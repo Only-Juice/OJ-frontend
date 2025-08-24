@@ -8,7 +8,7 @@ interface DateTimePickerProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  requiredHint?: String;
+  requiredHint?: string;
 }
 
 const DateTimePicker: React.FC<DateTimePickerProps> = ({

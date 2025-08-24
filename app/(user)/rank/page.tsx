@@ -87,7 +87,9 @@ function generateRankColumns(index: number, total: number, page: number) {
 
 function generateQuestionColumns(questions: Question[]) {
   return questions.map((question: Question) => (
-    <td className="text-center">{question.title}</td>
+    <td className="text-center" key={question.id}>
+      {question.title}
+    </td>
   ));
 }
 
