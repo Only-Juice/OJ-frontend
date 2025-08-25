@@ -28,16 +28,12 @@ export default function Exam() {
           <div className="card bg-base-100 w-96 shadow-sm" key={exam.id}>
             <div className="card-body">
               <h2 className="card-title">{exam.title}</h2>
-              <tbody>
-                <tr>
-                  <td>Start from</td>
-                  <td>：{toSystemDateFormat(new Date(exam.start_time))}</td>
-                </tr>
-                <tr>
-                  <td>End at</td>
-                  <td>：{toSystemDateFormat(new Date(exam.end_time))}</td>
-                </tr>
-              </tbody>
+              <div className="grid grid-rows-2 grid-cols-[auto_1fr]">
+                <div>Start from</div>
+                <div>：{toSystemDateFormat(new Date(exam.start_time))}</div>
+                <div>End at</div>
+                <div>：{toSystemDateFormat(new Date(exam.end_time))}</div>
+              </div>
               <div className="card-actions justify-end">
                 <Link href={`/exams/${exam.id}`}>
                   <button className="btn btn-primary">Join</button>
