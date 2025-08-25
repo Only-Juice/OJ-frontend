@@ -80,7 +80,7 @@ export default function PaginationTable<T>({
 
       <div className="text-right flex items-center justify-end gap-2 mt-4">
         {isLoading && <span className="loading loading-spinner"></span>}
-        {(page - 1) * limit + 1}-{Math.min(page * limit, totalCount)} of{" "}
+        {Math.min((page - 1) * limit + 1, totalCount)}-{Math.min(page * limit, totalCount)} of{" "}
         {totalCount}
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 // next.js
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
@@ -15,6 +16,9 @@ import { takeQuestion } from "@/utils/apiUtils";
 
 // type
 import type { ExamQuestion } from "@/types/api";
+
+// icon
+import { Trophy } from "lucide-react";
 
 export default function Exam() {
   const router = useRouter();
@@ -33,6 +37,14 @@ export default function Exam() {
   return (
     <div className="flex-1 flex flex-col">
       <Breadcrumbs links={links}></Breadcrumbs>
+      <div className="flex justify-end items-center">
+        <Link href={`/exams/${id}/rank`}>
+          <button className="btn btn-primary">
+            <Trophy />
+            Rank
+          </button>
+        </Link>
+      </div>
       <PaginationTable<ExamQuestion>
         classname="table-lg"
         url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/questions`}
