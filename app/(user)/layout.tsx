@@ -8,7 +8,7 @@ export default function UserLayout({
   return (
     <div>
       <Navbar />
-      <main className="pt-20 p-10 h-screen flex-col flex">{children}</main>
+      <main className="pt-20 p-10 flex-col flex min-h-screen">{children}</main>
     </div>
   );
 }
