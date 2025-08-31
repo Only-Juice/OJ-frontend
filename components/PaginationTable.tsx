@@ -37,7 +37,13 @@ export default function PaginationTable<T>({
 }: PaginationTableProps<T>) {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useSWR(`${url}?page=${page}&limit=${limit}`);
+  const urlObj = new URL(url);
+  urlObj.searchParams.set("limit", limit.toString());
+  urlObj.searchParams.set("page", page.toString());
+
+  const { data, isLoading } = useSWR(
+    urlObj.toString().replace(window.location.origin, "")
+  );
 
   const items: T[] = data?.data?.[dataField] || [];
 
@@ -80,8 +86,8 @@ export default function PaginationTable<T>({
 
       <div className="text-right flex items-center justify-end gap-2 mt-4">
         {isLoading && <span className="loading loading-spinner"></span>}
-        {Math.min((page - 1) * limit + 1, totalCount)}-{Math.min(page * limit, totalCount)} of{" "}
-        {totalCount}
+        {Math.min((page - 1) * limit + 1, totalCount)}-
+        {Math.min(page * limit, totalCount)} of {totalCount}
       </div>
 
       <div className="join items-center justify-center mt-4">

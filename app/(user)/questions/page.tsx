@@ -2,6 +2,7 @@
 
 // next.js
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 // components
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -21,12 +22,17 @@ export default function Problem() {
   const router = useRouter();
   const links = [{ title: "Questions", href: "/questions" }];
 
+  const [status, setStatus] = useState("all"); // 初始值
+
   return (
     <div className="flex-1 flex flex-col">
       <Breadcrumbs links={links}></Breadcrumbs>
+      <div className="flex justify-end mb-4">
+        <QuestionStatusDropDown value={status} onChange={setStatus} />
+      </div>
       <PaginationTable<Question>
         classname="table-lg"
-        url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`}
+        url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/questions?status=${status}`}
         totalField="question_count"
         dataField="questions"
         theadShow={() => (
@@ -83,5 +89,25 @@ export default function Problem() {
         }}
       />
     </div>
+  );
+}
+
+function QuestionStatusDropDown({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <select
+      value={value}
+      className="select"
+      onChange={(e) => onChange(e.target.value)}
+    >
+      <option value="all">All</option>
+      <option value="active">Active</option>
+      <option value="expired">Expired</option>
+    </select>
   );
 }
