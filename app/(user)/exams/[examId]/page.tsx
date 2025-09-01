@@ -18,7 +18,7 @@ import { takeQuestion } from "@/utils/apiUtils";
 import type { ExamQuestion } from "@/types/api";
 
 // icon
-import { Trophy } from "lucide-react";
+import { Trophy, CircleCheck, CircleX } from "lucide-react";
 
 export default function Exam() {
   const router = useRouter();
@@ -73,13 +73,13 @@ export default function Exam() {
             <td>{item.question.title}</td>
             <td>{toSystemDateFormat(new Date(item.question.start_time))}</td>
             <td>{toSystemDateFormat(new Date(item.question.end_time))}</td>
-            {/* <td>
-                  {item.has_question ? (
-                    <CircleCheck className="text-green-500" />
-                  ) : (
-                    <CircleX className="text-red-500" />
-                  )}
-                </td> */}
+            <td>
+              {item.top_score >= 100 ? (
+                <CircleCheck className="text-green-500" />
+              ) : (
+                <CircleX className="text-red-500" />
+              )}
+            </td>
           </tr>
         )}
       />
