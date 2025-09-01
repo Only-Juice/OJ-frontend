@@ -41,9 +41,7 @@ export default function PaginationTable<T>({
   urlObj.searchParams.set("limit", limit.toString());
   urlObj.searchParams.set("page", page.toString());
 
-  const { data, isLoading } = useSWR(
-    urlObj.toString().replace(window.location.origin, "")
-  );
+  const { data, isLoading } = useSWR(urlObj.toString());
 
   const items: T[] = data?.data?.[dataField] || [];
 
