@@ -52,11 +52,10 @@ export default function Problem() {
               className={`
                     ${
                       isDisabled
-                        ? "pointer-events-none opacity-50"
+                        ? "cursor-pointer opacity-50"
                         : "cursor-pointer hover:bg-base-200"
                     }`}
               onClick={async () => {
-                if (isDisabled) return;
                 if (!item.has_question) {
                   await takeQuestion(item.id);
                 }
