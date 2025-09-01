@@ -32,6 +32,7 @@ export type ExamQuestion = {
   question: Question;
   point: number;
   has_question: boolean;
+  top_score: number;
 };
 
 type QuestionOperate = "delete" | "update" | "create";
@@ -85,6 +86,8 @@ export type TestSuiteSummary = {
   errors: number;
   timestamp: string; // ISO datetime string
   time: string;
+  maxscore: number;
+  getscore: number;
   testsuite: TestCase[];
 };
 
@@ -103,4 +106,10 @@ export type TestCase = {
 export type Failure = {
   failure: string;
   type: string;
+};
+
+export type GiteaPublicKey = {
+  id: number;
+  title: string;
+  key: string;
 };

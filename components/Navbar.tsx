@@ -3,11 +3,15 @@
 // next.js
 import Link from "next/link";
 import useSWR from "swr";
+import { useState } from "react";
 
 // utils
 import { fetchWithRefresh } from "@/utils/apiUtils";
 
-const Navbar = () => {
+// type
+import { GiteaPublicKey } from "@/types/api";
+
+export default function Navbar() {
   const { data: userData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user`
   );
@@ -20,6 +24,12 @@ const Navbar = () => {
   const username = userData?.data?.login ?? "";
   const userId = userData?.data?.login ?? "";
   const isPublic = userInfoData?.data?.is_public ?? false;
+
+  const openPublicKeyDialog = () => {
+    (
+      document.getElementById("public-key-dialog") as HTMLDialogElement
+    )?.showModal();
+  };
 
   const updateUserVisibility = async (newVisibility: boolean) => {
     mutateUserInfo(
@@ -107,7 +117,9 @@ const Navbar = () => {
             className="menu menu-md dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
             <li>
-              <label className="fieldset-label">
+              <label className="flex">
+                Hide information
+                <div className="flex-1"></div>
                 <input
                   type="checkbox"
                   checked={isPublic}
@@ -116,11 +128,10 @@ const Navbar = () => {
                   }}
                   className="toggle toggle-primary"
                 />
-                Hide information
               </label>
             </li>
             <li>
-              <a>(SSH) Settings</a>
+              <a onClick={() => openPublicKeyDialog()}>(SSH) Settings</a>
             </li>
             <li>
               <a
@@ -152,8 +163,131 @@ const Navbar = () => {
           </ul>
         </div>
       </div>
+      <PublicKeyDialog />
     </div>
   );
-};
+}
 
-export default Navbar;
+function PublicKeyDialog() {
+  const { data, mutate } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user/keys`
+  );
+
+  const [title, setTitle] = useState("");
+  const [key, setKey] = useState("");
+
+  const handleAddKey = () => {
+    fetchWithRefresh(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user/keys`,
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          title: title,
+          key: key,
+        }),
+      }
+    )
+      .then(() => {
+        setTitle("");
+        setKey("");
+        mutate();
+      })
+      .catch((err) => {
+        console.error("Failed to add key", err);
+      });
+  };
+
+  const handleDeleteKey = (keyId: number) => {
+    fetchWithRefresh(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user/keys`,
+      {
+        method: "DELETE",
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          id: keyId,
+        }),
+      }
+    )
+      .then(() => {
+        mutate();
+      })
+      .catch((err) => {
+        console.error("Failed to delete key", err);
+      });
+  };
+
+  return (
+    <dialog id="public-key-dialog" className="modal">
+      <div className="modal-box h-[80vh] w-11/12 max-w-7xl">
+        <form method="dialog">
+          <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+            ✕
+          </button>
+        </form>
+        <fieldset className="fieldset">
+          <label className="label">Title</label>
+          <div>
+            <input
+              className="input w-full"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            ></input>
+          </div>
+          <label className="label">Public Key</label>
+          <div>
+            <textarea
+              className="textarea w-full"
+              placeholder="Public Key"
+              value={key}
+              onChange={(e) => setKey(e.target.value)}
+            ></textarea>
+          </div>
+        </fieldset>
+
+        <div className="flex justify-end">
+          <button className="btn btn-primary mt-4 mb-4" onClick={handleAddKey}>
+            Add
+          </button>
+        </div>
+
+        <table className="table ">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Key</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.data?.map((key: GiteaPublicKey) => (
+              <tr key={key.id}>
+                <td>{key.title}</td>
+                <td className="max-w-xs whitespace-pre-wrap break-words">
+                  {key.key}
+                </td>
+                <td>
+                  <button
+                    className="btn btn-error"
+                    onClick={() => handleDeleteKey(key.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </dialog>
+  );
+}
