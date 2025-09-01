@@ -187,13 +187,13 @@ function SubmitHistoryDetailCollapse(message: string) {
             className="collapse collapse-arrow bg-base-100 border-base-300 border"
             key={index}
           >
-            <input type="radio" name={json.name} />
+            <input type="checkbox" name={json.name} />
             {/* 物件標題 */}
             <div className="collapse-title font-semibold">
               <div className="flex justify-between">
                 <span>{test.name}</span>
                 <span>
-                  {pass}/{test.tests}
+                  {test.maxscore}/{test.getscore}
                 </span>
               </div>
             </div>
