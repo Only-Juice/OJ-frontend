@@ -156,7 +156,7 @@ export default function AccountPage() {
       <PaginationTable<Account>
         classname="table-lg"
         url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user`}
-        totalField="totalCount"
+        totalField="total_count"
         dataField="items"
         theadShow={() => (
           <tr>
