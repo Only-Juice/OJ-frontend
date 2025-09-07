@@ -20,7 +20,7 @@ import { Trash } from "lucide-react";
 import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 // type
-import type { ExamQuestionInAdmin } from "@/types/api";
+import type { ExamQuestionInAdmin } from "@/types/api/common";
 
 type operate = "delete" | "update" | "create";
 

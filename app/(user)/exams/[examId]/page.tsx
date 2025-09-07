@@ -15,7 +15,7 @@ import { toSystemDateFormat } from "@/utils/datetimeUtils";
 import { takeQuestion } from "@/utils/fetchUtils";
 
 // type
-import type { ExamQuestion } from "@/types/api";
+import type { ExamQuestion } from "@/types/api/common";
 
 // icon
 import { Trophy, CircleCheck, CircleX } from "lucide-react";

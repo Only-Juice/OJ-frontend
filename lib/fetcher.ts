@@ -5,7 +5,7 @@ import { refreshToken } from "@/utils/fetchUtils";
 import { isTokenExpired, storeTokenExp } from "@/utils/tokenUtils";
 
 // type
-import { ApiResponse, RefreshTokenResponse } from "@/types/api";
+import { ApiResponse, RefreshTokenResponse } from "@/types/api/common";
 
 export default async function fetcher(url: string, options?: RequestInit) {
   if (!isTokenExpired()) {

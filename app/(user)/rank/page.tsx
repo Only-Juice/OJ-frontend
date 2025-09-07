@@ -7,7 +7,7 @@ import useSWR from "swr";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 // type
-import type { Question } from "@/types/api";
+import type { Question } from "@/types/api/common";
 import Leaderboard from "@/components/Leaderboard";
 
 export default function RankPage() {

@@ -19,7 +19,7 @@ import { fetchWithRefresh } from "@/utils/fetchUtils";
 import { Plus, Pen } from "lucide-react";
 
 // types
-import { Question } from "@/types/api";
+import { Question } from "@/types/api/common";
 
 export default function Questions() {
   const links = [{ title: "Questions", href: "/admin/questions" }];

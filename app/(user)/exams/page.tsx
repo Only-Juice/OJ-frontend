@@ -11,7 +11,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
 // types
-import type { Exam } from "@/types/api";
+import type { Exam } from "@/types/api/common";
 
 export default function Exam() {
   const links = [{ title: "Exams", href: "/exams" }];

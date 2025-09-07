@@ -15,7 +15,9 @@ import type {
   TestSuiteSummary,
   TestCase,
   Failure,
-} from "@/types/api";
+  ApiResponse,
+} from "@/types/api/common";
+import { PublicQuestion, UserQuestion } from "@/types/api/question";
 
 // third-party
 import MarkdownPreview from "@uiw/react-markdown-preview";
@@ -32,25 +34,30 @@ const LIMIT = 10;
 export default function Problem() {
   const params = useParams();
   const id = params.questionId;
+  const links = [{ title: "Questions", href: "/questions" }];
 
   // question data
-  const { data: questionData } = useSWR(
+  const { data: questionData } = useSWR<ApiResponse<PublicQuestion>>(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/${id}/question`
+  );
+
+  // user question data
+  const { data: userQuestionData } = useSWR<ApiResponse<UserQuestion>>(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/user/${id}/question`
   );
   const question = questionData?.data.readme || "Loading...";
 
-  const links = [
-    { title: "Questions", href: "/questions" },
-    { title: `${questionData?.data.title}`, href: `/questions/${id}` },
-  ];
-
   // question git repo url
   const [sshUrl, setSshUrl] = useState("");
+  const [httpUrl, setHttpUrl] = useState("");
   useEffect(() => {
     setSshUrl(
-      `${process.env.NEXT_PUBLIC_GITEA_BASE_URL}/${questionData?.data?.git_repo_url}.git`
+      `${process.env.NEXT_PUBLIC_GITEA_SSH_BASE_URL}:${userQuestionData?.data.git_repo_url}.git`
     );
-  }, [questionData]);
+    setHttpUrl(
+      `${process.env.NEXT_PUBLIC_GITEA_BASE_URL}/${userQuestionData?.data.git_repo_url}.git`
+    );
+  }, [userQuestionData]);
 
   // submit history data
   const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
@@ -241,7 +248,7 @@ function SSHUrlAndRejudgeButton({
   const handleCopy = () => {
     navigator.clipboard.writeText(sshUrl).then(
       () => {
-        alert("SSH URL copied to clipboard!");
+        // alert("SSH URL copied to clipboard!");
       },
       (err) => {}
     );

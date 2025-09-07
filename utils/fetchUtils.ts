@@ -1,5 +1,5 @@
 // type
-import { ApiResponse, RefreshTokenResponse } from "@/types/api";
+import { ApiResponse, RefreshTokenResponse } from "@/types/api/common";
 
 // utils
 import { isTokenExpired, storeTokenExp } from "./tokenUtils";

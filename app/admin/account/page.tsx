@@ -14,7 +14,7 @@ import PaginationTable from "@/components/PaginationTable";
 import { Plus, RotateCcw } from "lucide-react";
 
 // type
-import { Account } from "@/types/api";
+import { Account } from "@/types/api/common";
 
 // utils
 import { fetchWithRefresh } from "@/utils/fetchUtils";

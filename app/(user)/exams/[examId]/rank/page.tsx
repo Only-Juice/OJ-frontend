@@ -9,7 +9,7 @@ import Leaderboard from "@/components/Leaderboard";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 // type
-import type { ExamQuestion, Question } from "@/types/api";
+import type { ExamQuestion, Question } from "@/types/api/common";
 
 export default function ExamRankPage() {
   const params = useParams();

@@ -25,7 +25,7 @@ import type {
   TestSuiteSummary,
   TestCase,
   Failure,
-} from "@/types/api";
+} from "@/types/api/common";
 
 export default function Problem() {
   const params = useParams();

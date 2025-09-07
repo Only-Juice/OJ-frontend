@@ -9,7 +9,7 @@ import { useState } from "react";
 import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 // type
-import { GiteaPublicKey } from "@/types/api";
+import { GiteaPublicKey } from "@/types/api/common";
 
 export default function Navbar() {
   const { data: userData } = useSWR(

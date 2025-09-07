@@ -20,7 +20,7 @@ import { fetchWithRefresh } from "@/utils/fetchUtils";
 import { Plus, Settings } from "lucide-react";
 
 // type
-import type { Exam } from "@/types/api";
+import type { Exam } from "@/types/api/common";
 
 export default function Exam() {
   const links = [{ title: "Exams", href: "/admin/exams" }];

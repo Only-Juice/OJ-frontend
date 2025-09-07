@@ -9,7 +9,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // type
-import type { Question } from "@/types/api";
+import type { Question } from "@/types/api/common";
 
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";

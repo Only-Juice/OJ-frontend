@@ -5,6 +5,7 @@
 ```env
 NEXT_PUBLIC_API_BASE_URL = "https://apiexample/api"
 NEXT_PUBLIC_GITEA_BASE_URL = "https://giteaexample"
+NEXT_PUBLIC_GITEA_SSH_BASE_URL = "git@hostname"
 ```
 
 # 啟動開發伺服器

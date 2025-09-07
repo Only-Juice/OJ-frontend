@@ -1,7 +1,7 @@
 "use client";
 
 // type
-import type { Question, Rank } from "@/types/api";
+import type { Question, Rank } from "@/types/api/common";
 import PaginationTable from "./PaginationTable";
 
 // icon
