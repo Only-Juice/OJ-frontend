@@ -12,6 +12,7 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
   const [oauthLoading, setOauthLoading] = useState(false);
 
   function handleLogin(event: React.FormEvent) {
@@ -19,6 +20,7 @@ export default function Login() {
     event.preventDefault();
 
     setError(false); // 每次嘗試登入前先清除錯誤提示
+    setIsLogin(true);
 
     fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`, {
       method: "POST",
@@ -48,6 +50,9 @@ export default function Login() {
       })
       .catch((_error) => {
         setError(true);
+      })
+      .finally(() => {
+        setIsLogin(false);
       });
   }
 
@@ -111,8 +116,15 @@ export default function Login() {
                 >
                   Login failed, please check your username and password.
                 </p>
-                <button className="btn btn-primary mt-4" onClick={handleLogin}>
-                  Login
+                <button className="btn btn-primary mt-4" onClick={handleLogin} disabled={isLogin}>
+                  {isLogin ? (
+                    <>
+                      <span className="loading loading-spinner loading-sm"></span>
+                      Logging in...
+                    </>
+                  ) : (
+                    "Login"
+                  )}
                 </button>
 
                 {/* OAuth 分隔線 */}
