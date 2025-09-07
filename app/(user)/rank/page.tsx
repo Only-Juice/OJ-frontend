@@ -3,16 +3,11 @@
 // next.js
 import useSWR from "swr";
 
-// components
-import Breadcrumbs from "@/components/Breadcrumbs";
-
 // type
 import type { Question } from "@/types/api/common";
 import Leaderboard from "@/components/Leaderboard";
 
 export default function RankPage() {
-  const links = [{ title: "Rank", href: "/rank" }];
-
   const leaderboardUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/leaderboard`;
 
   const { data: questionsData } = useSWR(
@@ -22,7 +17,6 @@ export default function RankPage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Breadcrumbs links={links}></Breadcrumbs>
       <Leaderboard
         questions={getQuestion(questions)}
         leaderboardUrl={leaderboardUrl}

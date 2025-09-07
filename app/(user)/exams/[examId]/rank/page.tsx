@@ -6,7 +6,6 @@ import useSWR from "swr";
 
 // components
 import Leaderboard from "@/components/Leaderboard";
-import Breadcrumbs from "@/components/Breadcrumbs";
 
 // type
 import type { ExamQuestion, Question } from "@/types/api/common";
@@ -19,12 +18,6 @@ export default function ExamRankPage() {
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/exam`
   );
 
-  const links = [
-    { title: "Exams", href: "/exams" },
-    { title: `${examData?.data?.exam_title}`, href: `/exams/${id}` },
-    { title: "Rank", href: `/exams/${id}/rank` },
-  ];
-
   const questionUrl = `${
     process.env.NEXT_PUBLIC_API_BASE_URL
   }/exams/${id}/questions?limit=${2 ** 31 - 1}`;
@@ -36,7 +29,6 @@ export default function ExamRankPage() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <Breadcrumbs links={links}></Breadcrumbs>
       <Leaderboard
         questions={getQuestion(questions)}
         leaderboardUrl={leaderboardUrl}

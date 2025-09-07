@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 // components
-import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // type
@@ -20,13 +19,10 @@ import { CircleCheck, CircleX } from "lucide-react";
 
 export default function Problem() {
   const router = useRouter();
-  const links = [{ title: "Questions", href: "/questions" }];
-
   const [status, setStatus] = useState("all"); // 初始值
 
   return (
     <div className="flex-1 flex flex-col">
-      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="flex justify-end mb-4">
         <QuestionStatusDropDown value={status} onChange={setStatus} />
       </div>

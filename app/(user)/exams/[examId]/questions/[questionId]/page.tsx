@@ -6,7 +6,6 @@ import { useState, useEffect, useRef } from "react";
 import useSWR from "swr";
 
 // components
-import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // third-party
@@ -44,18 +43,6 @@ export default function Problem() {
 
   const question = questionData?.data.readme || "Loading...";
 
-  const links = [
-    { title: "Exams", href: "/exams" },
-    {
-      title: `${examData?.data.exam_title}`,
-      href: `/exams/${examId}`,
-    },
-    {
-      title: `${questionData?.data.title}`,
-      href: `/exams/${examId}/questions/${id}`,
-    },
-  ];
-
   // question git repo url
   const [sshUrl, setSshUrl] = useState("");
   useEffect(() => {
@@ -74,7 +61,6 @@ export default function Problem() {
   // html elements
   return (
     <div className="flex-1">
-      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex gap-10 flex-1">
         <div className="tabs tabs-border tabs-box flex-2">
           <input

@@ -4,7 +4,6 @@
 import { useState } from "react";
 
 // components
-import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 import DateTimePicker from "@/components/DatePicker";
 
@@ -22,7 +21,6 @@ import { Plus, Pen } from "lucide-react";
 import { Question } from "@/types/api/common";
 
 export default function Questions() {
-  const links = [{ title: "Questions", href: "/admin/questions" }];
 
   const [id, setId] = useState<number | null>(null);
   const [title, setTitle] = useState<string>("");
@@ -136,7 +134,6 @@ export default function Questions() {
 
   return (
     <div className="flex flex-col flex-1 ">
-      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="flex justify-end mb-4 gap-4">
         <div className="btn btn-primary" onClick={createBtnClick}>
           Create New Question

@@ -6,7 +6,6 @@ import { useState, useEffect, useRef } from "react";
 import useSWR from "swr";
 
 // components
-import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // type
@@ -34,7 +33,6 @@ const LIMIT = 10;
 export default function Problem() {
   const params = useParams();
   const id = params.questionId;
-  const links = [{ title: "Questions", href: "/questions" }];
 
   // question data
   const { data: questionData } = useSWR<ApiResponse<PublicQuestion>>(
@@ -69,7 +67,6 @@ export default function Problem() {
   // html elements
   return (
     <div className="flex-1">
-      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex gap-10 flex-1">
         <div className="tabs tabs-border tabs-box flex-2">
           <input

@@ -7,7 +7,6 @@ import Papa from "papaparse";
 import { useState, useRef } from "react";
 
 // components
-import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // icons
@@ -26,8 +25,6 @@ export type ImportUserRow = {
 };
 
 export default function AccountPage() {
-  const links = [{ title: "Account", href: "/admin/account" }];
-
   const importUserModalRef = useRef<HTMLDialogElement>(null);
 
   const [username, setUsername] = useState("");
@@ -136,7 +133,6 @@ export default function AccountPage() {
 
   return (
     <div className="w-full flex flex-col">
-      <Breadcrumbs links={links} />
       <div className="flex justify-end mb-4 gap-4">
         <div
           className="btn btn-primary"

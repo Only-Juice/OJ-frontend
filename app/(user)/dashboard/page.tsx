@@ -4,7 +4,6 @@
 import { useRouter } from "next/navigation";
 
 // components
-import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // type
@@ -14,13 +13,10 @@ import type { SubmitResultOnDashboard } from "@/types/api/common";
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
 export default function Dashboard() {
-  const links = [{ title: "Dashboard", href: "/dashboard" }];
-
   const router = useRouter();
 
   return (
     <div className="flex flex-col flex-1">
-      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="w-full flex justify-center gap-10 flex-1">
         <div className="card flex-1 flex flex-col gap-10 items-center bg-base-100">
           <div className="card-body w-full flex flex-col">

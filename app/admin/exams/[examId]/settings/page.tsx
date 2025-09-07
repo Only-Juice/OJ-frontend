@@ -6,7 +6,6 @@ import { useParams } from "next/navigation";
 import useSWR from "swr";
 
 // components
-import Breadcrumbs from "@/components/Breadcrumbs";
 import DateTimePicker from "@/components/DatePicker";
 
 // utils
@@ -43,15 +42,6 @@ export default function Create() {
   const { data: examData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${id}/exam`
   );
-
-  // Breadcrumbs links
-  const links = [
-    { title: "Exams", href: "/admin/exams" },
-    {
-      title: `Exam ${examData?.data?.title}`,
-      href: `/admin/exams/${id}/settings`,
-    },
-  ];
 
   // State for exam details
   const [examTitle, setExamTitle] = useState("");
@@ -243,7 +233,6 @@ export default function Create() {
 
   return (
     <div className="flex flex-1 flex-col h-full">
-      <Breadcrumbs links={links} />
       <div className="flex-1 flex flex-row gap-4">
         <div className="flex-1 flex flex-col gap-4">
           <div className="flex flex-col gap-2">

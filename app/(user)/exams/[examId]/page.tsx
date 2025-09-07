@@ -7,7 +7,6 @@ import { useParams } from "next/navigation";
 import useSWR from "swr";
 
 // components
-import Breadcrumbs from "@/components/Breadcrumbs";
 import PaginationTable from "@/components/PaginationTable";
 
 // utils
@@ -29,14 +28,8 @@ export default function Exam() {
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/exam`
   );
 
-  const links = [
-    { title: "Exams", href: "/exams" },
-    { title: `${examData?.data?.exam_title}`, href: `/exams/${id}` },
-  ];
-
   return (
     <div className="flex-1 flex flex-col">
-      <Breadcrumbs links={links}></Breadcrumbs>
       <div className="flex justify-end items-center">
         <Link href={`/exams/${id}/rank`}>
           <button className="btn btn-primary">

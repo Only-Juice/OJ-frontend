@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useState, useRef } from "react";
 
 // components
-import Breadcrumbs from "@/components/Breadcrumbs";
 import DateTimePicker from "@/components/DatePicker";
 
 // utils
@@ -23,7 +22,6 @@ import { Plus, Settings } from "lucide-react";
 import type { Exam } from "@/types/api/common";
 
 export default function Exam() {
-  const links = [{ title: "Exams", href: "/admin/exams" }];
 
   const { data: examsData, mutate: mutateExams } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams`
@@ -31,7 +29,6 @@ export default function Exam() {
 
   return (
     <div className="flex-1">
-      <Breadcrumbs links={links} />
       <div className="fixed bottom-4 right-4">
         <div
           className="btn btn-primary"

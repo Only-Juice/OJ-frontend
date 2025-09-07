@@ -4,9 +4,6 @@
 import useSWR from "swr";
 import Link from "next/link";
 
-// components
-import Breadcrumbs from "@/components/Breadcrumbs";
-
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
 
@@ -14,15 +11,12 @@ import { toSystemDateFormat } from "@/utils/datetimeUtils";
 import type { Exam } from "@/types/api/common";
 
 export default function Exam() {
-  const links = [{ title: "Exams", href: "/exams" }];
-
   const { data: examsData } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams`
   );
 
   return (
     <div className="flex flex-1 flex-col">
-      <Breadcrumbs links={links} />
       <div className="flex flex-wrap gap-8">
         {examsData?.data?.map((exam: Exam) => (
           <div className="card bg-base-100 w-96 shadow-sm" key={exam.id}>
