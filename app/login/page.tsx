@@ -3,8 +3,11 @@
 // next.js
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { buildGiteaOAuthURL } from "@/utils/oauthUtils";
 import Link from "next/link";
+
+// utils
+import { buildGiteaOAuthURL } from "@/utils/oauthUtils";
+import { showAlert } from "@/utils/alertUtils";
 
 export default function Login() {
   const router = useRouter();
@@ -18,8 +21,6 @@ export default function Login() {
   function handleLogin(event: React.FormEvent) {
     // 不要刷新網頁
     event.preventDefault();
-
-    setError(false); // 每次嘗試登入前先清除錯誤提示
     setIsLogin(true);
 
     fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`, {
@@ -31,8 +32,8 @@ export default function Login() {
       credentials: "include",
       body: JSON.stringify({ username, password }),
     })
-      .then((loginResponse) => {
-        if (!loginResponse.ok) {
+      .then((response) => {
+        if (!response.ok) {
           throw new Error("Login failed");
         }
         return fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user`, {
@@ -44,12 +45,16 @@ export default function Login() {
           credentials: "include",
         });
       })
-      .then((userResponse) => userResponse.json())
-      .then((userData) => {
-        router.push(userData.data.is_admin ? "/admin" : "/questions");
+      .then((response) => response.json())
+      .then((json) => {
+        router.push(json.data.is_admin ? "/admin" : "/questions");
+        showAlert("Login successful!", "success");
       })
       .catch((_error) => {
-        setError(true);
+        showAlert(
+          "Login failed, please check your username and password.",
+          "error"
+        );
       })
       .finally(() => {
         setIsLogin(false);
@@ -116,7 +121,11 @@ export default function Login() {
                 >
                   Login failed, please check your username and password.
                 </p>
-                <button className="btn btn-primary mt-4" onClick={handleLogin} disabled={isLogin}>
+                <button
+                  className="btn btn-primary mt-4"
+                  onClick={handleLogin}
+                  disabled={isLogin}
+                >
                   {isLogin ? (
                     <>
                       <span className="loading loading-spinner loading-sm"></span>
