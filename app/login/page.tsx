@@ -5,9 +5,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 
+// types
+import { ApiResponse, LoginResponse, UserInfo } from "@/types/api";
+
 // utils
 import { buildGiteaOAuthURL } from "@/utils/oauthUtils";
 import { showAlert } from "@/utils/alertUtils";
+import { storeTokenExp } from "@/utils/tokenUtils";
 
 export default function Login() {
   const router = useRouter();
@@ -36,6 +40,13 @@ export default function Login() {
         if (!response.ok) {
           throw new Error("Login failed");
         }
+        return response.json();
+      })
+      .then((json: ApiResponse<LoginResponse>) => {
+        if (!json.success) {
+          throw new Error("Login failed");
+        }
+        storeTokenExp(json.data.access_token);
         return fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user`, {
           method: "GET",
           headers: {
@@ -45,8 +56,13 @@ export default function Login() {
           credentials: "include",
         });
       })
-      .then((response) => response.json())
-      .then((json) => {
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Fetch user info failed");
+        }
+        return response.json();
+      })
+      .then((json: ApiResponse<UserInfo>) => {
         router.push(json.data.is_admin ? "/admin" : "/questions");
         showAlert("Login successful!", "success");
       })
