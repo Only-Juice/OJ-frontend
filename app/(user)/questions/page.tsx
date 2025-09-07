@@ -13,7 +13,7 @@ import type { Question } from "@/types/api";
 
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
-import { takeQuestion } from "@/utils/apiUtils";
+import { takeQuestion } from "@/utils/fetchUtils";
 
 // icon
 import { CircleCheck, CircleX } from "lucide-react";

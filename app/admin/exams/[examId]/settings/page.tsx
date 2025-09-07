@@ -17,7 +17,7 @@ import {
 
 // icons
 import { Trash } from "lucide-react";
-import { fetchWithRefresh } from "@/utils/apiUtils";
+import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 // type
 import type { ExamQuestionInAdmin } from "@/types/api";

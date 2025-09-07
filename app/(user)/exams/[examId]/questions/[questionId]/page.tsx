@@ -17,7 +17,7 @@ import { CircleCheck, CircleX, Copy, RotateCw } from "lucide-react";
 
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
-import { fetchWithRefresh } from "@/utils/apiUtils";
+import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 // type
 import type {

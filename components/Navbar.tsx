@@ -6,7 +6,7 @@ import useSWR from "swr";
 import { useState } from "react";
 
 // utils
-import { fetchWithRefresh } from "@/utils/apiUtils";
+import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 // type
 import { GiteaPublicKey } from "@/types/api";

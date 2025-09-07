@@ -12,7 +12,7 @@ import PaginationTable from "@/components/PaginationTable";
 
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
-import { takeQuestion } from "@/utils/apiUtils";
+import { takeQuestion } from "@/utils/fetchUtils";
 
 // type
 import type { ExamQuestion } from "@/types/api";

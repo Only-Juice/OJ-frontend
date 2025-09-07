@@ -1,13 +1,14 @@
 "use client";
 
 // utils
-import { refreshToken } from "@/utils/apiUtils";
+import { refreshToken } from "@/utils/fetchUtils";
+import { isTokenExpired, storeTokenExp } from "@/utils/tokenUtils";
 
-let isRefreshing = false;
-let pendingRequests: (() => void)[] = [];
+// type
+import { ApiResponse, RefreshTokenResponse } from "@/types/api";
 
 export default async function fetcher(url: string, options?: RequestInit) {
-  const doFetch = async () => {
+  if (!isTokenExpired()) {
     return fetch(url, {
       headers: {
         accept: "application/json",
@@ -16,54 +17,46 @@ export default async function fetcher(url: string, options?: RequestInit) {
       credentials: "include",
       ...options,
     }).then((res) => {
-      if (res.status === 401) {
-        throw new Error("Unauthorized");
-      }
-
       if (!res.ok) {
         throw new Error(`Fetch failed with status ${res.status}`);
       }
 
       return res.json();
     });
-  };
-  
-  try {
-    return await doFetch();
-  } catch (error: unknown) {
-    if (error instanceof Error && error.message === "Unauthorized") {
-      if (!isRefreshing) {
-        isRefreshing = true;
-
-        try {
-          await refreshToken();
-          pendingRequests.forEach((cb) => cb());
-          pendingRequests = [];
-        } catch {
+  }
+  return refreshToken()
+    .then((response) => {
+      if (!response.ok) {
+        if (typeof window !== "undefined") {
           window.location.href = "/login";
-          throw new Error("Unable to refresh token");
-        } finally {
-          isRefreshing = false;
         }
       }
+      return response.json();
+    })
+    .then((json: ApiResponse<RefreshTokenResponse>) => {
+      if (!json.success) {
+        throw new Error(json.message || "Failed to refresh token");
+      }
+      storeTokenExp(json.data.access_token);
+      return fetch(url, {
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        ...options,
+      }).then((res) => {
+        if (!res.ok) {
+          throw new Error(`Fetch failed with status ${res.status}`);
+        }
 
-      return new Promise((resolve, reject) => {
-        pendingRequests.push(async () => {
-          try {
-            const result = await doFetch();
-            resolve(result);
-          } catch (err) {
-            reject(err);
-          }
-        });
+        return res.json();
       });
-    }
-
-    // 不是 Error 物件時，統一轉成 Error
-    if (!(error instanceof Error)) {
-      throw new Error(String(error));
-    }
-
-    throw error;
-  }
+    })
+    .catch((error) => {
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+      throw error;
+    });
 }

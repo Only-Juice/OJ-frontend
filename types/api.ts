@@ -1,3 +1,17 @@
+export type ApiResponse<T> = {
+  success: boolean;
+  message: string;
+  data: T;
+};
+
+export type LoginResponse = {
+  access_token: string;
+};
+
+export type RefreshTokenResponse = {
+  access_token: string;
+};
+
 // 單個題目頁面的上結果
 export type SubmitResult = {
   score: number;

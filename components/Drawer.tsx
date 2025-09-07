@@ -4,7 +4,7 @@ import Link from "next/link";
 import { UserRound, Trophy, FileText, LogOut } from "lucide-react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
-import { fetchWithRefresh } from "@/utils/apiUtils";
+import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 export default function Drawer({
   children,

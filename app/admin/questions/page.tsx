@@ -13,7 +13,7 @@ import {
   toISOStringFromLocal,
   toSystemDateFormat,
 } from "@/utils/datetimeUtils";
-import { fetchWithRefresh } from "@/utils/apiUtils";
+import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 // icons
 import { Plus, Pen } from "lucide-react";

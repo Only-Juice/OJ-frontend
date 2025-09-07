@@ -17,7 +17,7 @@ import { Plus, RotateCcw } from "lucide-react";
 import { Account } from "@/types/api";
 
 // utils
-import { fetchWithRefresh } from "@/utils/apiUtils";
+import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 export type ImportUserRow = {
   username: string;
