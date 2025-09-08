@@ -11,23 +11,16 @@ export function showAlert(
   alert.role = "alert";
   alert.innerHTML = `<span>${message}</span>`;
 
-  alert.style.opacity = "0";
-  alert.style.transition = "opacity 0.3s";
-  alertContainer.appendChild(alert);
-  requestAnimationFrame(() => {
-    alert.style.opacity = "1";
+  // 設定動畫時間
+  alert.style.animation = `alert-fade ${duration / 1000 + 0.6}s ease forwards`;
+  // 0.6s 是淡入+淡出時間（10% + 10% of keyframes = 0.2 + 0.4）可調
+
+  // 用 animationend 事件來移除元素
+  alert.addEventListener("animationend", () => {
+    if (alert.parentElement === alertContainer) {
+      alertContainer.removeChild(alert);
+    }
   });
 
-  setTimeout(() => {
-    alert.style.opacity = "0";
-    alert.addEventListener(
-      "transitionend",
-      () => {
-        if (alert.parentElement === alertContainer) {
-          alertContainer.removeChild(alert);
-        }
-      },
-      { once: true }
-    );
-  }, duration);
+  alertContainer.appendChild(alert);
 }
