@@ -131,9 +131,3 @@ export type Failure = {
   failure: string;
   type: string;
 };
-
-export type GiteaPublicKey = {
-  id: number;
-  title: string;
-  key: string;
-};

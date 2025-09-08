@@ -9,7 +9,9 @@ import { useState } from "react";
 import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 // type
-import { GiteaPublicKey } from "@/types/api/common";
+import { ApiResponse } from "@/types/api/common";
+import { GiteaPublicKey } from "@/types/api/giteaPublicKey";
+import { showAlert } from "@/utils/alertUtils";
 
 export default function Navbar() {
   const { data: userData } = useSWR(
@@ -169,7 +171,7 @@ export default function Navbar() {
 }
 
 function PublicKeyDialog() {
-  const { data, mutate } = useSWR(
+  const { data, mutate } = useSWR<ApiResponse<GiteaPublicKey[]>>(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user/keys`
   );
 
@@ -192,13 +194,25 @@ function PublicKeyDialog() {
         }),
       }
     )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to add key");
+        }
+        return response.json();
+      })
+      .then((json: ApiResponse<string>) => {
+        if (!json.success) {
+          throw new Error(json.message || "Failed to add key");
+        }
+        showAlert("Key added successfully", "success");
+      })
       .then(() => {
         setTitle("");
         setKey("");
         mutate();
       })
-      .catch((err) => {
-        console.error("Failed to add key", err);
+      .catch((error) => {
+        showAlert(error.message, "error");
       });
   };
 
@@ -217,11 +231,23 @@ function PublicKeyDialog() {
         }),
       }
     )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete key");
+        }
+        return response.json();
+      })
+      .then((json: ApiResponse<string>) => {
+        if (!json.success) {
+          throw new Error(json.message || "Failed to delete key");
+        }
+        showAlert("Key deleted successfully", "success");
+      })
       .then(() => {
         mutate();
       })
-      .catch((err) => {
-        console.error("Failed to delete key", err);
+      .catch((error) => {
+        showAlert(error.message, "error");
       });
   };
 
@@ -260,33 +286,33 @@ function PublicKeyDialog() {
           </button>
         </div>
 
-        <table className="table ">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Key</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.data?.map((key: GiteaPublicKey) => (
-              <tr key={key.id}>
-                <td>{key.title}</td>
-                <td className="max-w-xs whitespace-pre-wrap break-words">
-                  {key.key}
-                </td>
-                <td>
-                  <button
-                    className="btn btn-error"
-                    onClick={() => handleDeleteKey(key.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
+        <div className="overflow-y-auto h-[60%]">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Key</th>
+                <th>Delete</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data?.data.map((key: GiteaPublicKey) => (
+                <tr key={key.id}>
+                  <td>{key.title}</td>
+                  <td className="max-w-xs truncate">{key.key}</td>
+                  <td>
+                    <button
+                      className="btn btn-error"
+                      onClick={() => handleDeleteKey(key.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </dialog>
   );
