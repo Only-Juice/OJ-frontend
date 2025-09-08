@@ -13,14 +13,6 @@ export type RefreshTokenResponse = {
   access_token: string;
 };
 
-export type UserInfo = {
-  id: number;
-  user_name: string;
-  enable: boolean;
-  email: string;
-  is_public: boolean;
-  is_admin: boolean;
-};
 
 // 單個題目頁面的上結果
 export type SubmitResult = {

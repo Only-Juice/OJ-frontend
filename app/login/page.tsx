@@ -6,7 +6,8 @@ import { useState } from "react";
 import Link from "next/link";
 
 // types
-import { ApiResponse, LoginResponse, UserInfo } from "@/types/api/common";
+import { ApiResponse, LoginResponse } from "@/types/api/common";
+import { UserInfo } from "@/types/api/user";
 
 // utils
 import { buildGiteaOAuthURL } from "@/utils/oauthUtils";

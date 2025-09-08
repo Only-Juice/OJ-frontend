@@ -7,25 +7,26 @@ import { useState } from "react";
 
 // utils
 import { fetchWithRefresh } from "@/utils/fetchUtils";
+import { showAlert } from "@/utils/alertUtils";
 
 // type
 import { ApiResponse } from "@/types/api/common";
 import { GiteaPublicKey } from "@/types/api/giteaPublicKey";
-import { showAlert } from "@/utils/alertUtils";
+import { UserInfo, UserProfile } from "@/types/api/user";
 
 export default function Navbar() {
-  const { data: userData } = useSWR(
+  const { data: userData } = useSWR<ApiResponse<UserProfile>>(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user`
   );
 
-  const { data: userInfoData, mutate: mutateUserInfo } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/user`
-  );
+  const { data: userInfoData, mutate: mutateUserInfo } = useSWR<
+    ApiResponse<UserInfo>
+  >(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user`);
 
-  const avatarUrl = userData?.data?.avatar_url ?? null;
-  const username = userData?.data?.login ?? "";
-  const userId = userData?.data?.login ?? "";
-  const isPublic = userInfoData?.data?.is_public ?? false;
+  const avatarUrl = userData?.data.avatar_url ?? null;
+  const username = userData?.data.login ?? "";
+  const userId = userData?.data.login ?? "";
+  const isPublic = userInfoData?.data.is_public ?? false;
 
   const openPublicKeyDialog = () => {
     (
@@ -34,36 +35,73 @@ export default function Navbar() {
   };
 
   const updateUserVisibility = async (newVisibility: boolean) => {
-    mutateUserInfo(
-      {
-        ...userInfoData,
-        data: { ...userInfoData?.data, is_public: newVisibility },
+    // 更新當前資料
+    mutateUserInfo((currentData) => {
+      if (!currentData?.data) return currentData; // 防呆
+      return {
+        ...currentData,
+        data: {
+          ...currentData.data,
+          is_public: newVisibility,
+        },
+      };
+    }, false);
+
+    fetchWithRefresh(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user/is_public`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
       },
-      false
-    );
-
-    try {
-      const response = await fetchWithRefresh(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/is_public`,
-        {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ is_public: newVisibility }),
+      credentials: "include",
+      body: JSON.stringify({ is_public: newVisibility }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update user visibility");
         }
-      );
-
-      if (!response.ok) {
-        console.error("Failed to update user visibility");
+        return response.json();
+      })
+      .then((json: ApiResponse<object>) => {
+        if (!json.success) {
+          throw new Error(json.message || "Failed to update user visibility");
+        }
+        showAlert("User visibility updated", "success");
+      })
+      .catch((error) => {
+        showAlert(error.message, "error");
         mutateUserInfo();
-      }
-    } catch (error) {
-      console.error("Error updating user visibility:", error);
-      mutateUserInfo();
-    }
+      });
+  };
+
+  const handleLogout = () => {
+    fetchWithRefresh(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Logout failed");
+        }
+        return response.json();
+      })
+      .then((json: ApiResponse<string>) => {
+        if (!json.success) {
+          throw new Error(json.message || "Logout failed");
+        }
+        showAlert("Logout successful", "success");
+      })
+      .catch((err) => {
+        console.error("Logout failed", err);
+      })
+      .finally(() => {
+        // 無論是否成功，都導向 login 頁;
+        window.location.href = "/login";
+      });
   };
 
   const links = [
@@ -136,29 +174,7 @@ export default function Navbar() {
               <a onClick={() => openPublicKeyDialog()}>(SSH) Settings</a>
             </li>
             <li>
-              <a
-                className="text-error cursor-pointer"
-                onClick={async () => {
-                  try {
-                    await fetchWithRefresh(
-                      `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`,
-                      {
-                        method: "POST",
-                        headers: {
-                          accept: "application/json",
-                          "Content-Type": "application/json",
-                        },
-                        credentials: "include",
-                      }
-                    );
-                  } catch (err) {
-                    console.error("Logout failed", err);
-                  } finally {
-                    // 無論是否成功，都導向 login 頁
-                    window.location.href = "/login";
-                  }
-                }}
-              >
+              <a className="text-error cursor-pointer" onClick={handleLogout}>
                 Logout
               </a>
             </li>
