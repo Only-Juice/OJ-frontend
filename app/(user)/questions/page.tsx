@@ -22,7 +22,7 @@ export default function Problem() {
   const [status, setStatus] = useState("all"); // 初始值
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex flex-1 flex-col max-h-full">
       <div className="flex justify-end mb-4">
         <QuestionStatusDropDown value={status} onChange={setStatus} />
       </div>

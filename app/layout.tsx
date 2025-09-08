@@ -24,11 +24,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SWRProvider>{children}</SWRProvider>
-        
+
         {/* Alert container */}
         <div
           id="alert-container"
-          className="absolute top-4 right-4 w-[25%] gap-2 flex flex-col z-50"
+          className="absolute top-4 right-4 w-[25%] gap-2 flex flex-col z-2000"
         ></div>
       </body>
     </html>

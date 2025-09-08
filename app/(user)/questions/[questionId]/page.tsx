@@ -27,8 +27,11 @@ import { CircleCheck, CircleX, Copy, RotateCw } from "lucide-react";
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
 import { fetchWithRefresh } from "@/utils/fetchUtils";
+import { showAlert } from "@/utils/alertUtils";
 
 const LIMIT = 10;
+
+const HEIGHT = "max-h-[calc(100vh-12rem)] min-h-[calc(100vh-12rem)]";
 
 export default function Problem() {
   const params = useParams();
@@ -49,6 +52,7 @@ export default function Problem() {
   const [sshUrl, setSshUrl] = useState("");
   const [httpUrl, setHttpUrl] = useState("");
   useEffect(() => {
+    if (!userQuestionData) return;
     setSshUrl(
       `${process.env.NEXT_PUBLIC_GITEA_SSH_BASE_URL}:${userQuestionData?.data.git_repo_url}.git`
     );
@@ -56,6 +60,34 @@ export default function Problem() {
       `${process.env.NEXT_PUBLIC_GITEA_BASE_URL}/${userQuestionData?.data.git_repo_url}.git`
     );
   }, [userQuestionData]);
+
+  const handleRejudge = () => {
+    fetchWithRefresh(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question/user_rescore`,
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+        },
+        credentials: "include",
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to rejudge");
+        }
+        return res.json();
+      })
+      .then((json: ApiResponse<string>) => {
+        if (!json.success) {
+          throw new Error(json.message || "Failed to rejudge");
+        }
+        showAlert("Rejudge request sent", "success");
+      })
+      .catch((error) => {
+        showAlert(error.message, "error");
+      });
+  };
 
   // submit history data
   const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
@@ -66,109 +98,110 @@ export default function Problem() {
 
   // html elements
   return (
-    <div className="flex-1">
-      <div className="w-full flex gap-10 flex-1">
-        <div className="tabs tabs-border tabs-box flex-2">
-          <input
-            type="radio"
-            name="my_tabs_1"
-            className="tab"
-            aria-label="Question"
-            defaultChecked
-          />
-          <div className="tab-content p-2">
-            <MarkdownPreview
-              className="rounded-lg"
-              source={question}
-              style={{ padding: 16 }}
-            ></MarkdownPreview>
-          </div>
-          <input
-            ref={tabRef}
-            type="radio"
-            name="my_tabs_1"
-            className="tab"
-            aria-label="Submit history details"
-          />
-          <div className="tab-content p-2">
-            {submitResult &&
-            submitResult.score !== undefined &&
-            submitResult.score >= 0
-              ? SubmitHistoryDetailCollapse(submitResult.message)
-              : submitResult?.message}
+    <div className="flex-1 w-full flex gap-8">
+      <div className="tabs tabs-border tabs-box flex-2">
+        <input
+          type="radio"
+          name="my_tabs_1"
+          className="tab"
+          aria-label="Question"
+          defaultChecked
+        />
+        <div className={`tab-content p-2 overflow-y-auto ${HEIGHT}`}>
+          <MarkdownPreview
+            className="rounded-lg"
+            source={question}
+            style={{ padding: 16 }}
+          ></MarkdownPreview>
+        </div>
+        <input
+          ref={tabRef}
+          type="radio"
+          name="my_tabs_1"
+          className="tab"
+          aria-label="Submit history details"
+        />
+        <div className={`tab-content p-2 overflow-y-auto ${HEIGHT}`}>
+          {submitResult &&
+          submitResult.score !== undefined &&
+          submitResult.score >= 0
+            ? SubmitHistoryDetailCollapse(submitResult.message)
+            : submitResult?.message}
+        </div>
+      </div>
+      <div className="flex-1 gap-8 flex flex-col max-h-full">
+        <div className="card bg-base-100 w-full flex flex-1 ">
+          <div className="card-body flex flex-col flex-1 max-h-[70vh]">
+            <h2 className="card-title">Submit history</h2>
+            <PaginationTable<SubmitResult>
+              url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question`}
+              limit={LIMIT}
+              totalField="scores_count"
+              dataField="scores"
+              theadShow={() => (
+                <tr>
+                  <th>#</th>
+                  <th>Judge Time</th>
+                  <th>Score</th>
+                </tr>
+              )}
+              tbodyShow={(item, index, total, page) => (
+                <tr
+                  key={index}
+                  className={`cursor-pointer ${
+                    selectIndex === index
+                      ? "bg-primary text-primary-content"
+                      : "hover:bg-base-200"
+                  }`}
+                  onClick={() => {
+                    setSubmitResult(item);
+                    setSelectIndex(index);
+                    tabRef.current?.click();
+                  }}
+                >
+                  <td>{total - index - (page - 1) * LIMIT}</td>
+                  <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
+                  {item.score >= 0 ? (
+                    <td>{item.score}</td>
+                  ) : (
+                    <td>{item.message}</td>
+                  )}
+                </tr>
+              )}
+              onDataLoaded={(data) => {
+                setSelectIndex(0);
+                setSubmitResult(data[0]);
+              }}
+            />
           </div>
         </div>
-        <div className="flex-1 gap-10 flex flex-col sticky top-35 self-start">
-          <div className="card bg-base-100 w-full shadow-sm h-[70vh]">
-            <div className="card-body h-full flex flex-col">
-              <h2 className="card-title">Submit history</h2>
-              <PaginationTable<SubmitResult>
-                url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question`}
-                limit={LIMIT}
-                totalField="scores_count"
-                dataField="scores"
-                theadShow={() => (
-                  <tr>
-                    <th>#</th>
-                    <th>Judge Time</th>
-                    <th>Score</th>
-                  </tr>
-                )}
-                tbodyShow={(item, index, total, page) => (
-                  <tr
-                    key={index}
-                    className={`cursor-pointer ${
-                      selectIndex === index
-                        ? "bg-primary text-primary-content"
-                        : "hover:bg-base-200"
-                    }`}
-                    onClick={() => {
-                      setSubmitResult(item);
-                      setSelectIndex(index);
-                      tabRef.current?.click();
-                    }}
-                  >
-                    <td>{total - index - (page - 1) * LIMIT}</td>
-                    <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
-                    {item.score >= 0 ? (
-                      <td>{item.score}</td>
-                    ) : (
-                      <td>{item.message}</td>
-                    )}
-                  </tr>
-                )}
-                onDataLoaded={(data) => {
-                  setSelectIndex(0);
-                  setSubmitResult(data[0]);
-                }}
-              />
+        <div className="flex gap-8 items-center">
+          <div className="tabs tabs-border tabs-box flex-1">
+            <input
+              type="radio"
+              name="my_tabs_3"
+              className="tab"
+              aria-label="SSH"
+              defaultChecked
+            />
+            <div className="tab-content p-2">
+              <RepoUrl url={sshUrl} />
+            </div>
+
+            <input
+              type="radio"
+              name="my_tabs_3"
+              className="tab"
+              aria-label="HTTP"
+            />
+            <div className="tab-content p-2">
+              <RepoUrl url={httpUrl} />
             </div>
           </div>
-          <SSHUrlAndRejudgeButton
-            sshUrl={sshUrl}
-            onRejudge={() => {
-              fetchWithRefresh(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question/user_rescore`,
-                {
-                  method: "POST",
-                  headers: {
-                    accept: "application/json",
-                  },
-                  credentials: "include",
-                }
-              )
-                .then((res) => {
-                  if (!res.ok) {
-                    throw new Error("Failed to rejudge");
-                  }
-                  // setHistoryIndex(0);
-                  return res.json();
-                })
-                .catch((error) => {
-                  console.error("Error:", error);
-                });
-            }}
-          />
+          <button className="btn btn-primary" onClick={handleRejudge}>
+            Rejudge
+            <RotateCw />
+          </button>
         </div>
       </div>
     </div>
@@ -182,10 +215,6 @@ function SubmitHistoryDetailCollapse(message: string) {
   return (
     <div>
       {testsuites.map((test: TestSuiteSummary, index: number) => {
-        const pass = test.tests - test.failures - test.disabled - test.errors;
-        {
-          /* 可打開的物件 */
-        }
         return (
           <div
             className="collapse collapse-arrow bg-base-100 border-base-300 border"
@@ -197,7 +226,7 @@ function SubmitHistoryDetailCollapse(message: string) {
               <div className="flex justify-between">
                 <span>{test.name}</span>
                 <span>
-                  {test.maxscore}/{test.getscore}
+                  {test.getscore}/{test.maxscore}
                 </span>
               </div>
             </div>
@@ -234,38 +263,30 @@ function SubmitHistoryDetailCollapse(message: string) {
   );
 }
 
-// 顯示 SSH URL 和重新評分按鈕的組件
-function SSHUrlAndRejudgeButton({
-  sshUrl,
-  onRejudge,
-}: {
-  sshUrl: string;
-  onRejudge: () => void;
-}) {
+// 顯示 URL
+function RepoUrl({ url }: { url: string }) {
   const handleCopy = () => {
-    navigator.clipboard.writeText(sshUrl).then(
+    navigator.clipboard.writeText(url).then(
       () => {
-        // alert("SSH URL copied to clipboard!");
+        showAlert("Copied to clipboard", "success");
       },
       (err) => {}
     );
   };
   return (
-    <div className="flex gap-8">
-      <div className="join flex-1">
-        <input
-          className="input join-item flex-1"
-          placeholder="ssh url"
-          readOnly
-          value={sshUrl}
-        />
-        <button className="btn btn-primary join-item" onClick={handleCopy}>
-          <Copy />
-        </button>
-      </div>
-      <button className="btn btn-primary" onClick={onRejudge}>
-        Rejudge
-        <RotateCw />
+    <div className="join flex-1 w-full">
+      <input
+        className="input join-item flex-1"
+        placeholder="url"
+        readOnly
+        value={url}
+      />
+      <button
+        className="btn btn-primary join-item"
+        onClick={handleCopy}
+        disabled={!url}
+      >
+        <Copy />
       </button>
     </div>
   );
