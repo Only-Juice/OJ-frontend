@@ -14,6 +14,11 @@ import { UserInfo, UserProfile } from "@/types/api/user";
 
 // components
 import { PublicKeyDialog, openPublicKeyDialog } from "./PublicKeyDialog";
+import {
+  ChangePasswordDialog,
+  openChangePasswordDialog,
+} from "./ChangePasswordDialog";
+import { logout } from "@/utils/authUtils";
 
 export default function Navbar() {
   const { data: userData } = useSWR<ApiResponse<UserProfile>>(
@@ -66,36 +71,6 @@ export default function Navbar() {
       .catch((error) => {
         showAlert(error.message, "error");
         mutateUserInfo();
-      });
-  };
-
-  const handleLogout = () => {
-    fetchWithRefresh(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Logout failed");
-        }
-        return response.json();
-      })
-      .then((json: ApiResponse<string>) => {
-        if (!json.success) {
-          throw new Error(json.message || "Logout failed");
-        }
-        showAlert("Logout successful", "success");
-      })
-      .catch((err) => {
-        console.error("Logout failed", err);
-      })
-      .finally(() => {
-        // 無論是否成功，都導向 login 頁;
-        window.location.href = "/login";
       });
   };
 
@@ -168,16 +143,20 @@ export default function Navbar() {
               </label>
             </li>
             <li>
-              <a onClick={() => openPublicKeyDialog()}>(SSH) Settings</a>
+              <a onClick={openChangePasswordDialog}>Change password</a>
             </li>
             <li>
-              <a className="text-error cursor-pointer" onClick={handleLogout}>
+              <a onClick={openPublicKeyDialog}>SSH public key setting</a>
+            </li>
+            <li>
+              <a className="text-error cursor-pointer" onClick={logout}>
                 Logout
               </a>
             </li>
           </ul>
         </div>
       </div>
+      <ChangePasswordDialog />
       <PublicKeyDialog />
     </div>
   );
