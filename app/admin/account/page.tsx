@@ -163,8 +163,8 @@ export default function AccountPage() {
             <th>Reset Password</th>
           </tr>
         )}
-        tbodyShow={(item, rowIndex, total, page) => (
-          <tr key={rowIndex}>
+        tbodyShow={(item, index) => (
+          <tr key={index}>
             <td>{item.id}</td>
             <td>{item.user_name}</td>
             <td>{item.email}</td>

@@ -29,8 +29,6 @@ import { toSystemDateFormat } from "@/utils/datetimeUtils";
 import { fetchWithRefresh } from "@/utils/fetchUtils";
 import { showAlert } from "@/utils/alertUtils";
 
-const LIMIT = 10;
-
 const HEIGHT = "max-h-[calc(100vh-12rem)] min-h-[calc(100vh-12rem)]";
 
 export default function Problem() {
@@ -135,7 +133,6 @@ export default function Problem() {
             <h2 className="card-title">Submit history</h2>
             <PaginationTable<SubmitResult>
               url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question`}
-              limit={LIMIT}
               totalField="scores_count"
               dataField="scores"
               theadShow={() => (
@@ -145,7 +142,7 @@ export default function Problem() {
                   <th>Score</th>
                 </tr>
               )}
-              tbodyShow={(item, index, total, page) => (
+              tbodyShow={(item, index, seqNo, descSeqNo) => (
                 <tr
                   key={index}
                   className={`cursor-pointer ${
@@ -159,7 +156,7 @@ export default function Problem() {
                     tabRef.current?.click();
                   }}
                 >
-                  <td>{total - index - (page - 1) * LIMIT}</td>
+                  <td>{descSeqNo}</td>
                   <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
                   {item.score >= 0 ? (
                     <td>{item.score}</td>

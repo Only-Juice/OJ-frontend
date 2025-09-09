@@ -16,9 +16,9 @@ interface PaginationTableProps<T> {
   theadShow: () => JSX.Element;
   tbodyShow: (
     item: T,
-    rowIndex: number,
-    total: number,
-    page: number
+    index: number,
+    seqNo: number,
+    descSeqNo: number
   ) => JSX.Element;
   onPageChange?: (page: number) => void;
   onDataLoaded?: (data: T[]) => void;
@@ -75,9 +75,11 @@ export default function PaginationTable<T>({
         <table className={`table ${classname}`}>
           <thead>{theadShow()}</thead>
           <tbody>
-            {items.map((item, index) =>
-              tbodyShow(item, index, totalCount, page)
-            )}
+            {items.map((item, index) => {
+              const seqNo = (page - 1) * limit + index + 1;
+              const descSeqNo = totalCount - seqNo + 1;
+              return tbodyShow(item, index, seqNo, descSeqNo);
+            })}
           </tbody>
         </table>
       </div>

@@ -31,9 +31,9 @@ export default function Leaderboard({
           <th className="text-center">Total Score</th>
         </tr>
       )}
-      tbodyShow={(item, index, total, page) => (
+      tbodyShow={(item, index, seqNo, descSeqNo) => (
         <tr key={index}>
-          {generateRankCell(index, total, page)}
+          {generateRankCell(index, seqNo)}
           <th>{item.user_name}</th>
           {questions.map((question: Question) =>
             generateScoreCell(question, item)
@@ -46,8 +46,8 @@ export default function Leaderboard({
 }
 
 // 排名
-function generateRankCell(index: number, total: number, page: number) {
-  const rank = index + 1 + (page - 1) * total;
+function generateRankCell(index: number, seqNo: number) {
+  const rank = seqNo;
   if (rank === 1) {
     return (
       <th className="flex justify-center">

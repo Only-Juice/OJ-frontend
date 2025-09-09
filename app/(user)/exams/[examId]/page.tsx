@@ -41,7 +41,6 @@ export default function Exam() {
       <PaginationTable<ExamQuestion>
         classname="table-lg"
         url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/questions`}
-        limit={15}
         totalField="question_count"
         dataField="questions"
         theadShow={() => (

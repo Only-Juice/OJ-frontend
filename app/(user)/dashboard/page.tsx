@@ -31,7 +31,7 @@ export default function Dashboard() {
               <th>Score</th>
             </tr>
           )}
-          tbodyShow={(item, index, total, page) => (
+          tbodyShow={(item, index, seqNo, descSeqNo) => (
             <tr
               key={index}
               className="cursor-pointer hover:bg-base-200"
@@ -39,7 +39,7 @@ export default function Dashboard() {
                 router.push(`/questions/${item.question_id}`);
               }}
             >
-              <td>{total - index - (page - 1) * 10}</td>
+              <td>{descSeqNo}</td>
               <td>{item.question_title}</td>
               <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
               <td>{item.score >= 0 ? item.score : item.message}</td>

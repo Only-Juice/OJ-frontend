@@ -21,7 +21,6 @@ import { Plus, Pen } from "lucide-react";
 import { Question } from "@/types/api/common";
 
 export default function Questions() {
-
   const [id, setId] = useState<number | null>(null);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -155,8 +154,8 @@ export default function Questions() {
             <th>Modify</th>
           </tr>
         )}
-        tbodyShow={(item, rowIndex, total, page) => (
-          <tr key={rowIndex}>
+        tbodyShow={(item, index) => (
+          <tr key={index}>
             <td>{item.id}</td>
             <td>{item.title}</td>
             <td>{toSystemDateFormat(new Date(item.start_time))}</td>
