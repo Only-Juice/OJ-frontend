@@ -3,7 +3,6 @@
 // next.js
 import Link from "next/link";
 import useSWR from "swr";
-import { useState } from "react";
 
 // utils
 import { fetchWithRefresh } from "@/utils/fetchUtils";
@@ -11,8 +10,10 @@ import { showAlert } from "@/utils/alertUtils";
 
 // type
 import { ApiResponse } from "@/types/api/common";
-import { GiteaPublicKey } from "@/types/api/giteaPublicKey";
 import { UserInfo, UserProfile } from "@/types/api/user";
+
+// components
+import { PublicKeyDialog, openPublicKeyDialog } from "./PublicKeyDialog";
 
 export default function Navbar() {
   const { data: userData } = useSWR<ApiResponse<UserProfile>>(
@@ -28,13 +29,7 @@ export default function Navbar() {
   const userId = userData?.data.login ?? "";
   const isPublic = userInfoData?.data.is_public ?? false;
 
-  const openPublicKeyDialog = () => {
-    (
-      document.getElementById("public-key-dialog") as HTMLDialogElement
-    )?.showModal();
-  };
-
-  const updateUserVisibility = async (newVisibility: boolean) => {
+  const updateUserVisibility = (newVisibility: boolean) => {
     // 更新當前資料
     mutateUserInfo((currentData) => {
       if (!currentData?.data) return currentData; // 防呆
@@ -116,6 +111,7 @@ export default function Navbar() {
       className="navbar bg-base-100 shadow-sm"
       style={{ top: 0, width: "100%", zIndex: 1000 }}
     >
+      {/* navigation links */}
       <div className="flex-1">
         {links.map((link) => (
           <Link
@@ -127,6 +123,7 @@ export default function Navbar() {
           </Link>
         ))}
       </div>
+      {/* user info */}
       <div className="flex gap-5 items-center">
         <div className="lg:flex flex-col items-end">
           <p>{username}</p>
@@ -183,153 +180,5 @@ export default function Navbar() {
       </div>
       <PublicKeyDialog />
     </div>
-  );
-}
-
-function PublicKeyDialog() {
-  const { data, mutate } = useSWR<ApiResponse<GiteaPublicKey[]>>(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user/keys`
-  );
-
-  const [title, setTitle] = useState("");
-  const [key, setKey] = useState("");
-
-  const handleAddKey = () => {
-    fetchWithRefresh(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user/keys`,
-      {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          title: title,
-          key: key,
-        }),
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to add key");
-        }
-        return response.json();
-      })
-      .then((json: ApiResponse<string>) => {
-        if (!json.success) {
-          throw new Error(json.message || "Failed to add key");
-        }
-        showAlert("Key added successfully", "success");
-      })
-      .then(() => {
-        setTitle("");
-        setKey("");
-        mutate();
-      })
-      .catch((error) => {
-        showAlert(error.message, "error");
-      });
-  };
-
-  const handleDeleteKey = (keyId: number) => {
-    fetchWithRefresh(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/gitea/user/keys`,
-      {
-        method: "DELETE",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          id: keyId,
-        }),
-      }
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to delete key");
-        }
-        return response.json();
-      })
-      .then((json: ApiResponse<string>) => {
-        if (!json.success) {
-          throw new Error(json.message || "Failed to delete key");
-        }
-        showAlert("Key deleted successfully", "success");
-      })
-      .then(() => {
-        mutate();
-      })
-      .catch((error) => {
-        showAlert(error.message, "error");
-      });
-  };
-
-  return (
-    <dialog id="public-key-dialog" className="modal">
-      <div className="modal-box h-[80vh] w-11/12 max-w-7xl">
-        <form method="dialog">
-          <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-            ✕
-          </button>
-        </form>
-        <fieldset className="fieldset">
-          <label className="label">Title</label>
-          <div>
-            <input
-              className="input w-full"
-              placeholder="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            ></input>
-          </div>
-          <label className="label">Public Key</label>
-          <div>
-            <textarea
-              className="textarea w-full"
-              placeholder="Public Key"
-              value={key}
-              onChange={(e) => setKey(e.target.value)}
-            ></textarea>
-          </div>
-        </fieldset>
-
-        <div className="flex justify-end">
-          <button className="btn btn-primary mt-4 mb-4" onClick={handleAddKey}>
-            Add
-          </button>
-        </div>
-
-        <div className="overflow-y-auto h-[60%]">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Key</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.data.map((key: GiteaPublicKey) => (
-                <tr key={key.id}>
-                  <td>{key.title}</td>
-                  <td className="max-w-xs truncate">{key.key}</td>
-                  <td>
-                    <button
-                      className="btn btn-error"
-                      onClick={() => handleDeleteKey(key.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </dialog>
   );
 }
