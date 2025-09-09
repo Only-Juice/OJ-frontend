@@ -22,7 +22,7 @@ import { PublicQuestion, UserQuestion } from "@/types/api/question";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 
 // icons
-import { CircleCheck, CircleX, Copy, RotateCw } from "lucide-react";
+import { CircleCheck, CircleX, Copy, RotateCw, Check } from "lucide-react";
 
 // utils
 import { toSystemDateFormat } from "@/utils/datetimeUtils";
@@ -265,14 +265,18 @@ function SubmitHistoryDetailCollapse(message: string) {
 
 // 顯示 URL
 function RepoUrl({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false);
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(url).then(
-      () => {
-        showAlert("Copied to clipboard", "success");
-      },
-      (err) => {}
-    );
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true); // 按下去後變成勾勾
+      showAlert("Copied to clipboard", "success");
+
+      // 一定秒數後再變回去
+      setTimeout(() => setCopied(false), 2000); // 2 秒後恢復
+    });
   };
+
   return (
     <div className="join flex-1 w-full">
       <input
@@ -281,12 +285,13 @@ function RepoUrl({ url }: { url: string }) {
         readOnly
         value={url}
       />
+
       <button
-        className="btn btn-primary join-item"
+        className={`btn join-item ${copied ? "btn-success" : "btn-primary"}`}
         onClick={handleCopy}
         disabled={!url}
       >
-        <Copy />
+        {copied ? <Check /> : <Copy />}
       </button>
     </div>
   );
