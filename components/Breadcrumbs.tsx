@@ -1,9 +1,6 @@
 // next.js
 import Link from "next/link";
 
-// utils
-import { truncateText } from "@/utils/stringUtils";
-
 type Props = {
   links: { title: string; href: string }[];
 };
