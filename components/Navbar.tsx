@@ -130,7 +130,7 @@ export default function Navbar() {
           >
             <li>
               <label className="flex">
-                Hide information
+                Show information
                 <div className="flex-1"></div>
                 <input
                   type="checkbox"
