@@ -121,8 +121,8 @@ export default function Problem() {
         />
         <div className={`tab-content p-2 overflow-y-auto ${HEIGHT}`}>
           {submitResult &&
-          submitResult.score !== undefined &&
-          submitResult.score >= 0
+            submitResult.score !== undefined &&
+            submitResult.score >= 0
             ? SubmitHistoryDetailCollapse(submitResult.message)
             : submitResult?.message}
         </div>
@@ -145,11 +145,10 @@ export default function Problem() {
               tbodyShow={(item, index, seqNo, descSeqNo) => (
                 <tr
                   key={index}
-                  className={`cursor-pointer ${
-                    selectIndex === index
-                      ? "bg-primary text-primary-content"
-                      : "hover:bg-base-200"
-                  }`}
+                  className={`cursor-pointer ${selectIndex === index
+                    ? "bg-primary text-primary-content"
+                    : "hover:bg-base-200"
+                    }`}
                   onClick={() => {
                     setSubmitResult(item);
                     setSelectIndex(index);
@@ -207,8 +206,13 @@ export default function Problem() {
 
 // 一組可打開的物件，一次只會打開一個，用於顯示提交歷史的詳細資料
 function SubmitHistoryDetailCollapse(message: string) {
-  const json = JSON.parse(message);
-  const testsuites = json.testsuites || [];
+  let json, testsuites;
+  try {
+    json = JSON.parse(message);
+    testsuites = json.testsuites || [];
+  } catch {
+    return <div style={{ whiteSpace: 'pre-wrap' }}>{message}</div>;
+  }
   return (
     <div>
       {testsuites.map((test: TestSuiteSummary, index: number) => {
