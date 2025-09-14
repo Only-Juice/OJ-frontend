@@ -98,7 +98,7 @@ export default function Problem() {
   // html elements
   return (
     <div className="flex-1 w-full flex gap-8">
-      <div className="tabs tabs-border tabs-box flex-2">
+      <div className="tabs tabs-border tabs-box flex-2 max-w-[66.6%]">
         <input
           type="radio"
           name="my_tabs_1"
@@ -129,7 +129,7 @@ export default function Problem() {
             : submitResult?.message}
         </div>
       </div>
-      <div className="flex-1 gap-8 flex flex-col max-h-full">
+      <div className="flex-1 gap-8 flex flex-col max-h-full max-w-[33.3%]">
         <div className="card bg-base-100 w-full flex flex-1 ">
           <div className="card-body flex flex-col flex-1 max-h-[70vh]">
             <h2 className="card-title">Submit history</h2>

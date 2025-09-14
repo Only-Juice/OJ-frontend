@@ -33,3 +33,13 @@ body {
   90% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-10px); }
 }
+
+@layer base {
+  table {
+    @apply table-fixed w-full border-collapse;
+  }
+
+  td, th {
+    @apply whitespace-normal break-words;
+  }
+}
