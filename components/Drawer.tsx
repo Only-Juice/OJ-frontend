@@ -5,6 +5,7 @@ import { UserRound, Trophy, FileText, LogOut } from "lucide-react";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import { fetchWithRefresh } from "@/utils/fetchUtils";
+import { logout } from "@/utils/authUtils";
 
 export default function Drawer({
   children,
@@ -35,26 +36,13 @@ export default function Drawer({
   const isPublic = userInfoData?.data?.is_public ?? false;
 
   const handleLogout = async () => {
-    fetchWithRefresh(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    }).then((res) => {
-      if (!res.ok) {
-        throw new Error("Logout failed");
-      }
-      // 登出成功後，重定向到登入頁面
-      router.push("/login");
-    });
+    logout();
   };
 
   return (
     <div className="drawer drawer-open">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content p-10 flex h-screen">{children}</div>
+      <div className="drawer-content p-8 flex flex-col max-h-screen">{children}</div>
       <div className="drawer-side">
         <label
           htmlFor="my-drawer"

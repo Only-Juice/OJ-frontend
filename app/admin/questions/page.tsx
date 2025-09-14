@@ -2,6 +2,7 @@
 
 // next.js
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 // components
 import PaginationTable from "@/components/PaginationTable";
@@ -15,12 +16,14 @@ import {
 import { fetchWithRefresh } from "@/utils/fetchUtils";
 
 // icons
-import { Plus, Pen } from "lucide-react";
+import { Plus, Pen, Trophy } from "lucide-react";
 
 // types
 import { Question } from "@/types/api/common";
 
 export default function Questions() {
+  const router = useRouter();
+
   const [id, setId] = useState<number | null>(null);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -152,6 +155,7 @@ export default function Questions() {
             <th>End Date</th>
             <th>Status</th>
             <th>Modify</th>
+            <th>Score</th>
           </tr>
         )}
         tbodyShow={(item, index) => (
@@ -176,6 +180,14 @@ export default function Questions() {
                 onClick={() => modifyBtnClick(item)}
               >
                 <Pen />
+              </div>
+            </td>
+            <td>
+              <div
+                className="btn btn-ghost btn-sm"
+                onClick={() => router.push(`/admin/questions/${item.id}/score`)}
+              >
+                <Trophy />
               </div>
             </td>
           </tr>
