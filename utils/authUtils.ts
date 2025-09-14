@@ -29,6 +29,6 @@ export function logout() {
     .finally(() => {
       setTimeout(() => {
         window.location.href = "/login";
-      }, 1000); // 1秒後跳轉
+      }, 500); // 1秒後跳轉
     });
 }
