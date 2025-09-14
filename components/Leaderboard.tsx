@@ -7,6 +7,9 @@ import PaginationTable from "./PaginationTable";
 // icon
 import { Award } from "lucide-react";
 
+// utils
+import { Gradient } from "@/utils/colorUtils";
+
 interface LeaderboardProps {
   questions: Question[];
   leaderboardUrl: string;
@@ -83,29 +86,14 @@ function generateQuestionHeader(questions: Question[]) {
 //
 function generateScoreCell(question: Question, rank: Rank) {
   const score = rank.question_scores.find((q) => q.question_id === question.id);
-  return <GradientTd value={score ? score.score : 0} key={question.id} />;
-}
-
-// 顏色漸層的 td
-function GradientTd({ value }: { value: number }) {
-  const start = [214, 69, 69]; // RGB for #3A9D23
-  const end = [58, 157, 35]; // RGB for #D64545
-
-  const v = Math.max(0, Math.min(100, value));
-
-  // 線性插值
-  const r = Math.round(start[0] + ((end[0] - start[0]) * v) / 100);
-  const g = Math.round(start[1] + ((end[1] - start[1]) * v) / 100);
-  const b = Math.round(start[2] + ((end[2] - start[2]) * v) / 100);
-
-  const color = `rgb(${r}, ${g}, ${b})`;
-
   return (
     <td
-      className="text-center text-white rounded-md"
-      style={{ backgroundColor: color }}
+      className="text-center"
+      style={{
+        backgroundColor: ` ${Gradient({ value: score ? score.score : 0 })}`,
+      }}
     >
-      {value}
+      {score ? score.score : 0}
     </td>
   );
 }
