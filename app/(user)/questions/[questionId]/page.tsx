@@ -122,9 +122,8 @@ export default function Problem() {
         />
         <div className={`tab-content p-2 overflow-y-auto ${HEIGHT}`}>
           {submitResult &&
-          submitResult.score !== undefined &&
-          submitResult.score >= 0 &&
-          isJsonString(submitResult.message)
+            submitResult.score !== undefined &&
+            isJsonString(submitResult.message)
             ? SubmitHistoryDetailCollapse(submitResult.message)
             : submitResult?.message}
         </div>
@@ -147,11 +146,10 @@ export default function Problem() {
               tbodyShow={(item, index, seqNo, descSeqNo) => (
                 <tr
                   key={index}
-                  className={`cursor-pointer ${
-                    selectIndex === index
-                      ? "bg-primary text-primary-content"
-                      : "hover:bg-base-200"
-                  }`}
+                  className={`cursor-pointer ${selectIndex === index
+                    ? "bg-primary text-primary-content"
+                    : "hover:bg-base-200"
+                    }`}
                   onClick={() => {
                     setSubmitResult(item);
                     setSelectIndex(index);
@@ -163,7 +161,7 @@ export default function Problem() {
                   {item.score >= 0 ? (
                     <td>{item.score}</td>
                   ) : (
-                    <td>{item.message}</td>
+                    <td>0</td>
                   )}
                 </tr>
               )}
