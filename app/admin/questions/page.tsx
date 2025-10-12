@@ -75,7 +75,7 @@ export default function Questions() {
         </div>
       </div>
       <PaginationTable<Question>
-        classname="table-lg"
+        classname="table-lg table-auto"
         url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/questions`}
         totalField="question_count"
         dataField="questions"
@@ -198,7 +198,7 @@ function CreateAndUpdateQuestinoDialog({ id }: { id: number | null }) {
           stack_memory: Number(stackMemoryLimit),
           file_size: Number(fileSizeLimit),
           processes: Number(processNumberLimit),
-          open_files: 64, // default value, adjust if needed
+          open_files: Number(openFilesLimit),
         }),
       }
     )
@@ -245,7 +245,7 @@ function CreateAndUpdateQuestinoDialog({ id }: { id: number | null }) {
           stack_memory: Number(stackMemoryLimit),
           file_size: Number(fileSizeLimit),
           processes: Number(processNumberLimit),
-          open_files: 64, // default value, adjust if needed
+          open_files: Number(openFilesLimit),
         }),
       }
     )

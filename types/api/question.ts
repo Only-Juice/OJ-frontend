@@ -1,4 +1,5 @@
 export type PublicQuestion = {
+  id: number;
   title: string;
   description: string;
   readme: string;
