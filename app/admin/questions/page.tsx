@@ -320,6 +320,7 @@ function CreateAndUpdateQuestinoDialog({ id }: { id: number | null }) {
       setCompileScript(script.data.compile_script);
       setExecuteScript(script.data.execute_script);
       setScoreScript(script.data.score_script);
+      setScoreMap(script.data.score_map);
     }
   }, [script]);
 
