@@ -20,17 +20,17 @@ import { Plus, Settings } from "lucide-react";
 
 // type
 import type { Exam } from "@/types/api/common";
+import { showAlert } from "@/utils/alertUtils";
 
 export default function Exam() {
-
   const { data: examsData, mutate: mutateExams } = useSWR(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams`
   );
 
   return (
-    <div className="flex-1">
-      <div className="fixed bottom-4 right-4">
-        <div
+    <div className="flex-1 flex-row">
+      <div className="flex justify-end mb-4">
+        <button
           className="btn btn-primary"
           onClick={() =>
             (
@@ -40,7 +40,7 @@ export default function Exam() {
         >
           Create exam
           <Plus />
-        </div>
+        </button>
       </div>
       {examsData ? (
         <ExamCards exams={examsData.data} mutateExams={mutateExams} />
@@ -79,7 +79,7 @@ function ExamCards({
         throw new Error("Failed to delete exam");
       }
 
-      alert("Exam deleted successfully!");
+      showAlert("Exam deleted successfully!", "success");
       mutateExams(); // Refresh the exam list
     } catch (error) {
       console.error("Error deleting exam:", error);
@@ -168,9 +168,8 @@ function ExamDialog({ mutateExams }: { mutateExams: () => void }) {
         throw new Error("Failed to create exam");
       }
 
-      alert("Exam created successfully!");
+      showAlert("Exam created successfully!", "success");
       // Reset form after successful creation
-
       clearForm();
 
       mutateExams(); // Refresh the exam list

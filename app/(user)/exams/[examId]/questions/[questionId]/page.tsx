@@ -8,48 +8,85 @@ import useSWR from "swr";
 // components
 import PaginationTable from "@/components/PaginationTable";
 
-// third-party
-import MarkdownPreview from "@uiw/react-markdown-preview";
-
-// icons
-import { CircleCheck, CircleX, Copy, RotateCw } from "lucide-react";
-
-// utils
-import { toSystemDateFormat } from "@/utils/datetimeUtils";
-import { fetchWithRefresh } from "@/utils/fetchUtils";
-
 // type
 import type {
   SubmitResult,
   TestSuiteSummary,
   TestCase,
   Failure,
+  ApiResponse,
 } from "@/types/api/common";
+import { PublicQuestion, UserQuestion } from "@/types/api/question";
+
+// third-party
+import MarkdownPreview from "@uiw/react-markdown-preview";
+
+// icons
+import { CircleCheck, CircleX, Copy, RotateCw, Check } from "lucide-react";
+
+// utils
+import { toSystemDateFormat } from "@/utils/datetimeUtils";
+import { fetchWithRefresh } from "@/utils/fetchUtils";
+import { showAlert } from "@/utils/alertUtils";
+import { isJsonString } from "@/utils/commonUtils";
+
+const HEIGHT = "max-h-[calc(100vh-12rem)] min-h-[calc(100vh-12rem)]";
 
 export default function Problem() {
   const params = useParams();
-  const examId = params.examId;
   const id = params.questionId;
 
-  // exam data
-  const { data: examData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${examId}/exam`
-  );
-
   // question data
-  const { data: questionData } = useSWR(
+  const { data: questionData } = useSWR<ApiResponse<PublicQuestion>>(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/${id}/question`
   );
 
+  // user question data
+  const { data: userQuestionData } = useSWR<ApiResponse<UserQuestion>>(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/user/${id}/question`
+  );
   const question = questionData?.data.readme || "Loading...";
 
   // question git repo url
   const [sshUrl, setSshUrl] = useState("");
+  const [httpUrl, setHttpUrl] = useState("");
   useEffect(() => {
+    if (!userQuestionData) return;
     setSshUrl(
-      `${process.env.NEXT_PUBLIC_GITEA_BASE_URL}/${questionData?.data?.git_repo_url}.git`
+      `${process.env.NEXT_PUBLIC_GITEA_SSH_BASE_URL}:${userQuestionData?.data.git_repo_url}.git`
     );
-  }, [questionData]);
+    setHttpUrl(
+      `${process.env.NEXT_PUBLIC_GITEA_BASE_URL}/${userQuestionData?.data.git_repo_url}.git`
+    );
+  }, [userQuestionData]);
+
+  const handleRejudge = () => {
+    fetchWithRefresh(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question/user_rescore`,
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+        },
+        credentials: "include",
+      }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to rejudge");
+        }
+        return res.json();
+      })
+      .then((json: ApiResponse<string>) => {
+        if (!json.success) {
+          throw new Error(json.message || "Failed to rejudge");
+        }
+        showAlert("Rejudge request sent", "success");
+      })
+      .catch((error) => {
+        showAlert(error.message, "error");
+      });
+  };
 
   // submit history data
   const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
@@ -60,108 +97,108 @@ export default function Problem() {
 
   // html elements
   return (
-    <div className="flex-1">
-      <div className="w-full flex gap-10 flex-1">
-        <div className="tabs tabs-border tabs-box flex-2">
-          <input
-            type="radio"
-            name="my_tabs_1"
-            className="tab"
-            aria-label="Question"
-            defaultChecked
-          />
-          <div className="tab-content p-2">
-            <MarkdownPreview
-              className="rounded-lg"
-              source={question}
-              style={{ padding: 16 }}
-            ></MarkdownPreview>
-          </div>
-          <input
-            ref={tabRef}
-            type="radio"
-            name="my_tabs_1"
-            className="tab"
-            aria-label="Submit history details"
-          />
-          <div className="tab-content p-2">
-            {submitResult &&
+    <div className="flex-1 w-full flex gap-8">
+      <div className="tabs tabs-border tabs-box flex-2 max-w-[66.6%]">
+        <input
+          type="radio"
+          name="my_tabs_1"
+          className="tab"
+          aria-label="Question"
+          defaultChecked
+        />
+        <div className={`tab-content p-2 overflow-y-auto ${HEIGHT}`}>
+          <MarkdownPreview
+            className="rounded-lg"
+            source={question}
+            style={{ padding: 16 }}
+          ></MarkdownPreview>
+        </div>
+        <input
+          ref={tabRef}
+          type="radio"
+          name="my_tabs_1"
+          className="tab"
+          aria-label="Submit history details"
+        />
+        <div className={`tab-content p-2 overflow-y-auto ${HEIGHT}`}>
+          {submitResult &&
             submitResult.score !== undefined &&
-            submitResult.score >= 0
-              ? SubmitHistoryDetailCollapse(submitResult.message)
-              : submitResult?.message}
+            isJsonString(submitResult.message)
+            ? SubmitHistoryDetailCollapse(submitResult.message)
+            : submitResult?.message}
+        </div>
+      </div>
+      <div className="flex-1 gap-8 flex flex-col max-h-full max-w-[33.3%]">
+        <div className="card bg-base-100 w-full flex flex-1 ">
+          <div className="card-body flex flex-col flex-1 max-h-[70vh]">
+            <h2 className="card-title">Submit history</h2>
+            <PaginationTable<SubmitResult>
+              url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question`}
+              totalField="scores_count"
+              dataField="scores"
+              theadShow={() => (
+                <tr>
+                  <th>#</th>
+                  <th>Judge Time</th>
+                  <th>Score</th>
+                </tr>
+              )}
+              tbodyShow={(item, index, seqNo, descSeqNo) => (
+                <tr
+                  key={index}
+                  className={`cursor-pointer ${selectIndex === index
+                    ? "bg-primary text-primary-content"
+                    : "hover:bg-base-200"
+                    }`}
+                  onClick={() => {
+                    setSubmitResult(item);
+                    setSelectIndex(index);
+                    tabRef.current?.click();
+                  }}
+                >
+                  <td>{descSeqNo}</td>
+                  <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
+                  {item.score >= 0 ? (
+                    <td>{item.score}</td>
+                  ) : (
+                    <td>0</td>
+                  )}
+                </tr>
+              )}
+              onDataLoaded={(data) => {
+                setSelectIndex(0);
+                setSubmitResult(data[0]);
+              }}
+            />
           </div>
         </div>
-        <div className="flex-1 gap-10 flex flex-col sticky top-35 self-start">
-          <div className="card bg-base-100 w-full shadow-sm h-[70vh]">
-            <div className="card-body h-full flex flex-col">
-              <h2 className="card-title">Submit history</h2>
-              <PaginationTable<SubmitResult>
-                url={`${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question`}
-                totalField="scores_count"
-                dataField="scores"
-                theadShow={() => (
-                  <tr>
-                    <th>#</th>
-                    <th>Judge Time</th>
-                    <th>Score</th>
-                  </tr>
-                )}
-                tbodyShow={(item, index, seqNo, descSeqNo) => (
-                  <tr
-                    key={index}
-                    className={`cursor-pointer ${
-                      selectIndex === index
-                        ? "bg-primary text-primary-content"
-                        : "hover:bg-base-200"
-                    }`}
-                    onClick={() => {
-                      setSubmitResult(item);
-                      setSelectIndex(index);
-                      tabRef.current?.click();
-                    }}
-                  >
-                    <td>{descSeqNo}</td>
-                    <td>{toSystemDateFormat(new Date(item.judge_time))}</td>
-                    {item.score >= 0 ? (
-                      <td>{item.score}</td>
-                    ) : (
-                      <td>{item.message}</td>
-                    )}
-                  </tr>
-                )}
-                onDataLoaded={(data) => {
-                  setSelectIndex(0);
-                  setSubmitResult(data[0]);
-                }}
-              />
+        <div className="flex gap-8 items-center">
+          <div className="tabs tabs-border tabs-box flex-1">
+            <input
+              type="radio"
+              name="my_tabs_3"
+              className="tab"
+              aria-label="SSH"
+              defaultChecked
+            />
+            <div className="tab-content p-2">
+              <RepoUrl url={sshUrl} />
+            </div>
+
+            <input
+              type="radio"
+              name="my_tabs_3"
+              className="tab"
+              aria-label="HTTP"
+            />
+            <div className="tab-content p-2">
+              <RepoUrl url={httpUrl} />
             </div>
           </div>
-          <SSHUrlAndRejudgeButton
-            sshUrl={sshUrl}
-            onRejudge={() => {
-              fetchWithRefresh(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/score/${id}/question/user_rescore`,
-                {
-                  method: "POST",
-                  headers: {
-                    accept: "application/json",
-                  },
-                  credentials: "include",
-                }
-              )
-                .then((res) => {
-                  if (!res.ok) {
-                    throw new Error("Failed to rejudge");
-                  }
-                  // setHistoryIndex(0);
-                  return res.json();
-                })
-                .catch((error) => {
-                  console.error("Error:", error);
-                });
-            }}
-          />
+          <button className="btn btn-primary" onClick={handleRejudge}>
+            Rejudge
+            <RotateCw />
+          </button>
         </div>
       </div>
     </div>
@@ -175,22 +212,18 @@ function SubmitHistoryDetailCollapse(message: string) {
   return (
     <div>
       {testsuites.map((test: TestSuiteSummary, index: number) => {
-        const pass = test.tests - test.failures - test.disabled - test.errors;
-        {
-          /* 可打開的物件 */
-        }
         return (
           <div
             className="collapse collapse-arrow bg-base-100 border-base-300 border"
             key={index}
           >
-            <input type="radio" name={json.name} />
+            <input type="checkbox" name={json.name} />
             {/* 物件標題 */}
             <div className="collapse-title font-semibold">
               <div className="flex justify-between">
                 <span>{test.name}</span>
                 <span>
-                  {pass}/{test.tests}
+                  {test.getscore}/{test.maxscore}
                 </span>
               </div>
             </div>
@@ -227,38 +260,35 @@ function SubmitHistoryDetailCollapse(message: string) {
   );
 }
 
-// 顯示 SSH URL 和重新評分按鈕的組件
-function SSHUrlAndRejudgeButton({
-  sshUrl,
-  onRejudge,
-}: {
-  sshUrl: string;
-  onRejudge: () => void;
-}) {
+// 顯示 URL
+function RepoUrl({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false);
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(sshUrl).then(
-      () => {
-        alert("SSH URL copied to clipboard!");
-      },
-      (err) => {}
-    );
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true); // 按下去後變成勾勾
+      showAlert("Copied to clipboard", "success");
+
+      // 一定秒數後再變回去
+      setTimeout(() => setCopied(false), 2000); // 2 秒後恢復
+    });
   };
+
   return (
-    <div className="flex gap-8">
-      <div className="join flex-1">
-        <input
-          className="input join-item flex-1"
-          placeholder="ssh url"
-          readOnly
-          value={sshUrl}
-        />
-        <button className="btn btn-primary join-item" onClick={handleCopy}>
-          <Copy />
-        </button>
-      </div>
-      <button className="btn btn-primary" onClick={onRejudge}>
-        Rejudge
-        <RotateCw />
+    <div className="join flex-1 w-full">
+      <input
+        className="input join-item flex-1"
+        placeholder="url"
+        readOnly
+        value={url}
+      />
+
+      <button
+        className={`btn join-item ${copied ? "btn-success" : "btn-primary"}`}
+        onClick={handleCopy}
+        disabled={!url}
+      >
+        {copied ? <Check /> : <Copy />}
       </button>
     </div>
   );
