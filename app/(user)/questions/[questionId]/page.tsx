@@ -246,7 +246,9 @@ function SubmitHistoryDetailCollapse(message: string) {
                   {t.failures?.length ? (
                     <ul className="text-sm text-red-600 mt-2 list-disc ml-6">
                       {t.failures.map((f: Failure, i) => (
-                        <li key={i}>{f.failure}</li>
+                        <li key={i} className="whitespace-pre-wrap">
+                          {f.failure}
+                        </li>
                       ))}
                     </ul>
                   ) : null}
