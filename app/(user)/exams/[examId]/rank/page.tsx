@@ -14,15 +14,11 @@ export default function ExamRankPage() {
   const params = useParams();
   const id = params.examId;
 
-  const { data: examData } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/exam`
+  const { data: questionsData } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/questions?limit=${
+      2 ** 31 - 1
+    }`
   );
-
-  const questionUrl = `${
-    process.env.NEXT_PUBLIC_API_BASE_URL
-  }/exams/${id}/questions?limit=${2 ** 31 - 1}`;
-
-  const { data: questionsData } = useSWR(questionUrl);
   const questions = questionsData?.data?.questions ?? [];
 
   const leaderboardUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/${id}/leaderboard`;
