@@ -13,6 +13,7 @@ import { UserInfo } from "@/types/api/user";
 import { buildGiteaOAuthURL } from "@/utils/oauthUtils";
 import { showAlert } from "@/utils/alertUtils";
 import { storeTokenExp } from "@/utils/tokenUtils";
+import { buildInfo } from "@/utils/build-info";
 
 export default function Login() {
   const router = useRouter();
@@ -177,6 +178,37 @@ export default function Login() {
             </form>
           </div>
         </div>
+      </div>
+      <div className="absolute bottom-4 text-center w-full text-sm">
+        <p>
+          Build: <span className="font-mono text-gray-400">{buildInfo.shortCommitHash}</span>
+          {buildInfo.branchName !== 'unknown' && buildInfo.branchName !== 'dev' && (
+            <span className="ml-2">
+              on <a
+                href={`${process.env.NEXT_PUBLIC_GITHUB_REPO || 'https://github.com/Only-Juice/OJ-frontend'}/tree/${buildInfo.branchName}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-gray-400 hover:text-blue-400 hover:underline transition-colors"
+              >
+                {buildInfo.branchName}
+              </a>
+            </span>
+          )}
+        </p>
+        {buildInfo.buildTime && buildInfo.buildTime !== 'unknown' && (
+          <p>
+            Built: <span className="text-gray-400">
+              {new Date(buildInfo.buildTime).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'UTC'
+              })} UTC
+            </span>
+          </p>
+        )}
       </div>
     </div>
   );
