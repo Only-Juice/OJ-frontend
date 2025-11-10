@@ -3,23 +3,35 @@ import { ApiResponse, RefreshTokenResponse } from "@/types/api/common";
 
 // utils
 import { isTokenExpired, storeTokenExp } from "./tokenUtils";
+import { generateCSRFToken } from "./csrf";
 
 // 刷新 token
-export function refreshToken() {
+export async function refreshToken() {
   return fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`, {
     method: "POST",
     headers: {
       accept: "application/json",
+      "x-csrf-token": await generateCSRFToken(),
     },
     credentials: "include",
   });
 }
 
 // 如果過期就刷新 token
-export function fetchWithRefresh(
+export async function fetchWithRefresh(
   input: RequestInfo,
   init?: RequestInit
 ): Promise<Response> {
+  // 加上 csrf token
+  const csrfToken = await generateCSRFToken();
+  init = {
+    ...init,
+    headers: {
+      ...init?.headers,
+      "x-csrf-token": csrfToken,
+    },
+    credentials: "include",
+  };
   if (!isTokenExpired()) {
     return fetch(input, init);
   }
