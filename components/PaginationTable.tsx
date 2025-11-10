@@ -7,6 +7,10 @@ import { useState, useEffect } from "react";
 // next.js
 import useSWR from "swr";
 
+// icon
+import { RotateCw } from "lucide-react";
+import { showAlert } from "@/utils/alertUtils";
+
 interface PaginationTableProps<T> {
   classname?: string;
   url: string;
@@ -41,7 +45,7 @@ export default function PaginationTable<T>({
   urlObj.searchParams.set("limit", limit.toString());
   urlObj.searchParams.set("page", page.toString());
 
-  const { data, isLoading } = useSWR(urlObj.toString());
+  const { data, isLoading, isValidating, mutate } = useSWR(urlObj.toString());
 
   const items: T[] = data?.data?.[dataField] || [];
 
@@ -85,9 +89,22 @@ export default function PaginationTable<T>({
       </div>
 
       <div className="text-right flex items-center justify-end gap-2 mt-4">
-        {isLoading && <span className="loading loading-spinner"></span>}
+        {(isLoading || isValidating) && (
+          <span className="loading loading-spinner"></span>
+        )}
         {Math.min((page - 1) * limit + 1, totalCount)}-
         {Math.min(page * limit, totalCount)} of {totalCount}
+        <button
+          type="button"
+          className="btn btn-ghost"
+          onClick={async () => {
+            await mutate();
+            showAlert("Data refreshed", "success");
+          }}
+          disabled={isLoading || isValidating}
+        >
+          <RotateCw />
+        </button>
       </div>
 
       <div className="join items-center justify-center mt-4">
