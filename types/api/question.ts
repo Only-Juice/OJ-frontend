@@ -6,6 +6,7 @@ export type PublicQuestion = {
   git_repo_url: string;
   start_time: string;
   end_time: string;
+  is_active: boolean;
 };
 
 export type UserQuestion = {

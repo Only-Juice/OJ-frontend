@@ -104,6 +104,33 @@ function QuestionList() {
       });
   };
 
+  const handleProblemStatusChange = (id: number, isActive: boolean) => {
+    fetchWithRefresh(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/questions/admin/${id}/question`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ is_active: isActive }),
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update question status");
+        }
+        return response.json();
+      })
+      .then((json: ApiResponse<object>) => {
+        if (!json.success) throw new Error(json.message);
+        showAlert("Question status updated successfully", "success");
+      })
+      .catch((error) => {
+        showAlert("Failed to update question status:" + error.message, "error");
+      });
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex justify-end mb-2">
@@ -128,6 +155,7 @@ function QuestionList() {
             <th>Title</th>
             <th>Git repo URL</th>
             <th>Point</th>
+            <th>Status</th>
             <th>Modify</th>
             <th>Remove</th>
           </tr>
@@ -137,6 +165,19 @@ function QuestionList() {
             <td>{question.question.title}</td>
             <td>{question.question.git_repo_url}</td>
             <td>{question.point}</td>
+            <td>
+              <input
+                type="checkbox"
+                checked={question.question.is_active}
+                className="toggle toggle-primary"
+                onChange={(e) =>
+                  handleProblemStatusChange(
+                    question.question.id,
+                    e.target.checked
+                  )
+                }
+              />
+            </td>
             <td>
               <div
                 className="btn btn-ghost btn-sm"

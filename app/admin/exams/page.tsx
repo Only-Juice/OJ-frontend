@@ -19,7 +19,7 @@ import { fetchWithRefresh } from "@/utils/fetchUtils";
 import { Plus, Settings } from "lucide-react";
 
 // type
-import type { Exam } from "@/types/api/common";
+import type { ApiResponse, Exam } from "@/types/api/common";
 import { showAlert } from "@/utils/alertUtils";
 
 export default function Exam() {
@@ -63,27 +63,32 @@ function ExamCards({
   const handleDeleteExam = async (examId: number) => {
     if (!confirm("Are you sure you want to delete this exam?")) return;
 
-    try {
-      const response = await fetchWithRefresh(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${examId}/exam`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete exam");
+    fetchWithRefresh(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/exams/admin/${examId}/exam`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       }
-
-      showAlert("Exam deleted successfully!", "success");
-      mutateExams(); // Refresh the exam list
-    } catch (error) {
-      console.error("Error deleting exam:", error);
-    }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to delete exam");
+        }
+        return response.json();
+      })
+      .then((json: ApiResponse<object>) => {
+        if (!json.success) {
+          throw new Error("Failed to delete exam");
+        }
+        showAlert("Exam deleted successfully!", "success");
+        mutateExams();
+      })
+      .catch((error) => {
+        console.error("Error deleting exam:", error);
+      });
   };
 
   return (

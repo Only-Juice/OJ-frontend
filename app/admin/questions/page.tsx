@@ -1,7 +1,7 @@
 "use client";
 
 // next.js
-import { use, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { useEffect } from "react";
@@ -151,7 +151,6 @@ function CreateAndUpdateQuestinoDialog({ id }: { id: number | null }) {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [gitRepoUrl, setGitRepoUrl] = useState<string>("");
-  const [isActive, setIsActive] = useState<boolean>(false);
 
   const [compileScript, setCompileScript] = useState<string>("");
   const [executeScript, setExecuteScript] = useState<string>("");
@@ -187,7 +186,6 @@ function CreateAndUpdateQuestinoDialog({ id }: { id: number | null }) {
           git_repo_url: gitRepoUrl,
           start_time: new Date(startTime).toISOString(),
           end_time: new Date(endTime).toISOString(),
-          is_active: isActive,
           compile_script: compileScript,
           execute_script: executeScript,
           score_script: scoreScript,
@@ -234,7 +232,6 @@ function CreateAndUpdateQuestinoDialog({ id }: { id: number | null }) {
           git_repo_url: gitRepoUrl,
           start_time: new Date(startTime).toISOString(),
           end_time: new Date(endTime).toISOString(),
-          is_active: isActive,
           compile_script: compileScript,
           execute_script: executeScript,
           score_script: scoreScript,
@@ -270,7 +267,6 @@ function CreateAndUpdateQuestinoDialog({ id }: { id: number | null }) {
     setTitle("");
     setDescription("");
     setGitRepoUrl("");
-    setIsActive(false);
 
     setCompileScript("");
     setExecuteScript("");
@@ -420,16 +416,6 @@ function CreateAndUpdateQuestinoDialog({ id }: { id: number | null }) {
                 onChange={(e) => setGitRepoUrl(e.target.value)}
               />
               <p className="validator-hint">Gitea Repository URL is required</p>
-            </div>
-
-            <label className="label">Is Active</label>
-            <div>
-              <input
-                type="checkbox"
-                className="toggle toggle-primary"
-                checked={isActive}
-                onChange={(e) => setIsActive(e.target.checked)}
-              />
             </div>
           </fieldset>
           <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 ">
