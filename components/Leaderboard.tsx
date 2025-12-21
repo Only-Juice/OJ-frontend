@@ -26,6 +26,7 @@ export default function Leaderboard({
       limit={15}
       totalField="count"
       dataField="scores"
+      autoRefreshInterval={15000}
       theadShow={() => (
         <tr>
           <th className="text-center">#</th>

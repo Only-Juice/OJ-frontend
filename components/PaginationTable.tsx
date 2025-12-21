@@ -17,6 +17,7 @@ interface PaginationTableProps<T> {
   limit?: number;
   totalField: string;
   dataField: string;
+  autoRefreshInterval?: number; // in milliseconds, 0 means no auto refresh
   theadShow: () => JSX.Element;
   tbodyShow: (
     item: T,
@@ -34,6 +35,7 @@ export default function PaginationTable<T>({
   limit = 10,
   totalField,
   dataField,
+  autoRefreshInterval = 0,
   theadShow,
   tbodyShow,
   onPageChange,
@@ -45,18 +47,20 @@ export default function PaginationTable<T>({
   urlObj.searchParams.set("limit", limit.toString());
   urlObj.searchParams.set("page", page.toString());
 
-  const { data, isLoading, isValidating, mutate } = useSWR(urlObj.toString());
+  const { data, isLoading, isValidating, mutate } = useSWR(urlObj.toString(), {
+    refreshInterval: autoRefreshInterval,
+  });
 
   const items: T[] = data?.data?.[dataField] || [];
 
   const totalCount = data?.data?.[totalField] || 0;
 
-  const subtractPage = () => {
+  const previousPage = () => {
     if (page <= 1) return;
     setPage((prev) => prev - 1);
   };
 
-  const addPage = () => {
+  const nextPage = () => {
     if (totalCount <= page * limit) return;
     setPage((prev) => prev + 1);
   };
@@ -108,11 +112,11 @@ export default function PaginationTable<T>({
       </div>
 
       <div className="join items-center justify-center mt-4">
-        <button className="join-item btn" onClick={subtractPage}>
+        <button className="join-item btn" onClick={previousPage}>
           «
         </button>
         <button className="join-item btn">Page {page}</button>
-        <button className="join-item btn" onClick={addPage}>
+        <button className="join-item btn" onClick={nextPage}>
           »
         </button>
       </div>
